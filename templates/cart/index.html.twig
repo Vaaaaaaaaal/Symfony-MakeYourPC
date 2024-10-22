@@ -10,20 +10,20 @@
             <div class="cart-container">
                 <div class="cart-items">
                     {% for item in cartItems %}
-                        <div class="cart-item">
+                        <div class="cart-item" data-id="{{ item.id }}">
                             <div class="item-details">
                                 <h3>{{ item.name }}</h3>
                                 <p class="item-price">{{ item.price|number_format(2, ',', ' ') }} €</p>
                             </div>
                             <div class="item-quantity">
-                                <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, -1)">-</button>
+                                <button class="quantity-btn minus" data-action="decrease">-</button>
                                 <span class="quantity">{{ item.quantity }}</span>
-                                <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 1)">+</button>
+                                <button class="quantity-btn plus" data-action="increase">+</button>
                             </div>
                             <div class="item-total">
                                 {{ (item.price * item.quantity)|number_format(2, ',', ' ') }} €
                             </div>
-                            <button class="remove-item" onclick="removeItem({{ item.id }})">
+                            <button class="remove-item" data-action="remove">
                                 <i data-lucide="trash-2"></i>
                             </button>
                         </div>
@@ -33,7 +33,7 @@
                     <h2>Résumé de la commande</h2>
                     <div class="summary-row">
                         <span>Sous-total</span>
-                        <span>{{ total|number_format(2, ',', ' ') }} €</span>
+                        <span id="cart-subtotal">{{ total|number_format(2, ',', ' ') }} €</span>
                     </div>
                     <div class="summary-row">
                         <span>Frais de livraison</span>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="summary-row total">
                         <span>Total</span>
-                        <span>{{ total|number_format(2, ',', ' ') }} €</span>
+                        <span id="cart-total">{{ total|number_format(2, ',', ' ') }} €</span>
                     </div>
                     <button class="btn-checkout">Procéder au paiement</button>
                 </div>
@@ -56,14 +56,66 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        function updateQuantity(itemId, change) {
-            // Implémentez la logique de mise à jour de la quantité ici
-            console.log('Mise à jour de la quantité pour l\'item', itemId, 'avec un changement de', change);
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartItems = document.querySelectorAll('.cart-item');
 
-        function removeItem(itemId) {
-            // Implémentez la logique de suppression d'un item ici
-            console.log('Suppression de l\'item', itemId);
-        }
+            cartItems.forEach(item => {
+                const minusBtn = item.querySelector('.minus');
+                const plusBtn = item.querySelector('.plus');
+                const removeBtn = item.querySelector('.remove-item');
+                const quantitySpan = item.querySelector('.quantity');
+                const itemId = item.dataset.id;
+
+                minusBtn.addEventListener('click', () => updateQuantity(itemId, -1));
+                plusBtn.addEventListener('click', () => updateQuantity(itemId, 1));
+                removeBtn.addEventListener('click', () => removeItem(itemId));
+            });
+
+            function updateQuantity(itemId, change) {
+                fetch(`/cart/update/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ change: change })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateCartDisplay(data);
+                    }
+                });
+            }
+
+            function removeItem(itemId) {
+                fetch(`/cart/remove/${itemId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateCartDisplay(data);
+                    }
+                });
+            }
+
+            function updateCartDisplay(data) {
+                const cartItem = document.querySelector(`.cart-item[data-id="${data.itemId}"]`);
+                if (cartItem) {
+                    if (data.quantity > 0) {
+                        cartItem.querySelector('.quantity').textContent = data.quantity;
+                        cartItem.querySelector('.item-total').textContent = `${data.itemTotal.toFixed(2).replace('.', ',')} €`;
+                    } else {
+                        cartItem.remove();
+                    }
+                }
+                document.getElementById('cart-subtotal').textContent = `${data.subtotal.toFixed(2).replace('.', ',')} €`;
+                document.getElementById('cart-total').textContent = `${data.total.toFixed(2).replace('.', ',')} €`;
+
+                if (data.itemCount === 0) {
+                    location.reload(); // Recharge la page si le panier est vide
+                }
+            }
+        });
     </script>
 {% endblock %}

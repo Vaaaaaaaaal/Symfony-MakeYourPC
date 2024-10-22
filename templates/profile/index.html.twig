@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">Mon Profil</h1>
+        
+        <div class="profile-container">
+            <div class="profile-info">
+                <h2>Informations personnelles</h2>
+                <p><strong>Nom :</strong> {{ user.name }}</p>
+                <p><strong>Email :</strong> {{ user.email }}</p>
+                <p><strong>Adresse :</strong> {{ user.address }}</p>
+                <p><strong>Téléphone :</strong> {{ user.phone }}</p>
+                <a href="{{ path('app_edit_profile') }}" class="btn-edit-profile">Modifier mes informations</a>
+            </div>
+            
+            <div class="order-history">
+                <h2>Historique des commandes</h2>
+                {% if orders|length > 0 %}
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>N° de commande</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td><img src="{{ asset('images/products/' ~ order.image) }}" alt="Image de la commande" class="order-image"></td>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.date }}</td>
+                                    <td>{{ order.total|number_format(2, ',', ' ') }} €</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Vous n'avez pas encore passé de commande.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -12,7 +12,19 @@
                     <span class="cart-count">0</span>
                 </a>
             </li>
-            <li><a href="#"><i data-lucide="user"></i></a></li>
+            <li>
+                <a href="{{ path('app_profile') }}">
+                    <i data-lucide="user"></i>
+                </a>
+            </li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a href="{{ path('app_admin') }}">
+                        <i data-lucide="settings"></i>
+                        <span>Administration</span>
+                    </a>
+                </li>
+            {% endif %}
         </ul>
     </nav>
 </header>

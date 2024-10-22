@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">Modifier mon profil</h1>
+        
+        <div class="edit-profile-container">
+            <form action="{{ path('app_edit_profile') }}" method="post" class="edit-profile-form">
+                <div class="form-group">
+                    <label for="name">Nom</label>
+                    <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Adresse</label>
+                    <input type="text" id="address" name="address" value="{{ user.address }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" value="{{ user.phone }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password_confirm">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="password_confirm" name="password_confirm">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Enregistrer les modifications</button>
+                    <a href="{{ path('app_profile') }}" class="btn-cancel">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
