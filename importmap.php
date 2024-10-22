@@ -25,4 +25,7 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'animations' => [
+        'path' => './assets/js/animations.js',
+    ],
 ];
