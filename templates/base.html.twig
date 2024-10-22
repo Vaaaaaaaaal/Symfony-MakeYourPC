@@ -30,5 +30,23 @@
         <script>
             lucide.createIcons();
         </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                
+                function checkScroll() {
+                    animatedElements.forEach(el => {
+                        const rect = el.getBoundingClientRect();
+                        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                        if (rect.top <= windowHeight * 0.75) {
+                            el.classList.add('visible');
+                        }
+                    });
+                }
+
+                window.addEventListener('scroll', checkScroll);
+                checkScroll(); // Vérifier au chargement de la page
+            });
+        </script>
     </body>
 </html>

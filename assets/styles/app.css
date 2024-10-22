@@ -56,3 +56,140 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+/* Styles pour la bannière */
+.banner-container {
+  position: relative;
+  width: 100%;
+  height: 500px; /* Ajustez cette valeur selon vos besoins */
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.banner-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  z-index: 1;
+}
+
+.banner-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.banner-content p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #2980b9;
+}
+
+/* Ajustez les styles existants pour l'animation */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Media query pour la responsivité */
+@media (max-width: 768px) {
+  .banner-container {
+    height: 300px; /* Réduisez la hauteur pour les petits écrans */
+  }
+
+  .banner-content h1 {
+    font-size: 2rem;
+  }
+
+  .banner-content p {
+    font-size: 1rem;
+  }
+}
+
+/* Styles pour la grille de fonctionnalités */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 4rem 0;
+}
+
+.feature-tile {
+  background-color: #222222;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  color: #3498db;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+}
+
+.feature-tile h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #6294c6;
+}
+
+.feature-tile p {
+  font-size: 0.9rem;
+  color: #b3d1d3;
+}
+
+/* Ajustez les styles existants pour l'animation */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Media query pour la responsivité */
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}

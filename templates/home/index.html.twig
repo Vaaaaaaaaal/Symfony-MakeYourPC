@@ -3,9 +3,36 @@
 {% block title %}Accueil - MakeYourPC{% endblock %}
 
 {% block body %}
+    <div class="banner-container">
+        <img src="{{ asset('images/Banner.avif') }}" alt="Bannière MakeYourPC" class="banner-image">
+        <div class="banner-content">
+            <h1 class="animate-on-scroll">Bienvenue sur Make Your PC</h1>
+            <p class="animate-on-scroll">Créez votre PC gaming sur mesure avec nos composants</p>
+            <a href="#" class="cta-button animate-on-scroll"><i data-lucide="tool"></i> Voir nos produits</a>
+        </div>
+    </div>
     <div class="container">
-        <h1 class="animate-on-scroll">Bienvenue sur Make Your PC</h1>
-        <p class="animate-on-scroll">Créez votre PC gaming sur mesure avec nos composants</p>
-        <a href="#" class="cta-button animate-on-scroll"><i data-lucide="tool"></i> Voir nos produits</a>
+        <section class="features-grid">
+            <div class="feature-tile animate-on-scroll">
+                <i data-lucide="cpu" class="feature-icon"></i>
+                <h3>Composants de qualité</h3>
+                <p>Sélection rigoureuse des meilleurs composants du marché</p>
+            </div>
+            <div class="feature-tile animate-on-scroll">
+                <i data-lucide="settings" class="feature-icon"></i>
+                <h3>Personnalisation totale</h3>
+                <p>Configurez votre PC selon vos besoins et votre budget</p>
+            </div>
+            <div class="feature-tile animate-on-scroll">
+                <i data-lucide="truck" class="feature-icon"></i>
+                <h3>Livraison rapide</h3>
+                <p>Expédition sous 24h pour les composants en stock</p>
+            </div>
+            <div class="feature-tile animate-on-scroll">
+                <i data-lucide="headphones" class="feature-icon"></i>
+                <h3>Support expert</h3>
+                <p>Une équipe de passionnés à votre écoute</p>
+            </div>
+        </section>
     </div>
 {% endblock %}
