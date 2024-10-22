@@ -50,9 +50,9 @@
                                     <td>{{ order.user }}</td>
                                     <td>{{ order.total|number_format(2, ',', ' ') }} €</td>
                                     <td>{{ order.date }}</td>
-                                    <td>
-                                        <a href="#" class="btn-action"><i data-lucide="eye"></i> Voir</a>
-                                        <a href="#" class="btn-action"><i data-lucide="edit"></i> Éditer</a>
+                                    <td class="actions" style="display: flex; justify-content: space-around;">
+                                        <a href="#" style="color: #3498db;"><i data-lucide="eye"></i></a>
+                                        <a href="#" style="color: #3498db;"><i data-lucide="edit"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}
