@@ -35,6 +35,18 @@
                             <option value="">Tous</option>
                             <option value="cpu" {% if app.request.query.get('type') == 'cpu' %}selected{% endif %}>CPU</option>
                             <option value="gpu" {% if app.request.query.get('type') == 'gpu' %}selected{% endif %}>GPU</option>
+                            <option value="ssd" {% if app.request.query.get('type') == 'ssd' %}selected{% endif %}>SSD</option>
+                            <option value="motherboard" {% if app.request.query.get('type') == 'motherboard' %}selected{% endif %}>Carte mère</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Note minimale</label>
+                        <select class="form-control" id="rating" name="rating">
+                            <option value="">Toutes les notes</option>
+                            <option value="4" {% if app.request.query.get('rating') == '4' %}selected{% endif %}>4 étoiles et plus</option>
+                            <option value="3" {% if app.request.query.get('rating') == '3' %}selected{% endif %}>3 étoiles et plus</option>
+                            <option value="2" {% if app.request.query.get('rating') == '2' %}selected{% endif %}>2 étoiles et plus</option>
+                            <option value="1" {% if app.request.query.get('rating') == '1' %}selected{% endif %}>1 étoile et plus</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3">Appliquer les filtres</button>
@@ -46,6 +58,18 @@
                     <div class="product-tile">
                         <img src="{{ asset('images/products/' ~ product.image) }}" alt="{{ product.name }}">
                         <h4>{{ product.name }}</h4>
+                        <div class="rating">
+                            {% for i in 1..5 %}
+                                {% if i <= product.rating %}
+                                    <i data-lucide="star" class="star filled"></i>
+                                {% elseif i <= product.rating + 0.5 %}
+                                    <i data-lucide="star-half" class="star filled"></i>
+                                {% else %}
+                                    <i data-lucide="star" class="star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="rating-value ml-2">{{ product.rating }}</span>
+                        </div>
                         <p class="price">{{ product.price|number_format(2, ',', ' ') }} €</p>
                         <p class="type">{{ product.type }}</p>
                         <button class="btn-add-to-cart" title="Ajouter au panier">
