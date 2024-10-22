@@ -54,29 +54,36 @@
             </div>
             
             <div class="product-grid">
-                {% for product in products %}
-                    <div class="product-tile">
-                        <img src="{{ asset('images/products/' ~ product.image) }}" alt="{{ product.name }}">
-                        <h4>{{ product.name }}</h4>
-                        <div class="rating">
-                            {% for i in 1..5 %}
-                                {% if i <= product.rating %}
-                                    <i data-lucide="star" class="star filled"></i>
-                                {% elseif i <= product.rating + 0.5 %}
-                                    <i data-lucide="star-half" class="star filled"></i>
-                                {% else %}
-                                    <i data-lucide="star" class="star"></i>
-                                {% endif %}
-                            {% endfor %}
-                            <span class="rating-value ml-2">{{ product.rating }}</span>
-                        </div>
-                        <p class="price">{{ product.price|number_format(2, ',', ' ') }} €</p>
-                        <p class="type">{{ product.type }}</p>
-                        <button class="btn-add-to-cart" title="Ajouter au panier">
-                            <i data-lucide="shopping-cart"></i>
-                        </button>
+                {% if products is empty %}
+                    <div class="no-products-message">
+                        <p>Aucun produit ne correspond à votre recherche.</p>
+                        <p>Essayez de modifier vos critères de recherche ou de réinitialiser les filtres.</p>
                     </div>
-                {% endfor %}
+                {% else %}
+                    {% for product in products %}
+                        <div class="product-tile">
+                            <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
+                            <h4>{{ product.name }}</h4>
+                            <div class="rating">
+                                {% for i in 1..5 %}
+                                    {% if i <= product.rating %}
+                                        <i data-lucide="star" class="star filled"></i>
+                                    {% elseif i <= product.rating + 0.5 %}
+                                        <i data-lucide="star-half" class="star filled"></i>
+                                    {% else %}
+                                        <i data-lucide="star" class="star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="rating-value ml-2">{{ product.rating|number_format(1) }}</span>
+                            </div>
+                            <div class="price-card">{{ product.price|number_format(2, ',', ' ') }} €</div>
+                            <p class="type">{{ product.type }}</p>
+                            <button class="btn-add-to-cart" title="Ajouter au panier">
+                                <i data-lucide="shopping-cart"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>

@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
-use App\Form\ProductType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,19 +11,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductController extends AbstractController
 {
     #[Route('/products', name: 'app_products')]
-    public function index(Request $request): Response
+    public function index(Request $request, ProductRepository $productRepository): Response
     {
-        $products = [
-            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'price' => 349.99, 'image' => 'i7.png', 'type' => 'cpu', 'rating' => 4.5],
-            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'price' => 699.99, 'image' => 'rtx.jpg', 'type' => 'gpu', 'rating' => 4.8],
-            ['id' => 3, 'name' => 'SSD Samsung 1To', 'price' => 129.99, 'image' => 'ssd.avif', 'type' => 'ssd', 'rating' => 4.2],
-            ['id' => 4, 'name' => 'Carte mère ASUS ROG', 'price' => 249.99, 'image' => 'motherboard.png', 'type' => 'motherboard', 'rating' => 4.0],
-        ];
+        $priceMin = $request->query->get('price_min');
+        $priceMax = $request->query->get('price_max');
+        $type = $request->query->get('type');
+        $rating = $request->query->get('rating');
 
-        $filteredProducts = $this->filterProducts($products, $request);
+        $products = $productRepository->findByFilters($priceMin, $priceMax, $type, $rating);
 
         return $this->render('product/index.html.twig', [
-            'products' => $filteredProducts,
+            'products' => $products,
         ]);
     }
 
@@ -67,26 +64,7 @@ class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/product/add', name: 'app_add_product')]
-    public function addProduct(Request $request): Response
-    {
-        $form = $this->createForm(ProductType::class);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            
-            // Ici, vous traiteriez normalement les données pour les sauvegarder en base de données
-            // Pour l'instant, nous allons simplement rediriger vers la page de gestion des produits
-            
-            $this->addFlash('success', 'Le produit a été ajouté avec succès.');
-            return $this->redirectToRoute('app_admin_products');
-        }
-
-        return $this->render('admin/add_product.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
 
     #[Route('/admin/product/edit/{id}', name: 'app_edit_product')]
     public function editProduct(int $id): Response

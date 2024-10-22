@@ -38,5 +38,31 @@ class ProductRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-}
 
+    public function findByFilters(?float $priceMin, ?float $priceMax, ?string $type, ?float $rating): array
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        if ($priceMin !== null) {
+            $qb->andWhere('p.price >= :priceMin')
+               ->setParameter('priceMin', $priceMin);
+        }
+
+        if ($priceMax !== null) {
+            $qb->andWhere('p.price <= :priceMax')
+               ->setParameter('priceMax', $priceMax);
+        }
+
+        if ($type !== null && $type !== '') {
+            $qb->andWhere('p.type = :type')
+               ->setParameter('type', $type);
+        }
+
+        if ($rating !== null) {
+            $qb->andWhere('p.rating >= :rating')
+               ->setParameter('rating', $rating);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+}
