@@ -1159,3 +1159,194 @@
 .btn-action-space {
   margin-left: 0.5rem; /* Ajustez cette valeur selon vos préférences */
 }
+
+/* Styles pour la page de gestion des produits */
+.manage-products {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.product-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.btn-add-product {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-add-product:hover {
+  background-color: #2980b9;
+}
+
+.btn-add-product i {
+  margin-right: 0.5rem;
+}
+
+.btn-add-product .btn-text {
+  margin-left: 0.5rem;
+}
+
+.search-products {
+  display: flex;
+  align-items: center;
+}
+
+.search-products input {
+  padding: 0.5rem;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.btn-search {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-search:hover {
+  background-color: #2980b9;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th,
+.product-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.product-table th {
+  color: #6294c6;
+  font-weight: bold;
+}
+
+.product-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit,
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit i,
+.btn-delete i {
+  width: 18px;
+  height: 18px;
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Media query pour la responsivité */
+@media (max-width: 768px) {
+  .product-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .search-products {
+    width: 100%;
+  }
+
+  .product-table {
+    font-size: 0.9rem;
+  }
+
+  .product-table th,
+  .product-table td {
+    padding: 0.5rem;
+  }
+
+  .product-thumbnail {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Styles pour le formulaire d'ajout de produit */
+.add-product-form {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.add-product-form label {
+  color: #b3d1d3;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.add-product-form input[type="text"],
+.add-product-form input[type="number"],
+.add-product-form select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.add-product-form button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-product-form button[type="submit"]:hover {
+  background-color: #2980b9;
+}
