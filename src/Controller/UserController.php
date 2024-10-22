@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserController extends AbstractController
 {
@@ -45,6 +47,25 @@ class UserController extends AbstractController
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
             'recentOrders' => $recentOrders,
+        ]);
+    }
+
+    #[Route('/profile', name: 'app_profile')]
+    public function profile(UserInterface $user, UserRepository $userRepository): Response
+    {
+        // Récupérer l'utilisateur complet depuis la base de données
+        $fullUser = $userRepository->find($user->getId());
+
+        // Simulons l'historique des commandes (à remplacer par de vraies données plus tard)
+        $orders = [
+            ['id' => 1, 'date' => '2023-05-01', 'total' => 599.99, 'image' => 'i7.png'],
+            ['id' => 2, 'date' => '2023-06-15', 'total' => 1299.99,  'image' => 'rtx.jpg'],
+            ['id' => 3, 'date' => '2023-07-20', 'total' => 799.99,  'image' => 'ssd.avif'],
+        ];
+
+        return $this->render('profile/index.html.twig', [
+            'user' => $fullUser,
+            'orders' => $orders,
         ]);
     }
 }

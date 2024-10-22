@@ -9,10 +9,11 @@
         <div class="profile-container">
             <div class="profile-info">
                 <h2>Informations personnelles</h2>
-                <p><strong>Nom :</strong> {{ user.name }}</p>
+                <p><strong>Nom :</strong> {{ user.surname }} {{ user.name }}</p>
                 <p><strong>Email :</strong> {{ user.email }}</p>
-                <p><strong>Adresse :</strong> {{ user.address }}</p>
-                <p><strong>Téléphone :</strong> {{ user.phone }}</p>
+                <!-- Ajoutez ces lignes si vous avez ces champs dans votre entité User -->
+                {# <p><strong>Adresse :</strong> {{ user.address }}</p> #}
+                {# <p><strong>Téléphone :</strong> {{ user.phone }}</p> #}
                 <a href="{{ path('app_edit_profile') }}" class="btn-edit-profile">Modifier mes informations</a>
             </div>
             
