@@ -31,6 +31,7 @@ class Product
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    // Getters and setters...
-}
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imagePath = null;
 
+}

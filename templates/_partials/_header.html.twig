@@ -13,9 +13,9 @@
                 </a>
             </li>
             <li class="user-menu">
-                <a href="{{ path('app_profile') }}">
+                <span class="user-icon-wrapper">
                     <i data-lucide="user"></i>
-                </a>
+                </span>
                 <div class="user-dropdown">
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <div class="user-info">
@@ -24,20 +24,20 @@
                         </div>
                         <div class="dropdown-divider"></div>
                         <a href="{{ path('app_profile') }}" class="dropdown-item">
-                            <i data-lucide="settings"></i>
+                            <i data-lucide="settings" style="margin-right: 8px;"></i>
                             <span>Mon profil</span>
                         </a>
                         <a href="{{ path('app_logout') }}" class="dropdown-item">
-                            <i data-lucide="log-out"></i>
+                            <i data-lucide="log-out" style="margin-right: 8px;"></i>
                             <span>Se déconnecter</span>
                         </a>
                     {% else %}
                         <a href="{{ path('app_login') }}" class="dropdown-item">
-                            <i data-lucide="log-in"></i>
+                            <i data-lucide="log-in" style="margin-right: 8px;"></i>
                             <span>Se connecter</span>
                         </a>
                         <a href="{{ path('app_register') }}" class="dropdown-item">
-                            <i data-lucide="user-plus"></i>
+                            <i data-lucide="user-plus" style="margin-right: 8px;"></i>
                             <span>S'inscrire</span>
                         </a>
                     {% endif %}
@@ -58,6 +58,13 @@
 <style>
     .user-menu {
         position: relative;
+    }
+    .user-icon-wrapper {
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    .user-icon-wrapper:hover {
+        color: #5D69D6; /* Couleur de survol de l'icône */
     }
     .user-dropdown {
         display: none;
@@ -91,14 +98,14 @@
     .dropdown-item {
         display: flex;
         align-items: center;
-        padding: 8px;
-        color: #333;
+        padding:  8px 0;
+        color: #ffffff;
         text-decoration: none;
         transition: background-color 0.2s;
         border-radius: 4px;
     }
     .dropdown-item:hover {
-        background-color: #e0e0e0; /* Couleur de survol légèrement plus foncée */
+        background-color: #333333; /* Couleur de survol légèrement plus foncée */
     }
     .dropdown-item i {
         margin-right: 8px;
