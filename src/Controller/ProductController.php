@@ -13,12 +13,13 @@ class ProductController extends AbstractController
     #[Route('/products', name: 'app_products')]
     public function index(Request $request, ProductRepository $productRepository): Response
     {
+        $search = $request->query->get('search');
         $priceMin = $request->query->get('price_min') ? (float) $request->query->get('price_min') : null;
         $priceMax = $request->query->get('price_max') ? (float) $request->query->get('price_max') : null;
         $type = $request->query->get('type');
         $rating = $request->query->get('rating') ? (float) $request->query->get('rating') : null;
 
-        $products = $productRepository->findByFilters($priceMin, $priceMax, $type, $rating);
+        $products = $productRepository->findByFilters($search, $priceMin, $priceMax, $type, $rating);
 
         return $this->render('product/index.html.twig', [
             'products' => $products,

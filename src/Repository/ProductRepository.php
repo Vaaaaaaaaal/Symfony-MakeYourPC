@@ -39,9 +39,14 @@ class ProductRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByFilters(?float $priceMin, ?float $priceMax, ?string $type, ?float $rating): array
+    public function findByFilters(?string $search, ?float $priceMin, ?float $priceMax, ?string $type, ?float $rating): array
     {
         $qb = $this->createQueryBuilder('p');
+
+        if ($search !== null && $search !== '') {
+            $qb->andWhere('p.name LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
 
         if ($priceMin !== null) {
             $qb->andWhere('p.price >= :priceMin')

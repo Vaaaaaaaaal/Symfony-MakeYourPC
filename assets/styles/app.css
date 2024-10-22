@@ -1529,3 +1529,23 @@ footer {
     margin-top: 0.5rem;
   }
 }
+
+.no-products-message {
+  grid-column: 1 / -1; /* Fait s'étendre le message sur toute la largeur de la grille */
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #b3d1d3;
+}
+
+.no-products-message p:first-child {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #6294c6;
+}
+
+.no-products-message p:last-child {
+  font-style: italic;
+}
