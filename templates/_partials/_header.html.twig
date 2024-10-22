@@ -12,10 +12,36 @@
                     <span class="cart-count">0</span>
                 </a>
             </li>
-            <li>
+            <li class="user-menu">
                 <a href="{{ path('app_profile') }}">
                     <i data-lucide="user"></i>
                 </a>
+                <div class="user-dropdown">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <div class="user-info">
+                            <i data-lucide="user" class="user-icon"></i>
+                            <span>{{ app.user.name }}</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ path('app_profile') }}" class="dropdown-item">
+                            <i data-lucide="settings"></i>
+                            <span>Mon profil</span>
+                        </a>
+                        <a href="{{ path('app_logout') }}" class="dropdown-item">
+                            <i data-lucide="log-out"></i>
+                            <span>Se déconnecter</span>
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="dropdown-item">
+                            <i data-lucide="log-in"></i>
+                            <span>Se connecter</span>
+                        </a>
+                        <a href="{{ path('app_register') }}" class="dropdown-item">
+                            <i data-lucide="user-plus"></i>
+                            <span>S'inscrire</span>
+                        </a>
+                    {% endif %}
+                </div>
             </li>
             {% if is_granted('ROLE_ADMIN') %}
                 <li>
@@ -28,3 +54,53 @@
         </ul>
     </nav>
 </header>
+
+<style>
+    .user-menu {
+        position: relative;
+    }
+    .user-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: #1e1e1e; /* Fond gris clair */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 12px;
+        z-index: 1000;
+        min-width: 200px;
+    }
+    .user-menu:hover .user-dropdown {
+        display: block;
+    }
+    .user-info {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        margin-bottom: 8px;
+        color: #ffffff;
+    }
+    .user-icon {
+        margin-right: 8px;
+    }
+    .dropdown-divider {
+        height: 1px;
+        background-color: #d0d0d0; /* Ligne de séparation légèrement plus foncée */
+        margin: 8px 0;
+    }
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.2s;
+        border-radius: 4px;
+    }
+    .dropdown-item:hover {
+        background-color: #e0e0e0; /* Couleur de survol légèrement plus foncée */
+    }
+    .dropdown-item i {
+        margin-right: 8px;
+    }
+</style>
