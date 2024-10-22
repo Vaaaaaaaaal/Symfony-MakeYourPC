@@ -31,6 +31,7 @@ class Product
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $rating = null;
 
+    private $image;
 
     public function getId(): ?int
     {
@@ -100,6 +101,18 @@ class Product
     public function setRating(?float $rating): self
     {
         $this->rating = $rating;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
         return $this;
     }
 }

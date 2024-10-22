@@ -13,11 +13,10 @@ class CartController extends AbstractController
     #[Route('/cart', name: 'app_cart')]
     public function index(): Response
     {
-        // Simulons quelques produits dans le panier
         $cartItems = [
-            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'price' => 349.99, 'quantity' => 1],
-            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'price' => 699.99, 'quantity' => 1],
-            ['id' => 3, 'name' => 'SSD Samsung 1To', 'price' => 129.99, 'quantity' => 2],
+            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'price' => 349.99, 'image' => 'i7.png', 'quantity' => 1],
+            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'price' => 699.99, 'image' => 'rtx.jpg', 'quantity' => 1],
+            ['id' => 3, 'name' => 'SSD Samsung 1To', 'price' => 129.99, 'image' => 'ssd.avif', 'quantity' => 2],
         ];
 
         $total = array_sum(array_map(function($item) {

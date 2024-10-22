@@ -13,10 +13,10 @@ class ProductController extends AbstractController
     #[Route('/products', name: 'app_products')]
     public function index(Request $request, ProductRepository $productRepository): Response
     {
-        $priceMin = $request->query->get('price_min');
-        $priceMax = $request->query->get('price_max');
+        $priceMin = $request->query->get('price_min') ? (float) $request->query->get('price_min') : null;
+        $priceMax = $request->query->get('price_max') ? (float) $request->query->get('price_max') : null;
         $type = $request->query->get('type');
-        $rating = $request->query->get('rating');
+        $rating = $request->query->get('rating') ? (float) $request->query->get('rating') : null;
 
         $products = $productRepository->findByFilters($priceMin, $priceMax, $type, $rating);
 
