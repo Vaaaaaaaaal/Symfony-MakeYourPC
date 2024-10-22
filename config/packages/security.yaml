@@ -18,6 +18,7 @@ security:
       form_login:
         login_path: app_login
         check_path: app_login
+        default_target_path: app_login_success
       logout:
         path: app_logout
 
@@ -26,6 +27,8 @@ security:
   access_control:
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/$, roles: PUBLIC_ACCESS } # Permet l'accès public à la page d'accueil
+    - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/, roles: ROLE_USER }
 
 when@test:
