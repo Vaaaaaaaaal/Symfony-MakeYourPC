@@ -291,12 +291,14 @@
   margin-bottom: 1rem;
 }
 
+footer {
+  margin-top: 100px;
+}
+
 /* Styles pour le footer */
 .site-footer {
-  background-color: #222222;
   color: #ffffff;
   padding: 4rem 0;
-  margin-top: 4rem;
 }
 
 .footer-content {
@@ -517,6 +519,7 @@
 }
 
 .filters {
+  top: 80px;
   flex: 0 0 250px;
   background-color: #222222;
   padding: 1.5rem;
