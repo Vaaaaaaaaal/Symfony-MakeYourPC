@@ -28,7 +28,7 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $imagePath = null;
 
-    #[ORM\Column(type: "float", nullable: true)]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $rating = null;
 
 
