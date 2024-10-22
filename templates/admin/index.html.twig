@@ -11,22 +11,22 @@
                 <div class="stat-card">
                     <i data-lucide="users" class="stat-icon"></i>
                     <h3>Utilisateurs</h3>
-                    <p class="stat-value">{{ stats.users }}</p>
+                    <p class="stat-value">1250</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="shopping-cart" class="stat-icon"></i>
                     <h3>Commandes</h3>
-                    <p class="stat-value">{{ stats.orders }}</p>
+                    <p class="stat-value">587</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="dollar-sign" class="stat-icon"></i>
                     <h3>Revenus</h3>
-                    <p class="stat-value">{{ stats.revenue|number_format(2, ',', ' ') }} €</p>
+                    <p class="stat-value">256 789,50 €</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="package" class="stat-icon"></i>
                     <h3>Produits</h3>
-                    <p class="stat-value">{{ stats.products }}</p>
+                    <p class="stat-value">342</p>
                 </div>
             </div>
 
@@ -44,7 +44,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for order in recentOrders %}
+                            {% set fakeOrders = [
+                                {id: 1001, user: 'Alice Dupont', total: 1299.99, date: '2024-03-15'},
+                                {id: 1002, user: 'Bob Martin', total: 799.50, date: '2024-03-14'},
+                                {id: 1003, user: 'Charlie Leclerc', total: 2499.99, date: '2024-03-13'},
+                                {id: 1004, user: 'Diana Prince', total: 599.99, date: '2024-03-12'},
+                                {id: 1005, user: 'Ethan Hunt', total: 1799.99, date: '2024-03-11'}
+                            ] %}
+                            {% for order in fakeOrders %}
                                 <tr>
                                     <td>#{{ order.id }}</td>
                                     <td>{{ order.user }}</td>
@@ -66,7 +73,6 @@
                         <a href="{{ path('app_admin_products') }}" class="btn-quick-action"><i data-lucide="package"></i> Gérer les produits</a>
                         <a href="#" class="btn-quick-action"><i data-lucide="users"></i> Gérer les utilisateurs</a>
                         <a href="#" class="btn-quick-action"><i data-lucide="bar-chart-2"></i> Voir les statistiques</a>
-                
                     </div>
                 </div>
             </div>
