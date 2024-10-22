@@ -10,23 +10,30 @@
 {% block body %}
 <div class="auth-container">
     <h2 class="auth-title">Connexion</h2>
+    
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
     <form method="post" class="auth-form">
         {% if error %}
             <div class="error-message">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="_username" required autofocus>
+            <input type="email" id="email" name="_username" value="{{ last_username }}" required autofocus>
         </div>
         <div class="form-group">
             <label for="password">Mot de passe</label>
             <input type="password" id="password" name="_password" required>
         </div>
-        <div class="form-group">
-            <label>
-                <input type="checkbox" name="_remember_me"> Se souvenir de moi
-            </label>
+        <div class="form-group checkbox">
+            <input type="checkbox" id="remember_me" name="_remember_me">
+            <label for="remember_me">Se souvenir de moi</label>
         </div>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button type="submit" class="auth-button">Se connecter</button>
     </form>
     <div class="auth-link">

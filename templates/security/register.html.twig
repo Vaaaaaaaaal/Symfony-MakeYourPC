@@ -7,30 +7,22 @@
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 {% endblock %}
 
-{% block body %}
-<div class="auth-container">
-    <h2 class="auth-title">Inscription</h2>
-    <form method="post" class="auth-form">
-        <div class="form-group">
-            <label for="name">Nom</label>
-            <input type="text" id="name" name="name" required autofocus>
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Mot de passe</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <label for="confirm_password">Confirmer le mot de passe</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
-        </div>
+{% block content %}
+    <div class="auth-container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <h2 class="auth-title">Inscription</h2>
+        {{ form_start(registrationForm, {'attr': {'class': 'auth-form'}}) }}
+        {{ form_row(registrationForm.name) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.plainPassword) }}
         <button type="submit" class="auth-button">S'inscrire</button>
-    </form>
-    <div class="auth-link">
-        <p>Déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+        {{ form_end(registrationForm) }}
     </div>
-</div>
 {% endblock %}
