@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Produits - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">Nos Produits</h1>
+        
+        <div class="search-bar mb-4">
+            <form action="{{ path('app_products') }}" method="GET" class="form-inline">
+                <div class="search-container">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher un produit..." value="{{ app.request.query.get('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="product-container">
+            <div class="filters sticky-filters">
+                <h4>Filtres</h4>
+                <form action="{{ path('app_products') }}" method="GET">
+                    <div class="form-group number-input-container">
+                        <label for="price_min">Prix min</label>
+                        <input type="number" class="input-int" id="price_min" name="price_min" value="{{ app.request.query.get('price_min') }}">
+                    </div>
+                    <div class="form-group number-input-container">
+                        <label for="price_max">Prix max</label>
+                        <input type="number" class="input-int" id="price_max" name="price_max" value="{{ app.request.query.get('price_max') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type de produit</label>
+                        <select class="form-control" id="type" name="type">
+                            <option value="">Tous</option>
+                            <option value="cpu" {% if app.request.query.get('type') == 'cpu' %}selected{% endif %}>CPU</option>
+                            <option value="gpu" {% if app.request.query.get('type') == 'gpu' %}selected{% endif %}>GPU</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Appliquer les filtres</button>
+                </form>
+            </div>
+            
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-tile">
+                        <img src="{{ asset('images/products/' ~ product.image) }}" alt="{{ product.name }}">
+                        <h4>{{ product.name }}</h4>
+                        <p class="price">{{ product.price|number_format(2, ',', ' ') }} €</p>
+                        <p class="type">{{ product.type }}</p>
+                        <button class="btn-add-to-cart" title="Ajouter au panier">
+                            <i data-lucide="shopping-cart"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

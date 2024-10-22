@@ -433,3 +433,241 @@
     margin: 0 0.5rem; /* Réduction des marges pour les petits écrans */
   }
 }
+
+/* Styles pour la page des produits */
+.card {
+  background-color: #222222;
+  border: none;
+  transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  color: #6294c6;
+}
+
+.card-text {
+  color: #b3d1d3;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+/* Styles pour la page des produits */
+.search-bar {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.search-bar form {
+  display: flex;
+  width: 100%;
+}
+
+.search-bar .input-group {
+  width: 100%;
+}
+
+.search-bar input[type="text"] {
+  flex-grow: 1;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.search-bar .btn-outline-secondary {
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  transition: background-color 0.3s ease;
+}
+
+.search-bar .btn-outline-secondary:hover {
+  background-color: #2980b9;
+}
+
+.product-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.sticky-filters {
+  position: sticky;
+  top: 20px; /* Ajustez cette valeur selon vos besoins */
+  align-self: flex-start;
+}
+
+.filters {
+  flex: 0 0 250px;
+  background-color: #222222;
+  padding: 1.5rem;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.filters h4 {
+  color: #6294c6;
+  margin-bottom: 1rem;
+}
+
+.filters .form-group {
+  margin-bottom: 1rem;
+}
+
+.filters label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b3d1d3;
+}
+
+.filters input[type="number"],
+.filters select {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.filters .btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+}
+
+.filters .number-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.filters .number-input-container label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  min-width: 70px; /* Ajustez cette valeur selon vos besoins */
+}
+
+.filters .number-input-container input[type="number"] {
+  flex: 1;
+}
+
+.product-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.product-tile {
+  background-color: #222222;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+  position: relative; /* Ajoutez cette ligne */
+}
+
+.product-tile:hover {
+  transform: translateY(-5px);
+}
+
+.product-tile img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.product-tile h4 {
+  font-size: 1.2rem;
+  color: #6294c6;
+  margin-bottom: 0.5rem;
+}
+
+.product-tile .price {
+  font-weight: bold;
+  color: #3498db;
+  margin-bottom: 0.5rem;
+}
+
+.product-tile .type {
+  color: #b3d1d3;
+  margin-bottom: 1rem;
+}
+
+.btn-add-to-cart {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px; /* Augmenté de 40px à 50px */
+  height: 50px; /* Augmenté de 40px à 50px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-add-to-cart:hover {
+  background-color: #2980b9;
+}
+
+.btn-add-to-cart i {
+  width: 28px; /* Augmenté de 20px à 28px */
+  height: 28px; /* Augmenté de 20px à 28px */
+}
+
+/* Media query pour la responsivité */
+@media (max-width: 768px) {
+  .product-container {
+    flex-direction: column;
+  }
+
+  .sticky-filters {
+    position: static;
+  }
+
+  .filters {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.input-int {
+  width: 100%;
+}
