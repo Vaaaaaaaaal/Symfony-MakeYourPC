@@ -36,6 +36,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "boolean")]
     private bool $isAdmin = false;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $telephone = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -119,6 +125,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsAdmin(bool $isAdmin): self
     {
         $this->isAdmin = $isAdmin;
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?string $adresse): self
+    {
+        $this->adresse = $adresse;
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): self
+    {
+        $this->telephone = $telephone;
         return $this;
     }
 }
