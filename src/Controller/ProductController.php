@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository;
+use App\Form\ProductType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,5 +50,55 @@ class ProductController extends AbstractController
             }
             return true;
         });
+    }
+
+    #[Route('/admin/products', name: 'app_admin_products')]
+    public function manageProducts(): Response
+    {
+        $products = [
+            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'type' => 'CPU', 'price' => 349.99, 'stock' => 50, 'image' => 'i7.png'],
+            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'type' => 'GPU', 'price' => 699.99, 'stock' => 25, 'image' => 'rtx.jpg'],
+            ['id' => 3, 'name' => 'SSD Samsung 1To', 'type' => 'SSD', 'price' => 129.99, 'stock' => 100, 'image' => 'ssd.avif'],
+            ['id' => 4, 'name' => 'Carte mère ASUS ROG', 'type' => 'Motherboard', 'price' => 249.99, 'stock' => 30, 'image' => 'motherboard.png'],
+        ];
+
+        return $this->render('admin/manage_products.html.twig', [
+            'products' => $products,
+        ]);
+    }
+
+    #[Route('/admin/product/add', name: 'app_add_product')]
+    public function addProduct(Request $request): Response
+    {
+        $form = $this->createForm(ProductType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            
+            // Ici, vous traiteriez normalement les données pour les sauvegarder en base de données
+            // Pour l'instant, nous allons simplement rediriger vers la page de gestion des produits
+            
+            $this->addFlash('success', 'Le produit a été ajouté avec succès.');
+            return $this->redirectToRoute('app_admin_products');
+        }
+
+        return $this->render('admin/add_product.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/admin/product/edit/{id}', name: 'app_edit_product')]
+    public function editProduct(int $id): Response
+    {
+        // Simuler la modification d'un produit
+        return $this->redirectToRoute('app_admin_products');
+    }
+
+    #[Route('/admin/product/delete/{id}', name: 'app_delete_product')]
+    public function deleteProduct(int $id): Response
+    {
+        // Simuler la suppression d'un produit
+        return $this->redirectToRoute('app_admin_products');
     }
 }

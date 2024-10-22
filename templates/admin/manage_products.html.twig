@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des produits - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">Gestion des produits</h1>
+        
+        <div class="manage-products">
+            <div class="product-actions">
+                <a href="{{ path('app_add_product') }}" class="btn-add-product">
+                    <i data-lucide="plus-circle"></i><span class="btn-text">Ajouter un produit</span>
+                </a>
+                <div class="search-products">
+                    <input type="text" id="product-search" placeholder="Rechercher un produit...">
+                    <button class="btn-search"><i data-lucide="search"></i></button>
+                </div>
+            </div>
+
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td><img src="{{ asset('images/products/' ~ product.image) }}" alt="{{ product.name }}" class="product-thumbnail"></td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.type }}</td>
+                            <td>{{ product.price|number_format(2, ',', ' ') }} €</td>
+                            <td>{{ product.stock }}</td>
+                            <td>
+                                <a href="{{ path('app_edit_product', {'id': product.id}) }}" class="btn-edit" title="Modifier">
+                                    <i data-lucide="edit-2"></i>
+                                </a>
+                                <a href="{{ path('app_delete_product', {'id': product.id}) }}" class="btn-delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
+                                    <i data-lucide="trash-2"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
