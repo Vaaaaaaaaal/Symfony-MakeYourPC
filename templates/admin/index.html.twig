@@ -1,9 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}Administration - MakeYourPC{% endblock %}
 
 {% block body %}
-    <h1>Panneau d'administration</h1>
-    <p>Bienvenue dans l'interface d'administration.</p>
-    {# Ajoutez ici le contenu de votre page d'administration #}
+    <div class="container">
+        <h1 class="my-4">Tableau de bord d'administration</h1>
+        
+        <div class="admin-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i data-lucide="users" class="stat-icon"></i>
+                    <h3>Utilisateurs</h3>
+                    <p class="stat-value">{{ stats.users }}</p>
+                </div>
+                <div class="stat-card">
+                    <i data-lucide="shopping-cart" class="stat-icon"></i>
+                    <h3>Commandes</h3>
+                    <p class="stat-value">{{ stats.orders }}</p>
+                </div>
+                <div class="stat-card">
+                    <i data-lucide="dollar-sign" class="stat-icon"></i>
+                    <h3>Revenus</h3>
+                    <p class="stat-value">{{ stats.revenue|number_format(2, ',', ' ') }} €</p>
+                </div>
+                <div class="stat-card">
+                    <i data-lucide="package" class="stat-icon"></i>
+                    <h3>Produits</h3>
+                    <p class="stat-value">{{ stats.products }}</p>
+                </div>
+            </div>
+
+            <div class="admin-sections">
+                <div class="admin-section">
+                    <h2><i data-lucide="list" class="section-icon"></i> Commandes récentes</h2>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Utilisateur</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recentOrders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.user }}</td>
+                                    <td>{{ order.total|number_format(2, ',', ' ') }} €</td>
+                                    <td>{{ order.date }}</td>
+                                    <td class="actions" style="display: flex; justify-content: space-around;">
+                                        <a href="#" style="color: #3498db;"><i data-lucide="eye"></i></a>
+                                        <a href="#" style="color: #3498db;"><i data-lucide="edit"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="admin-section">
+                    <h2><i data-lucide="zap" class="section-icon"></i> Actions rapides</h2>
+                    <div class="quick-actions">
+                        <a href="{{ path('app_admin_products') }}" class="btn-quick-action"><i data-lucide="package"></i> Gérer les produits</a>
+                        <a href="#" class="btn-quick-action"><i data-lucide="users"></i> Gérer les utilisateurs</a>
+                        <a href="#" class="btn-quick-action"><i data-lucide="bar-chart-2"></i> Voir les statistiques</a>
+                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

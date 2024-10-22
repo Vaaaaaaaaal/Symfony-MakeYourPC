@@ -5,19 +5,27 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class UserController extends AbstractController
 {
-    #[Route('/login_success', name: 'app_login_success')]
+    #[Route('/login/success', name: 'app_login_success')]
     public function loginSuccess(Security $security): Response
     {
-        if ($security->isGranted('ROLE_ADMIN')) {
-            return $this->redirectToRoute('app_admin_dashboard');
+        // Vérifiez si l'utilisateur est connecté
+        if (!$security->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
         }
+
+        $user = $security->getUser();
         
-        // Redirection par défaut pour les utilisateurs non-admin
-        return $this->redirectToRoute('app_home');
+        // Redirigez en fonction du rôle de l'utilisateur
+        if ($security->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('app_admin');
+        } else {
+            return $this->redirectToRoute('app_home');
+        }
     }
 
     #[Route('/admin', name: 'app_admin_dashboard')]

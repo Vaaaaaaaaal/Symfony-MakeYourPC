@@ -34,4 +34,18 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imagePath = null;
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $rating = null;
+
+    // Ajoutez ces méthodes getter et setter pour le nouveau champ
+    public function getRating(): ?float
+    {
+        return $this->rating;
+    }
+
+    public function setRating(?float $rating): self
+    {
+        $this->rating = $rating;
+        return $this;
+    }
 }
