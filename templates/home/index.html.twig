@@ -3,9 +3,63 @@
 {% block title %}Accueil - MakeYourPC{% endblock %}
 
 {% block body %}
+    <div class="banner-container">
+        <img src="{{ asset('images/Banner.avif') }}" alt="Bannière MakeYourPC" class="banner-image">
+        <div class="banner-content">
+            <h1>Bienvenue sur Make Your PC</h1>
+            <p>Créez votre PC gaming sur mesure avec nos composants</p>
+            <a href="#" class="cta-button"><i data-lucide="tool"></i> Voir nos produits</a>
+        </div>
+    </div>
     <div class="container">
-        <h1 class="animate-on-scroll">Bienvenue sur Make Your PC</h1>
-        <p class="animate-on-scroll">Créez votre PC gaming sur mesure avec nos composants</p>
-        <a href="#" class="cta-button animate-on-scroll"><i data-lucide="tool"></i> Voir nos produits</a>
+        <section class="features-grid">
+            <div class="feature-tile animate">
+                <i data-lucide="cpu" class="feature-icon"></i>
+                <h3>Composants de qualité</h3>
+                <p>Sélection rigoureuse des meilleurs composants du marché</p>
+            </div>
+            <div class="feature-tile animate">
+                <i data-lucide="settings" class="feature-icon"></i>
+                <h3>Personnalisation totale</h3>
+                <p>Configurez votre PC selon vos besoins et votre budget</p>
+            </div>
+            <div class="feature-tile animate">
+                <i data-lucide="truck" class="feature-icon"></i>
+                <h3>Livraison rapide</h3>
+                <p>Expédition sous 24h pour les composants en stock</p>
+            </div>
+            <div class="feature-tile animate">
+                <i data-lucide="headphones" class="feature-icon"></i>
+                <h3>Support expert</h3>
+                <p>Une équipe de passionnés à votre écoute</p>
+            </div>
+        </section>
+
+        <section class="testimonials animate">
+            <h2>Ce que disent nos clients</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial">
+                    <p>"J'ai pu créer le PC de mes rêves grâce à MakeYourPC. Le service est top et les conseils sont précieux !"</p>
+                    <div class="testimonial-author">
+                        <img src="{{ asset('images/avatar/avatar1.jpeg') }}" alt="Avatar de Jean D." class="testimonial-avatar">
+                        <span>Jean D.</span>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p>"Des composants de qualité et un excellent rapport qualité-prix. Je recommande vivement MakeYourPC !"</p>
+                    <div class="testimonial-author">
+                        <img src="{{ asset('images/avatar/avatar2.jpeg') }}" alt="Avatar de Marie L." class="testimonial-avatar">
+                        <span>Marie L.</span>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p>"Le support client est exceptionnel. Ils m'ont guidé tout au long du processus de configuration."</p>
+                    <div class="testimonial-author">
+                        <img src="{{ asset('images/avatar/avatar3.jpeg') }}" alt="Avatar de Pierre M." class="testimonial-avatar">
+                        <span>Pierre M.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 {% endblock %}
