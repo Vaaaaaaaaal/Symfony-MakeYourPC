@@ -1,10 +1,17 @@
 <header>
     <nav class="container">
-        <a href="{{ path('app_home') }}" class="logo">MakeYourPC</a>
+        <a href="{{ path('app_home') }}" class="logo">
+            <img src="{{ asset('images/Logo.svg') }}" alt="Logo MakeYourPC" class="img-fluid" style="width: 50px; height: auto;">
+        </a>
+        
         <ul class="nav-links">
-            <li><a href="#"><i data-lucide="cpu"></i>Produits</a></li>
-            <li><a href="#"><i data-lucide="shopping-cart"></i>Panier</a></li>
-            <li><a href="#"><i data-lucide="user"></i>Connexion</a></li>
+            <li><a href="#">Produits</a></li>
+            <li class="cart-icon">
+                <a href="#">
+                    <i data-lucide="shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </li>            <li><a href="#"><i data-lucide="user"></i></a></li>
         </ul>
     </nav>
 </header>
