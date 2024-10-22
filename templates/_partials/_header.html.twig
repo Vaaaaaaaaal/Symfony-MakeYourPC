@@ -23,10 +23,17 @@
                             <span>{{ app.user.name }}</span>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <a href="{{ path('app_profile') }}" class="dropdown-item">
-                            <i data-lucide="settings" style="margin-right: 8px;"></i>
-                            <span>Mon profil</span>
-                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_admin') }}" class="dropdown-item">
+                                <i data-lucide="settings" style="margin-right: 8px;"></i>
+                                <span>Administration</span>
+                            </a>
+                        {% else %}
+                            <a href="{{ path('app_profile') }}" class="dropdown-item">
+                                <i data-lucide="settings" style="margin-right: 8px;"></i>
+                                <span>Mon profil</span>
+                            </a>
+                        {% endif %}
                         <a href="{{ path('app_logout') }}" class="dropdown-item">
                             <i data-lucide="log-out" style="margin-right: 8px;"></i>
                             <span>Se déconnecter</span>
@@ -43,14 +50,6 @@
                     {% endif %}
                 </div>
             </li>
-            {% if is_granted('ROLE_ADMIN') %}
-                <li>
-                    <a href="{{ path('app_admin') }}">
-                        <i data-lucide="settings"></i>
-                        <span>Administration</span>
-                    </a>
-                </li>
-            {% endif %}
         </ul>
     </nav>
 </header>
