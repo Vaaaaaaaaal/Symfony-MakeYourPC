@@ -8,6 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProductController extends AbstractController
 {
@@ -53,15 +55,19 @@ class ProductController extends AbstractController
     }
 
     #[Route('/admin/products', name: 'app_admin_products')]
-    public function manageProducts(): Response
+    public function manageProducts(ProductRepository $productRepository): Response
     {
-        $products = [
-            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'type' => 'CPU', 'price' => 349.99, 'stock' => 50, 'image' => 'i7.png'],
-            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'type' => 'GPU', 'price' => 699.99, 'stock' => 25, 'image' => 'rtx.jpg'],
-            ['id' => 3, 'name' => 'SSD Samsung 1To', 'type' => 'SSD', 'price' => 129.99, 'stock' => 100, 'image' => 'ssd.avif'],
-            ['id' => 4, 'name' => 'Carte mère ASUS ROG', 'type' => 'Motherboard', 'price' => 249.99, 'stock' => 30, 'image' => 'motherboard.png'],
-        ];
-
+        $products = $productRepository->findAll();
+        
+        // Ajout de logs pour le débogage
+        foreach ($products as $product) {
+            dump([
+                'name' => $product->getName(),
+                'imagePath' => $product->getImagePath(),
+                'full_path' => 'public/images/products/' . $product->getImagePath()
+            ]);
+        }
+        
         return $this->render('admin/manage_products.html.twig', [
             'products' => $products,
         ]);
@@ -95,10 +101,25 @@ class ProductController extends AbstractController
         return $this->redirectToRoute('app_admin_products');
     }
 
-    #[Route('/admin/product/delete/{id}', name: 'app_delete_product')]
-    public function deleteProduct(int $id): Response
+    #[Route('/admin/product/delete/{id}', name: 'app_delete_product', methods: ['POST'])]
+    public function deleteProduct(
+        int $id, 
+        ProductRepository $productRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse
     {
-        // Simuler la suppression d'un produit
-        return $this->redirectToRoute('app_admin_products');
+        $product = $productRepository->find($id);
+        
+        if (!$product) {
+            return new JsonResponse(['success' => false, 'message' => 'Produit non trouvé'], 404);
+        }
+
+        try {
+            $entityManager->remove($product);
+            $entityManager->flush();
+            return new JsonResponse(['success' => true, 'message' => 'Produit supprimé avec succès']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['success' => false, 'message' => 'Erreur lors de la suppression'], 500);
+        }
     }
 }
