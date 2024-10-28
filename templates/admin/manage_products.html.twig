@@ -57,8 +57,8 @@
                                 </a>
                                 <button class="btn-delete" 
                                         title="Supprimer" 
-                                        onclick="confirmDelete({{ product.id }}, '{{ product.name }}')"
-                                        data-product-id="{{ product.id }}">
+                                        data-product-id="{{ product.id }}"
+                                        data-product-name="{{ product.name }}">
                                     <i data-lucide="trash-2"></i>
                                 </button>
                             </td>
@@ -85,43 +85,103 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        let currentProductId = null;
         const modal = document.getElementById('deleteModal');
+        let currentProductId = null;
         
-        function confirmDelete(productId, productName) {
-            currentProductId = productId;
-            document.getElementById('productName').textContent = productName;
-            modal.style.display = 'flex';
-        }
-
-        document.getElementById('cancelDelete').addEventListener('click', () => {
-            modal.style.display = 'none';
+        console.log('Script de suppression chargé');
+        
+        // Ajouter les écouteurs d'événements pour tous les boutons de suppression
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+        console.log('Nombre de boutons de suppression trouvés:', deleteButtons.length);
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+                console.log('Clic sur le bouton de suppression', { productId, productName });
+                
+                currentProductId = productId;
+                document.getElementById('productName').textContent = productName;
+                modal.style.display = 'flex';
+            });
         });
 
-        document.getElementById('confirmDelete').addEventListener('click', async () => {
+        const confirmDeleteButton = document.getElementById('confirmDelete');
+        console.log('Bouton de confirmation trouvé:', confirmDeleteButton);
+        
+        confirmDeleteButton.addEventListener('click', async () => {
             try {
-                const response = await fetch(`/admin/product/delete/${currentProductId}`, {
+                console.log('Clic sur le bouton de confirmation');
+                console.log('ID du produit à supprimer:', currentProductId);
+                
+                const url = `/admin/product/delete/${currentProductId}`;
+                console.log('URL de suppression:', url);
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
                     }
                 });
                 
+                console.log('Statut de la réponse:', response.status);
+                console.log('Headers de la réponse:', Object.fromEntries(response.headers));
+                
                 const data = await response.json();
+                console.log('Données reçues:', data);
                 
                 if (data.success) {
-                    // Supprimer la ligne du tableau
+                    console.log('Suppression réussie');
                     const row = document.querySelector(`[data-product-id="${currentProductId}"]`).closest('tr');
-                    row.remove();
+                    if (row) {
+                        console.log('Ligne trouvée, suppression...');
+                        row.remove();
+                    } else {
+                        console.log('Ligne non trouvée dans le tableau');
+                    }
                     
-                    // Afficher une notification de succès
-                    // Vous pouvez utiliser votre système de notification ici
-                    alert(data.message);
+                    // Afficher la notification
+                    const notification = document.createElement('div');
+                    notification.className = 'notification success';
+                    notification.innerHTML = `
+                        <div class="notification-content">
+                            <i data-lucide="check-circle"></i>
+                            <span>${data.message}</span>
+                        </div>
+                    `;
+                    document.body.appendChild(notification);
+                    lucide.createIcons();
+                    
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3000);
                 } else {
-                    alert(data.message);
+                    console.log('Échec de la suppression:', data.message);
+                    const notification = document.createElement('div');
+                    notification.className = 'notification error';
+                    notification.innerHTML = `
+                        <div class="notification-content">
+                            <i data-lucide="alert-circle"></i>
+                            <span>${data.message}</span>
+                        </div>
+                    `;
+                    document.body.appendChild(notification);
+                    lucide.createIcons();
                 }
             } catch (error) {
-                alert('Une erreur est survenue lors de la suppression');
+                console.error('Erreur détaillée:', error);
+                console.error('Stack trace:', error.stack);
+                const notification = document.createElement('div');
+                notification.className = 'notification error';
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i data-lucide="alert-circle"></i>
+                        <span>Une erreur est survenue lors de la suppression</span>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                lucide.createIcons();
             }
             
             modal.style.display = 'none';
@@ -193,6 +253,44 @@
 
         .btn-delete:hover {
             color: #c82333; /* Rouge plus foncé au survol */
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 {% endblock %}

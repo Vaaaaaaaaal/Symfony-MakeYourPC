@@ -108,18 +108,28 @@ class ProductController extends AbstractController
         EntityManagerInterface $entityManager
     ): JsonResponse
     {
-        $product = $productRepository->find($id);
-        
-        if (!$product) {
-            return new JsonResponse(['success' => false, 'message' => 'Produit non trouvé'], 404);
-        }
-
         try {
+            $product = $productRepository->find($id);
+            
+            if (!$product) {
+                return new JsonResponse([
+                    'success' => false, 
+                    'message' => 'Produit non trouvé'
+                ], 404);
+            }
+
             $entityManager->remove($product);
             $entityManager->flush();
-            return new JsonResponse(['success' => true, 'message' => 'Produit supprimé avec succès']);
+            
+            return new JsonResponse([
+                'success' => true, 
+                'message' => 'Le produit a été supprimé avec succès'
+            ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['success' => false, 'message' => 'Erreur lors de la suppression'], 500);
+            return new JsonResponse([
+                'success' => false, 
+                'message' => 'Erreur lors de la suppression: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
