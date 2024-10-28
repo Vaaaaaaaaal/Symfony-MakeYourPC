@@ -18,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Repository\ProductRepository;
 
 class UserController extends AbstractController
