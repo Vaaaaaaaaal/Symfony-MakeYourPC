@@ -11,22 +11,22 @@
                 <div class="stat-card">
                     <i data-lucide="users" class="stat-icon"></i>
                     <h3>Utilisateurs</h3>
-                    <p class="stat-value">1250</p>
+                    <p class="stat-value">{{ stats.users }}</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="shopping-cart" class="stat-icon"></i>
                     <h3>Commandes</h3>
-                    <p class="stat-value">587</p>
+                    <p class="stat-value">{{ stats.orders }}</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="dollar-sign" class="stat-icon"></i>
                     <h3>Revenus</h3>
-                    <p class="stat-value">256 789,50 €</p>
+                    <p class="stat-value">{{ stats.revenue|number_format(2, ',', ' ') }} €</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="package" class="stat-icon"></i>
                     <h3>Produits</h3>
-                    <p class="stat-value">342</p>
+                    <p class="stat-value">{{ stats.products }}</p>
                 </div>
             </div>
 
@@ -71,8 +71,7 @@
                     <h2><i data-lucide="zap" class="section-icon"></i> Actions rapides</h2>
                     <div class="quick-actions">
                         <a href="{{ path('app_admin_products') }}" class="btn-quick-action"><i data-lucide="package"></i> Gérer les produits</a>
-                        <a href="#" class="btn-quick-action"><i data-lucide="users"></i> Gérer les utilisateurs</a>
-                        <a href="#" class="btn-quick-action"><i data-lucide="bar-chart-2"></i> Voir les statistiques</a>
+                        <a href="{{ path('app_admin_users') }}" class="btn-quick-action"><i data-lucide="users"></i> Gérer les utilisateurs</a>
                     </div>
                 </div>
             </div>

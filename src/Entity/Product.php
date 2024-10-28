@@ -16,11 +16,21 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
     #[ORM\Column]
     private ?float $price = null;
 
     #[ORM\Column(length: 50)]
     private ?string $type = null;
+
+
+    #[ORM\Column]
+    private ?int $stock = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -100,5 +110,71 @@ class Product
     {
         $this->rating = $rating;
         return $this;
+    }
+
+    // Getters et Setters
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): static
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): static
+    {
+        $this->imagePath = $imagePath;
+        return $this;
+    }
+
+    public function getImageUrl(): string
+    {
+        return $this->imagePath ? 'images/products/' . $this->imagePath : 'images/products/default.png';
     }
 }

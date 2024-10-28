@@ -17,6 +17,9 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Repository\ProductRepository;
 
 class UserController extends AbstractController
 {
@@ -32,29 +35,42 @@ class UserController extends AbstractController
         
         // Redirigez en fonction du rôle de l'utilisateur
         if ($security->isGranted('ROLE_ADMIN')) {
-            return $this->redirectToRoute('app_admin');
+            return $this->redirectToRoute('app_admin_dashboard');  // Correction ici
         } else {
             return $this->redirectToRoute('app_home');
         }
     }
 
-    #[Route('/admin', name: 'app_admin_dashboard')]
-    public function adminDashboard(): Response
+    #[Route('/admin', name: 'app_admin')]
+    public function adminDashboard(
+        UserRepository $userRepository,
+        ProductRepository $productRepository
+    ): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         // Ajoutez ici la logique pour récupérer les statistiques et les données ncessaires
         $stats = [
-            'users' => 0, // À remplacer par les vraies données
+            'users' => $userRepository->count(['isAdmin' => false]),
             'orders' => 0,
-            'revenue' => 0,
-            'products' => 0,
+            'revenue' => 0.00,
+            'products' => $productRepository->count([]),
         ];
-        $recentOrders = []; // À remplacer par les vraies données
 
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
-            'recentOrders' => $recentOrders,
+        ]);
+    }
+
+    #[Route('/admin/users', name: 'app_admin_users')]
+    public function manageUsers(UserRepository $userRepository): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $users = $userRepository->findAll();
+
+        return $this->render('admin/users.html.twig', [
+            'users' => $users,
         ]);
     }
 

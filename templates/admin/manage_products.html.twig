@@ -31,7 +31,22 @@
                 <tbody>
                     {% for product in products %}
                         <tr>
-                            <td><img src="{{ asset('images/products/' ~ product.image) }}" alt="{{ product.name }}" class="product-thumbnail"></td>
+                            <td>
+                                {% if product.imagePath %}
+                                    <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}" class="product-thumbnail">
+                                    <script>
+                                        console.log('Produit: {{ product.name }}');
+                                        console.log('Image path: {{ product.imagePath }}');
+                                        console.log('Full URL: {{ asset('images/products/' ~ product.imagePath) }}');
+                                    </script>
+                                {% else %}
+                                    <img src="{{ asset('images/products/default.png') }}" alt="Image par défaut" class="product-thumbnail">
+                                    <script>
+                                        console.log('Produit sans image: {{ product.name }}');
+                                        console.log('Image property:', {{ product.imagePath|json_encode|raw }});
+                                    </script>
+                                {% endif %}
+                            </td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.type }}</td>
                             <td>{{ product.price|number_format(2, ',', ' ') }} €</td>
@@ -40,9 +55,12 @@
                                 <a href="{{ path('app_edit_product', {'id': product.id}) }}" class="btn-edit" title="Modifier">
                                     <i data-lucide="edit-2"></i>
                                 </a>
-                                <a href="{{ path('app_delete_product', {'id': product.id}) }}" class="btn-delete" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
+                                <button class="btn-delete" 
+                                        title="Supprimer" 
+                                        onclick="confirmDelete({{ product.id }}, '{{ product.name }}')"
+                                        data-product-id="{{ product.id }}">
                                     <i data-lucide="trash-2"></i>
-                                </a>
+                                </button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -50,4 +68,131 @@
             </table>
         </div>
     </div>
+
+    {# Modal de confirmation #}
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmation de suppression</h2>
+            <p>Êtes-vous sûr de vouloir supprimer le produit <span id="productName"></span> ?</p>
+            <div class="modal-actions">
+                <button id="confirmDelete" class="btn-danger">Supprimer</button>
+                <button id="cancelDelete" class="btn-secondary">Annuler</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        let currentProductId = null;
+        const modal = document.getElementById('deleteModal');
+        
+        function confirmDelete(productId, productName) {
+            currentProductId = productId;
+            document.getElementById('productName').textContent = productName;
+            modal.style.display = 'flex';
+        }
+
+        document.getElementById('cancelDelete').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        document.getElementById('confirmDelete').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/admin/product/delete/${currentProductId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Supprimer la ligne du tableau
+                    const row = document.querySelector(`[data-product-id="${currentProductId}"]`).closest('tr');
+                    row.remove();
+                    
+                    // Afficher une notification de succès
+                    // Vous pouvez utiliser votre système de notification ici
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Une erreur est survenue lors de la suppression');
+            }
+            
+            modal.style.display = 'none';
+        });
+
+        // Fermer la modale si on clique en dehors
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: #dc3545; /* Rouge pour l'icône de suppression */
+        }
+
+        .btn-delete:hover {
+            color: #c82333; /* Rouge plus foncé au survol */
+        }
+    </style>
 {% endblock %}
