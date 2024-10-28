@@ -1,30 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Profil - MakeYourPC{% endblock %}
+{% block title %}Mon profil - MakeYourPC{% endblock %}
 
 {% block body %}
     <div class="container">
-        <h1 class="my-4">Mon Profil</h1>
-        
         <div class="profile-container">
             <div class="profile-info">
-                <h2>Informations personnelles</h2>
-                <p><strong>Nom :</strong> {{ user.surname }} {{ user.name }}</p>
+                <h2>Mes informations</h2>
+                <p><strong>Nom :</strong> {{ user.name }}</p>
+                <p><strong>Prénom :</strong> {{ user.surname }}</p>
                 <p><strong>Email :</strong> {{ user.email }}</p>
-                <!-- Ajoutez ces lignes si vous avez ces champs dans votre entité User -->
-                {# <p><strong>Adresse :</strong> {{ user.address }}</p> #}
-                {# <p><strong>Téléphone :</strong> {{ user.phone }}</p> #}
-                <a href="{{ path('app_edit_profile') }}" class="btn-edit-profile">Modifier mes informations</a>
+                <p><strong>Adresse :</strong> {{ user.adresse ?: 'Non renseignée' }}</p>
+                <p><strong>Téléphone :</strong> {{ user.telephone ?: 'Non renseigné' }}</p>
+                <a href="{{ path('app_profile_edit') }}" class="btn-edit-profile">Modifier mes informations</a>
             </div>
-            
+
             <div class="order-history">
                 <h2>Historique des commandes</h2>
-                {% if orders|length > 0 %}
+                {% if orders is empty %}
+                    <p>Aucune commande pour le moment.</p>
+                {% else %}
                     <table class="order-table">
                         <thead>
                             <tr>
                                 <th>Image</th>
-                                <th>N° de commande</th>
+                                <th>Commande #</th>
                                 <th>Date</th>
                                 <th>Total</th>
                             </tr>
@@ -32,16 +32,16 @@
                         <tbody>
                             {% for order in orders %}
                                 <tr>
-                                    <td><img src="{{ asset('images/products/' ~ order.image) }}" alt="Image de la commande" class="order-image"></td>
-                                    <td>#{{ order.id }}</td>
+                                    <td>
+                                        <img src="{{ asset('images/' ~ order.image) }}" alt="Product" class="order-image">
+                                    </td>
+                                    <td>{{ order.id }}</td>
                                     <td>{{ order.date }}</td>
-                                    <td>{{ order.total|number_format(2, ',', ' ') }} €</td>
+                                    <td>{{ order.total }}€</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                {% else %}
-                    <p>Vous n'avez pas encore passé de commande.</p>
                 {% endif %}
             </div>
         </div>
