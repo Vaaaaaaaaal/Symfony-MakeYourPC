@@ -18,11 +18,8 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Entity\User;
-<<<<<<< HEAD
 use App\Repository\ProductRepository;
-=======
 use Symfony\Component\HttpFoundation\JsonResponse;
->>>>>>> Admin
 
 class UserController extends AbstractController
 {
@@ -66,14 +63,14 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin/users', name: 'app_admin_users')]
-    public function manageUsers(UserRepository $userRepository): Response
+    public function manageUsers(EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        $users = $userRepository->findAll();
+        $users = $entityManager->getRepository(User::class)->findAll();
 
         return $this->render('admin/users.html.twig', [
-            'users' => $users,
+            'users' => $users
         ]);
     }
 
@@ -165,18 +162,6 @@ class UserController extends AbstractController
 
         return $this->render('profile/edit.html.twig', [
             'form' => $form->createView()
-        ]);
-    }
-
-    #[Route('/admin/users', name: 'app_admin_users')]
-    public function manageUsers(EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
-        $users = $entityManager->getRepository(User::class)->findAll();
-
-        return $this->render('admin/users.html.twig', [
-            'users' => $users
         ]);
     }
 
