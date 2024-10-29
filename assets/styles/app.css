@@ -1766,3 +1766,171 @@ footer {
 .password-input {
   padding-right: 40px !important;
 }
+
+/* Styles pour la gestion des utilisateurs */
+.manage-users {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.user-table th,
+.user-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.user-table th {
+  color: #6294c6;
+  font-weight: bold;
+  background-color: #1a1a1a;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.user-table td {
+  color: #b3d1d3;
+}
+
+.user-table .actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action.edit {
+  color: #3498db;
+}
+
+.btn-action.delete {
+  color: #e74c3c;
+}
+
+.btn-action:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.btn-action i {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2px;
+}
+
+/* Ajoutez ces styles à la fin du fichier */
+.role-select {
+  background-color: #333;
+  color: #b3d1d3;
+  border: 1px solid #444;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.role-select option {
+  background-color: #222222;
+  color: #b3d1d3;
+}
+
+/* Ajoutez ces styles pour le select désactivé */
+.role-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #2a2a2a;
+}
+
+/* Styles pour les modales */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.modal-content h2 {
+  color: #6294c6;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+
+.modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b3d1d3;
+}
+
+.modal .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.modal .form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+}

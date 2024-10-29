@@ -18,7 +18,11 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Entity\User;
+<<<<<<< HEAD
 use App\Repository\ProductRepository;
+=======
+use Symfony\Component\HttpFoundation\JsonResponse;
+>>>>>>> Admin
 
 class UserController extends AbstractController
 {
@@ -162,5 +166,133 @@ class UserController extends AbstractController
         return $this->render('profile/edit.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    #[Route('/admin/users', name: 'app_admin_users')]
+    public function manageUsers(EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $users = $entityManager->getRepository(User::class)->findAll();
+
+        return $this->render('admin/users.html.twig', [
+            'users' => $users
+        ]);
+    }
+
+    #[Route('/admin/users/{id}/role', name: 'app_admin_user_role', methods: ['POST'])]
+    public function updateUserRole(
+        User $user,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Security $security
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        // Empêcher l'auto-modification du rôle
+        if ($user === $security->getUser()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas modifier votre propre rôle'
+            ], 403);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $newRole = $data['role'] ?? null;
+
+        if (!$newRole) {
+            return new JsonResponse(['success' => false, 'message' => 'Rôle non spécifié'], 400);
+        }
+
+        try {
+            $user->setIsAdmin($newRole === 'ROLE_ADMIN');
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Rôle mis à jour avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour du rôle'
+            ], 500);
+        }
+    }
+
+    #[Route('/admin/users/{id}/edit', name: 'app_admin_user_edit', methods: ['POST'])]
+    public function editUser(
+        User $user,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $data = json_decode($request->getContent(), true);
+
+        try {
+            if (isset($data['name'])) $user->setName($data['name']);
+            if (isset($data['surname'])) $user->setSurname($data['surname']);
+            if (isset($data['email'])) $user->setEmail($data['email']);
+            if (isset($data['adresse'])) $user->setAdresse($data['adresse']);
+            if (isset($data['telephone'])) $user->setTelephone($data['telephone']);
+            if (!empty($data['password'])) {
+                $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+                $user->setPassword($hashedPassword);
+            }
+
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Utilisateur mis à jour avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour de l\'utilisateur'
+            ], 500);
+        }
+    }
+
+    #[Route('/admin/users/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
+    public function deleteUser(
+        User $user,
+        EntityManagerInterface $entityManager,
+        Security $security
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        // Empêcher la suppression de son propre compte
+        if ($user === $security->getUser()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas supprimer votre propre compte'
+            ], 403);
+        }
+
+        // Empêcher la suppression d'un admin
+        if ($user->isAdmin()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Impossible de supprimer un administrateur'
+            ], 403);
+        }
+
+        try {
+            $entityManager->remove($user);
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Utilisateur supprimé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression de l\'utilisateur'
+            ], 500);
+        }
     }
 }
