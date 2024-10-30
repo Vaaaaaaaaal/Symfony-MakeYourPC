@@ -22,6 +22,7 @@ class Product
     #[ORM\Column(length: 50)]
     private ?string $type = null;
 
+
     #[ORM\Column]
     private ?int $stock = null;
 
@@ -47,7 +48,7 @@ class Product
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
         return $this;
@@ -58,7 +59,7 @@ class Product
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(float $price): static
     {
         $this->price = $price;
         return $this;
@@ -69,7 +70,7 @@ class Product
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(string $type): static
     {
         $this->type = $type;
         return $this;
@@ -80,7 +81,7 @@ class Product
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -91,7 +92,7 @@ class Product
         return $this->imagePath;
     }
 
-    public function setImagePath(string $imagePath): self
+    public function setImagePath(?string $imagePath): static
     {
         $this->imagePath = $imagePath;
         return $this;
@@ -102,15 +103,10 @@ class Product
         return $this->rating;
     }
 
-    public function setRating(?float $rating): self
+    public function setRating(?float $rating): static
     {
         $this->rating = $rating;
         return $this;
-    }
-
-    public function getImageUrl(): string
-    {
-        return $this->imagePath ? 'images/products/' . $this->imagePath : 'images/products/default.png';
     }
 
     public function getStock(): ?int
@@ -122,5 +118,10 @@ class Product
     {
         $this->stock = $stock;
         return $this;
+    }
+
+    public function getImageUrl(): string
+    {
+        return $this->imagePath ? 'images/products/' . $this->imagePath : 'images/products/default.png';
     }
 }

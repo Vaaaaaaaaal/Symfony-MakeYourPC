@@ -8,9 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Bundle\SecurityBundle\Security;
-use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Repository\ProductRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,6 +17,8 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Entity\User;
+use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends AbstractController
@@ -59,6 +59,18 @@ class UserController extends AbstractController
 
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
+        ]);
+    }
+
+    #[Route('/admin/users', name: 'app_admin_users')]
+    public function manageUsers(EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $users = $entityManager->getRepository(User::class)->findAll();
+
+        return $this->render('admin/users.html.twig', [
+            'users' => $users
         ]);
     }
 
@@ -150,18 +162,6 @@ class UserController extends AbstractController
 
         return $this->render('profile/edit.html.twig', [
             'form' => $form->createView()
-        ]);
-    }
-
-    #[Route('/admin/users', name: 'app_admin_users')]
-    public function manageUsers(UserRepository $userRepository): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
-        $users = $userRepository->findAll();
-
-        return $this->render('admin/users.html.twig', [
-            'users' => $users,
         ]);
     }
 
