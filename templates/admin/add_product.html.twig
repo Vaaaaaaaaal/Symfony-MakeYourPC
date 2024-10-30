@@ -6,11 +6,51 @@
     <div class="container">
         <h1 class="my-4">Ajouter un produit</h1>
         
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
         <div class="add-product-form">
-            {{ form_start(form) }}
-                {{ form_widget(form) }}
-                <button type="submit" class="btn btn-primary">Ajouter le produit</button>
-            {{ form_end(form) }}
+            {% if confirmation is defined %}
+                <div class="alert alert-warning">
+                    <p>Êtes-vous sûr de vouloir ajouter ce produit ?</p>
+                    <form method="post" action="{{ path('app_add_product_confirm') }}" enctype="multipart/form-data">
+                        <input type="hidden" name="confirm" value="1">
+                        {% for key, value in form.vars.value %}
+                            <input type="hidden" name="product[{{ key }}]" value="{{ value }}">
+                        {% endfor %}
+                        <button type="submit" class="btn btn-success me-2">Confirmer</button>
+                        <a href="{{ path('app_add_product') }}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            {% else %}
+                {{ form_start(form) }}
+                    <div class="mb-3">
+                        {{ form_row(form.name) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_row(form.price) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_row(form.stock) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_row(form.type) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_row(form.image) }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter le produit</button>
+                {{ form_end(form) }}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

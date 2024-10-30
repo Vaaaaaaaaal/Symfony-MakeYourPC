@@ -85,114 +85,104 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const modal = document.getElementById('deleteModal');
-        let currentProductId = null;
-        
-        console.log('Script de suppression chargé');
-        
-        // Ajouter les écouteurs d'événements pour tous les boutons de suppression
-        const deleteButtons = document.querySelectorAll('.btn-delete');
-        console.log('Nombre de boutons de suppression trouvés:', deleteButtons.length);
-        
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productId = this.dataset.productId;
-                const productName = this.dataset.productName;
-                console.log('Clic sur le bouton de suppression', { productId, productName });
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Script chargé');
+            
+            const modal = document.getElementById('deleteModal');
+            const cancelDeleteButton = document.getElementById('cancelDelete');
+            const confirmDeleteButton = document.getElementById('confirmDelete');
+            let currentProductId = null;
+            
+            console.log('Modal:', modal);
+            console.log('Bouton annuler:', cancelDeleteButton);
+            console.log('Bouton confirmer:', confirmDeleteButton);
+            
+            // Gestionnaire pour les boutons de suppression
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                console.log('Ajout du gestionnaire sur le bouton:', button);
                 
-                currentProductId = productId;
-                document.getElementById('productName').textContent = productName;
-                modal.style.display = 'flex';
-            });
-        });
-
-        const confirmDeleteButton = document.getElementById('confirmDelete');
-        console.log('Bouton de confirmation trouvé:', confirmDeleteButton);
-        
-        confirmDeleteButton.addEventListener('click', async () => {
-            try {
-                console.log('Clic sur le bouton de confirmation');
-                console.log('ID du produit à supprimer:', currentProductId);
-                
-                const url = `/admin/product/delete/${currentProductId}`;
-                console.log('URL de suppression:', url);
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/json'
-                    }
+                button.addEventListener('click', (e) => {
+                    console.log('Clic sur le bouton de suppression');
+                    e.preventDefault();
+                    
+                    const productId = button.dataset.productId;
+                    const productName = button.dataset.productName;
+                    console.log('ID du produit:', productId);
+                    console.log('Nom du produit:', productName);
+                    
+                    currentProductId = productId;
+                    document.getElementById('productName').textContent = productName;
+                    modal.style.display = 'flex';
                 });
+            });
+            
+            // Ajout du gestionnaire pour le bouton Confirmer
+            confirmDeleteButton.addEventListener('click', async () => {
+                console.log('Confirmation de suppression pour le produit:', currentProductId);
                 
-                console.log('Statut de la réponse:', response.status);
-                console.log('Headers de la réponse:', Object.fromEntries(response.headers));
-                
-                const data = await response.json();
-                console.log('Données reçues:', data);
-                
-                if (data.success) {
-                    console.log('Suppression réussie');
-                    const row = document.querySelector(`[data-product-id="${currentProductId}"]`).closest('tr');
-                    if (row) {
-                        console.log('Ligne trouvée, suppression...');
-                        row.remove();
+                try {
+                    const response = await fetch(`/admin/product/delete/${currentProductId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token('delete-product') }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+                    console.log('Réponse du serveur:', data);
+
+                    if (data.success) {
+                        // Fermer le modal
+                        modal.style.display = 'none';
+                        
+                        // Supprimer la ligne du tableau
+                        const productRow = document.querySelector(`[data-product-id="${currentProductId}"]`).closest('tr');
+                        productRow.remove();
+
+                        // Afficher une notification de succès
+                        showNotification('Le produit a été supprimé avec succès', 'success');
                     } else {
-                        console.log('Ligne non trouvée dans le tableau');
+                        throw new Error(data.message || 'Erreur lors de la suppression');
                     }
-                    
-                    // Afficher la notification
-                    const notification = document.createElement('div');
-                    notification.className = 'notification success';
-                    notification.innerHTML = `
-                        <div class="notification-content">
-                            <i data-lucide="check-circle"></i>
-                            <span>${data.message}</span>
-                        </div>
-                    `;
-                    document.body.appendChild(notification);
-                    lucide.createIcons();
-                    
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 3000);
-                } else {
-                    console.log('Échec de la suppression:', data.message);
-                    const notification = document.createElement('div');
-                    notification.className = 'notification error';
-                    notification.innerHTML = `
-                        <div class="notification-content">
-                            <i data-lucide="alert-circle"></i>
-                            <span>${data.message}</span>
-                        </div>
-                    `;
-                    document.body.appendChild(notification);
-                    lucide.createIcons();
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    showNotification('Erreur lors de la suppression du produit', 'error');
                 }
-            } catch (error) {
-                console.error('Erreur détaillée:', error);
-                console.error('Stack trace:', error.stack);
+            });
+
+            // Fonction pour afficher les notifications
+            function showNotification(message, type) {
                 const notification = document.createElement('div');
-                notification.className = 'notification error';
+                notification.className = `notification ${type}`;
                 notification.innerHTML = `
                     <div class="notification-content">
-                        <i data-lucide="alert-circle"></i>
-                        <span>Une erreur est survenue lors de la suppression</span>
+                        <span>${message}</span>
                     </div>
                 `;
+                
                 document.body.appendChild(notification);
-                lucide.createIcons();
+                
+                // Supprimer la notification après 3 secondes
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
             }
-            
-            modal.style.display = 'none';
-        });
 
-        // Fermer la modale si on clique en dehors
-        window.onclick = (event) => {
-            if (event.target === modal) {
+            // Gestionnaire pour le bouton Annuler
+            cancelDeleteButton.addEventListener('click', () => {
+                console.log('Clic sur Annuler');
                 modal.style.display = 'none';
-            }
-        }
+            });
+            
+            // Fermeture en cliquant en dehors
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    console.log('Clic en dehors du modal');
+                    modal.style.display = 'none';
+                }
+            });
+        });
     </script>
 
     <style>
@@ -206,14 +196,15 @@
             background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 9999;
         }
 
         .modal-content {
-            background-color: white;
+            background-color: #222222;
+            color: #fff;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             max-width: 500px;
             width: 90%;
         }
