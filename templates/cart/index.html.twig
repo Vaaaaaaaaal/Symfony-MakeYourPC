@@ -50,8 +50,14 @@
                 </div>
             </div>
         {% else %}
-            <p>Votre panier est vide.</p>
-            <a href="{{ path('app_products') }}" class="btn-continue-shopping">Continuer vos achats</a>
+            <div class="empty-cart">
+                <i data-lucide="shopping-cart" class="empty-cart-icon"></i>
+                <p>Votre panier est vide</p>
+                <a href="{{ path('app_products') }}" class="btn-continue-shopping">
+                    <i data-lucide="arrow-left"></i>
+                    Continuer vos achats
+                </a>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
@@ -66,26 +72,39 @@
                 const minusBtn = item.querySelector('.minus');
                 const plusBtn = item.querySelector('.plus');
                 const removeBtn = item.querySelector('.remove-item');
-                const quantitySpan = item.querySelector('.quantity');
                 const itemId = item.dataset.id;
 
-                minusBtn.addEventListener('click', () => updateQuantity(itemId, -1));
-                plusBtn.addEventListener('click', () => updateQuantity(itemId, 1));
-                removeBtn.addEventListener('click', () => removeItem(itemId));
+                minusBtn?.addEventListener('click', () => updateQuantity(itemId, -1));
+                plusBtn?.addEventListener('click', () => updateQuantity(itemId, 1));
+                removeBtn?.addEventListener('click', () => removeItem(itemId));
             });
 
             function updateQuantity(itemId, change) {
                 fetch(`/cart/update/${itemId}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ change: change })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        updateCartDisplay(data);
+                        const item = document.querySelector(`.cart-item[data-id="${itemId}"]`);
+                        if (data.quantity > 0) {
+                            item.querySelector('.quantity').textContent = data.quantity;
+                            item.querySelector('.item-total').textContent = 
+                                `${(data.itemTotal).toFixed(2).replace('.', ',')} €`;
+                        } else {
+                            item.remove();
+                        }
+                        
+                        updateCartTotals(data.total);
+                        updateCartCount(data.itemCount);
+                        
+                        if (data.itemCount === 0) {
+                            location.reload();
+                        }
                     }
                 });
             }
@@ -97,26 +116,29 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        updateCartDisplay(data);
+                        const item = document.querySelector(`.cart-item[data-id="${itemId}"]`);
+                        item.remove();
+                        
+                        updateCartTotals(data.total);
+                        updateCartCount(data.itemCount);
+                        
+                        if (data.itemCount === 0) {
+                            location.reload();
+                        }
                     }
                 });
             }
 
-            function updateCartDisplay(data) {
-                const cartItem = document.querySelector(`.cart-item[data-id="${data.itemId}"]`);
-                if (cartItem) {
-                    if (data.quantity > 0) {
-                        cartItem.querySelector('.quantity').textContent = data.quantity;
-                        cartItem.querySelector('.item-total').textContent = `${data.itemTotal.toFixed(2).replace('.', ',')} €`;
-                    } else {
-                        cartItem.remove();
-                    }
-                }
-                document.getElementById('cart-subtotal').textContent = `${data.subtotal.toFixed(2).replace('.', ',')} €`;
-                document.getElementById('cart-total').textContent = `${data.total.toFixed(2).replace('.', ',')} €`;
+            function updateCartTotals(total) {
+                const formattedTotal = `${total.toFixed(2).replace('.', ',')} €`;
+                document.getElementById('cart-subtotal').textContent = formattedTotal;
+                document.getElementById('cart-total').textContent = formattedTotal;
+            }
 
-                if (data.itemCount === 0) {
-                    location.reload(); // Recharge la page si le panier est vide
+            function updateCartCount(count) {
+                const cartCount = document.querySelector('.cart-count');
+                if (cartCount) {
+                    cartCount.textContent = count;
                 }
             }
         });

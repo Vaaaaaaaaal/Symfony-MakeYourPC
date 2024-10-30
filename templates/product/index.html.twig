@@ -61,7 +61,7 @@
                     </div>
                 {% else %}
                     {% for product in products %}
-                        <div class="product-tile">
+                        <div class="product-tile" data-product-id="{{ product.id }}">
                             <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
                             <h4>{{ product.name }}</h4>
                             <div class="rating">
@@ -78,7 +78,7 @@
                             </div>
                             <div class="price-card">{{ product.price|number_format(2, ',', ' ') }} €</div>
                             <p class="type">{{ product.type }}</p>
-                            <button class="btn-add-to-cart" title="Ajouter au panier">
+                            <button class="btn-add-to-cart" type="button" data-product-id="{{ product.id }}">
                                 <i data-lucide="shopping-cart"></i>
                             </button>
                         </div>
@@ -87,4 +87,71 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
+            
+            addToCartButtons.forEach(button => {
+                button.replaceWith(button.cloneNode(true));
+                
+                const newButton = document.querySelector(`.btn-add-to-cart[data-product-id="${button.dataset.productId}"]`);
+                
+                newButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (this.disabled) return;
+                    
+                    const productId = this.dataset.productId;
+                    this.disabled = true;
+                    
+                    fetch(`/cart/add/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const cartCount = document.querySelector('.cart-count');
+                            if (cartCount) {
+                                cartCount.textContent = data.cartCount;
+                            }
+                            showNotification('Produit ajouté au panier', 'success');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('Erreur lors de l\'ajout au panier', 'error');
+                    })
+                    .finally(() => {
+                        this.disabled = false;
+                    });
+                }, { once: true });
+            });
+        });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
 {% endblock %}
