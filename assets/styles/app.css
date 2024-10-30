@@ -1699,3 +1699,648 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* Styles pour la page d'administration */
+.admin-dashboard {
+  margin-top: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: #222222;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stat-card h3 {
+  color: #6294c6;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #3498db;
+}
+
+.admin-sections {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.admin-section {
+  background-color: #222222;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.admin-section h2 {
+  color: #6294c6;
+  margin-bottom: 1rem;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.admin-table th {
+  color: #b3d1d3;
+}
+
+.btn-action {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.btn-quick-action {
+  display: block;
+  padding: 1rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.btn-quick-action:hover {
+  background-color: #2980b9;
+}
+
+/* Media query pour la responsivité */
+@media (max-width: 768px) {
+  .admin-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Styles pour les icônes dans la page d'administration */
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  color: #3498db;
+  margin-bottom: 0.5rem;
+}
+
+.section-icon {
+  width: 24px;
+  height: 24px;
+  color: #6294c6;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+.btn-action i,
+.btn-quick-action i {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* Nouveaux styles pour aligner le texte avec les icônes */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-section h2 {
+  display: flex;
+  align-items: center;
+}
+
+.btn-action,
+.btn-quick-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustez la hauteur de ligne pour les boutons d'action rapide */
+.btn-quick-action {
+  line-height: 1.2;
+  min-height: 60px; /* Ajustez cette valeur selon vos besoins */
+}
+
+.btn-action-space {
+  margin-left: 0.5rem; /* Ajustez cette valeur selon vos préférences */
+}
+
+/* Styles pour la page de gestion des produits */
+.manage-products {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.product-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.btn-add-product {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-add-product:hover {
+  background-color: #2980b9;
+}
+
+.btn-add-product i {
+  margin-right: 0.5rem;
+}
+
+.btn-add-product .btn-text {
+  margin-left: 0.5rem;
+}
+
+.search-products {
+  display: flex;
+  align-items: center;
+}
+
+.search-products input {
+  padding: 0.5rem;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.btn-search {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-search:hover {
+  background-color: #2980b9;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.product-table th,
+.product-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+  vertical-align: middle;
+}
+
+.product-table th {
+  color: #6294c6;
+  font-weight: bold;
+  background-color: #1a1a1a;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.product-table td {
+  background-color: #222222;
+}
+
+.product-table th:first-child,
+.product-table td:first-child {
+  padding-left: 1.5rem;
+}
+
+.product-table th:last-child,
+.product-table td:last-child {
+  padding-right: 1.5rem;
+}
+
+.product-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-name {
+  font-weight: bold;
+  color: #b3d1d3;
+}
+
+.product-price {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 1.1em;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Modifiez ces styles pour ajuster la largeur des colonnes */
+.product-table th:nth-child(1),
+.product-table td:nth-child(1) {
+  width: 80px;
+}
+
+.product-table th:nth-child(2),
+.product-table td:nth-child(2) {
+  width: 40%;
+}
+
+.product-table th:nth-child(3),
+.product-table td:nth-child(3) {
+  width: 20%;
+}
+
+.product-table th:nth-child(4),
+.product-table td:nth-child(4) {
+  width: 20%;
+}
+
+.product-table th:last-child,
+.product-table td:last-child {
+  width: 120px;
+}
+
+/* Supprimez ou commentez les styles pour la cinquième colonne */
+/*
+.product-table th:nth-child(5),
+.product-table td:nth-child(5) {
+  width: 20%;
+}
+*/
+
+/* Ajustez le style du prix pour qu'il soit plus visible */
+.product-price {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 1.1em;
+}
+
+/* Media query pour la responsivité */
+@media (max-width: 768px) {
+  .product-table {
+    font-size: 0.9rem;
+  }
+
+  .product-table th,
+  .product-table td {
+    padding: 0.5rem;
+  }
+
+  .product-thumbnail {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Modifiez cette partie pour cacher la colonne du type au lieu du prix */
+  .product-table th:nth-child(4),
+  .product-table td:nth-child(4) {
+    display: none;
+  }
+
+  .product-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+/* Styles pour le formulaire d'ajout de produit */
+.add-product-form {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.add-product-form label {
+  color: #b3d1d3;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.add-product-form input[type="text"],
+.add-product-form input[type="number"],
+.add-product-form select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.add-product-form button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-product-form button[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+.no-products-message {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  margin-top: 2rem;
+}
+
+.no-products-message p {
+  margin-bottom: 0.5rem;
+}
+
+.no-products-message p:first-child {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.price-card {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid #3498db;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #3498db;
+}
+
+/* Styles pour les éléments du panier */
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #222222;
+  border-radius: 8px;
+}
+
+.item-image {
+  flex: 0 0 80px;
+  margin-right: 1rem;
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.item-details {
+  flex: 1;
+}
+
+.item-details h3 {
+  margin: 0;
+  color: #b3d1d3;
+}
+
+.item-price {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.item-quantity {
+  display: flex;
+  align-items: center;
+  margin: 0 1rem;
+}
+
+.quantity-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.quantity {
+  margin: 0 0.5rem;
+  font-weight: bold;
+}
+
+.item-total {
+  font-weight: bold;
+  color: #3498db;
+  margin-right: 1rem;
+}
+
+.remove-item {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+}
+
+/* Ajustez ces styles si nécessaire pour une meilleure mise en page sur mobile */
+@media (max-width: 768px) {
+  .cart-item {
+    flex-wrap: wrap;
+  }
+
+  .item-image {
+    flex: 0 0 60px;
+  }
+
+  .cart-item-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .item-quantity {
+    margin: 0.5rem 0;
+  }
+
+  .item-total {
+    width: 100%;
+    text-align: right;
+    margin-top: 0.5rem;
+  }
+}
+
+.no-products-message {
+  grid-column: 1 / -1; /* Fait s'étendre le message sur toute la largeur de la grille */
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #b3d1d3;
+}
+
+.no-products-message p:first-child {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #6294c6;
+}
+
+.no-products-message p:last-child {
+  font-style: italic;
+}
+
+/* Supprimer toute la section des styles pour la page d'édition du profil */
+.edit-profile-container,
+.edit-profile-form,
+.password-section,
+.password-hint,
+.form-error,
+.btn-save,
+.btn-cancel {
+  /* Supprimer tous ces styles */
+}
+
+/* Styles pour la page d'édition du profil */
+.edit-profile-container {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.edit-profile-container h2 {
+  color: #6294c6;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.edit-profile-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.edit-profile-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b3d1d3;
+}
+
+.edit-profile-form input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-save {
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background-color: #e74c3c;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  flex: 1;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.alert-success {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.alert-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .edit-profile-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
