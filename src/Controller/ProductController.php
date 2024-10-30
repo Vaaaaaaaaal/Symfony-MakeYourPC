@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
-use App\Form\ProductType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,23 +14,23 @@ use App\Entity\Product;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Form\ProductType;
 
 class ProductController extends AbstractController
 {
     #[Route('/products', name: 'app_products')]
-    public function index(Request $request): Response
+    public function index(Request $request, ProductRepository $productRepository): Response
     {
-        $products = [
-            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'price' => 349.99, 'image' => 'i7.png', 'type' => 'cpu', 'rating' => 4.5],
-            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'price' => 699.99, 'image' => 'rtx.jpg', 'type' => 'gpu', 'rating' => 4.8],
-            ['id' => 3, 'name' => 'SSD Samsung 1To', 'price' => 129.99, 'image' => 'ssd.avif', 'type' => 'ssd', 'rating' => 4.2],
-            ['id' => 4, 'name' => 'Carte mère ASUS ROG', 'price' => 249.99, 'image' => 'motherboard.png', 'type' => 'motherboard', 'rating' => 4.0],
-        ];
+        $search = $request->query->get('search');
+        $priceMin = $request->query->get('price_min') ? (float) $request->query->get('price_min') : null;
+        $priceMax = $request->query->get('price_max') ? (float) $request->query->get('price_max') : null;
+        $type = $request->query->get('type');
+        $rating = $request->query->get('rating') ? (float) $request->query->get('rating') : null;
 
-        $filteredProducts = $this->filterProducts($products, $request);
+        $products = $productRepository->findByFilters($search, $priceMin, $priceMax, $type, $rating);
 
         return $this->render('product/index.html.twig', [
-            'products' => $filteredProducts,
+            'products' => $products,
         ]);
     }
 

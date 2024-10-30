@@ -291,12 +291,14 @@
   margin-bottom: 1rem;
 }
 
+footer {
+  margin-top: 100px;
+}
+
 /* Styles pour le footer */
 .site-footer {
-  background-color: #222222;
   color: #ffffff;
   padding: 4rem 0;
-  margin-top: 4rem;
 }
 
 .footer-content {
@@ -517,6 +519,7 @@
 }
 
 .filters {
+  top: 80px;
   flex: 0 0 250px;
   background-color: #222222;
   padding: 1.5rem;
@@ -583,7 +586,7 @@
   padding: 1rem;
   text-align: center;
   transition: transform 0.3s ease-in-out;
-  position: relative; /* Ajoutez cette ligne */
+  position: relative;
 }
 
 .product-tile:hover {
@@ -1227,7 +1230,8 @@
 
 .product-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .product-table th,
@@ -1235,11 +1239,30 @@
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #444;
+  vertical-align: middle;
 }
 
 .product-table th {
   color: #6294c6;
   font-weight: bold;
+  background-color: #1a1a1a;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.product-table td {
+  background-color: #222222;
+}
+
+.product-table th:first-child,
+.product-table td:first-child {
+  padding-left: 1.5rem;
+}
+
+.product-table th:last-child,
+.product-table td:last-child {
+  padding-right: 1.5rem;
 }
 
 .product-thumbnail {
@@ -1249,48 +1272,66 @@
   border-radius: 4px;
 }
 
+.product-name {
+  font-weight: bold;
+  color: #b3d1d3;
+}
+
+.product-price {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 1.1em;
+}
+
 .product-actions {
   display: flex;
   gap: 0.5rem;
+  justify-content: flex-end;
 }
 
-.btn-edit,
-.btn-delete {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  color: white;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
+/* Modifiez ces styles pour ajuster la largeur des colonnes */
+.product-table th:nth-child(1),
+.product-table td:nth-child(1) {
+  width: 80px;
 }
 
-.btn-edit i,
-.btn-delete i {
-  width: 18px;
-  height: 18px;
+.product-table th:nth-child(2),
+.product-table td:nth-child(2) {
+  width: 40%;
 }
 
-.pagination {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
+.product-table th:nth-child(3),
+.product-table td:nth-child(3) {
+  width: 20%;
+}
+
+.product-table th:nth-child(4),
+.product-table td:nth-child(4) {
+  width: 20%;
+}
+
+.product-table th:last-child,
+.product-table td:last-child {
+  width: 120px;
+}
+
+/* Supprimez ou commentez les styles pour la cinquième colonne */
+/*
+.product-table th:nth-child(5),
+.product-table td:nth-child(5) {
+  width: 20%;
+}
+*/
+
+/* Ajustez le style du prix pour qu'il soit plus visible */
+.product-price {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 1.1em;
 }
 
 /* Media query pour la responsivité */
 @media (max-width: 768px) {
-  .product-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-
-  .search-products {
-    width: 100%;
-  }
-
   .product-table {
     font-size: 0.9rem;
   }
@@ -1303,6 +1344,17 @@
   .product-thumbnail {
     width: 30px;
     height: 30px;
+  }
+
+  /* Modifiez cette partie pour cacher la colonne du type au lieu du prix */
+  .product-table th:nth-child(4),
+  .product-table td:nth-child(4) {
+    display: none;
+  }
+
+  .product-actions {
+    flex-direction: column;
+    gap: 0.25rem;
   }
 }
 
@@ -1349,4 +1401,536 @@
 
 .add-product-form button[type="submit"]:hover {
   background-color: #2980b9;
+}
+
+.no-products-message {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  margin-top: 2rem;
+}
+
+.no-products-message p {
+  margin-bottom: 0.5rem;
+}
+
+.no-products-message p:first-child {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.price-card {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid #3498db;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #3498db;
+}
+
+/* Styles pour les éléments du panier */
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #222222;
+  border-radius: 8px;
+}
+
+.item-image {
+  flex: 0 0 80px;
+  margin-right: 1rem;
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.item-details {
+  flex: 1;
+}
+
+.item-details h3 {
+  margin: 0;
+  color: #b3d1d3;
+}
+
+.item-price {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.item-quantity {
+  display: flex;
+  align-items: center;
+  margin: 0 1rem;
+}
+
+.quantity-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.quantity {
+  margin: 0 0.5rem;
+  font-weight: bold;
+}
+
+.item-total {
+  font-weight: bold;
+  color: #3498db;
+  margin-right: 1rem;
+}
+
+.remove-item {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+}
+
+/* Ajustez ces styles si nécessaire pour une meilleure mise en page sur mobile */
+@media (max-width: 768px) {
+  .cart-item {
+    flex-wrap: wrap;
+  }
+
+  .item-image {
+    flex: 0 0 60px;
+  }
+
+  .cart-item-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .item-quantity {
+    margin: 0.5rem 0;
+  }
+
+  .item-total {
+    width: 100%;
+    text-align: right;
+    margin-top: 0.5rem;
+  }
+}
+
+.no-products-message {
+  grid-column: 1 / -1; /* Fait s'étendre le message sur toute la largeur de la grille */
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #b3d1d3;
+}
+
+.no-products-message p:first-child {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #6294c6;
+}
+
+.no-products-message p:last-child {
+  font-style: italic;
+}
+
+/* Supprimer toute la section des styles pour la page d'édition du profil */
+.edit-profile-container,
+.edit-profile-form,
+.password-section,
+.password-hint,
+.form-error,
+.btn-save,
+.btn-cancel {
+  /* Supprimer tous ces styles */
+}
+
+/* Styles pour la page d'édition du profil */
+.edit-profile-container {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.edit-profile-container h2 {
+  color: #6294c6;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.edit-profile-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.edit-profile-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b3d1d3;
+}
+
+.edit-profile-form input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-save {
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background-color: #e74c3c;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  flex: 1;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.alert-success {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.alert-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .edit-profile-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+/* Styles pour les messages d'erreur de formulaire */
+.form-error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  list-style: none;
+  padding: 0;
+}
+
+.form-error > li {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+}
+
+/* Style spécifique pour l'erreur de correspondance des mots de passe */
+.password-mismatch {
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #e74c3c;
+  color: #e74c3c;
+}
+
+/* Mise en évidence des champs de mot de passe en cas d'erreur */
+.password-error input {
+  border-color: #e74c3c;
+}
+
+/* Animation pour attirer l'attention sur l'erreur */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+.alert-danger {
+  font-size: 0.85rem;
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Style pour les messages flash */
+.alert {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border-left: 3px solid;
+}
+
+.alert-danger {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.alert-success {
+  background-color: rgba(46, 204, 113, 0.1);
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+/* Animation pour les messages d'erreur */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+.alert-danger {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Style pour le champ de mot de passe avec l'œil */
+.password-group {
+  position: relative;
+}
+
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #b3d1d3;
+  padding: 5px;
+}
+
+.password-toggle:hover {
+  color: #3498db;
+}
+
+.password-input {
+  padding-right: 40px !important;
+}
+
+/* Styles pour la gestion des utilisateurs */
+.manage-users {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.user-table th,
+.user-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.user-table th {
+  color: #6294c6;
+  font-weight: bold;
+  background-color: #1a1a1a;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.user-table td {
+  color: #b3d1d3;
+}
+
+.user-table .actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action.edit {
+  color: #3498db;
+}
+
+.btn-action.delete {
+  color: #e74c3c;
+}
+
+.btn-action:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.btn-action i {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2px;
+}
+
+/* Ajoutez ces styles à la fin du fichier */
+.role-select {
+  background-color: #333;
+  color: #b3d1d3;
+  border: 1px solid #444;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.role-select option {
+  background-color: #222222;
+  color: #b3d1d3;
+}
+
+/* Ajoutez ces styles pour le select désactivé */
+.role-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #2a2a2a;
+}
+
+/* Styles pour les modales */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.modal-content h2 {
+  color: #6294c6;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+
+.modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b3d1d3;
+}
+
+.modal .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.modal .form-group input:focus {
+  outline: none;
+  border-color: #3498db;
 }

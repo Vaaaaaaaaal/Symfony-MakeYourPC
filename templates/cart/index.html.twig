@@ -11,6 +11,9 @@
                 <div class="cart-items">
                     {% for item in cartItems %}
                         <div class="cart-item" data-id="{{ item.id }}">
+                            <div class="item-image">
+                                <img src="{{ asset('images/products/' ~ item.image) }}" alt="{{ item.name }}" class="cart-item-image">
+                            </div>
                             <div class="item-details">
                                 <h3>{{ item.name }}</h3>
                                 <p class="item-price">{{ item.price|number_format(2, ',', ' ') }} €</p>

@@ -149,4 +149,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->telephone = $telephone;
         return $this;
     }
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreateAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 }
