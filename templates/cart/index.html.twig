@@ -46,7 +46,7 @@
                         <span>Total</span>
                         <span id="cart-total">{{ total|number_format(2, ',', ' ') }} €</span>
                     </div>
-                    <button class="btn-checkout">Procéder au paiement</button>
+                    <a href="{{ path('app_checkout') }}" class="btn-checkout">Procéder au paiement</a>
                 </div>
             </div>
         {% else %}

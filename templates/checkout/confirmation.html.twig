@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="confirmation-container">
+            <i data-lucide="check-circle" class="success-icon"></i>
+            <h1>Merci pour votre commande !</h1>
+            <p>Votre paiement a été traité avec succès.</p>
+            <a href="{{ path('app_products') }}" class="btn-continue-shopping">
+                <i data-lucide="arrow-left"></i>
+                Retourner à la boutique
+            </a>
+        </div>
+    </div>
+{% endblock %} 

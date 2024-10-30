@@ -112,15 +112,25 @@
                     fetch(`/cart/add/${productId}`, {
                         method: 'POST',
                         headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token('add-to-cart') }}',
                             'Content-Type': 'application/json'
-                        }
+                        },
+                        credentials: 'same-origin'
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || 'Erreur serveur');
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             const cartCount = document.querySelector('.cart-count');
                             if (cartCount) {
                                 cartCount.textContent = data.cartCount;
+                                cartCount.style.display = data.cartCount > 0 ? 'inline-block' : 'none';
                             }
                             showNotification('Produit ajouté au panier', 'success');
                         }

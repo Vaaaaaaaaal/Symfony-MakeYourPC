@@ -2,35 +2,39 @@
 
 namespace App\Controller;
 
+use App\Entity\Cart;
+use App\Entity\CartItem;
 use App\Entity\Product;
+use App\Repository\CartRepository;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CartController extends AbstractController
 {
     #[Route('/cart', name: 'app_cart')]
-    public function index(SessionInterface $session, ProductRepository $productRepository): Response
+    public function index(CartRepository $cartRepository): Response
     {
-        $cart = $session->get('cart', []);
+        $user = $this->getUser();
+        $cart = $cartRepository->findOneBy(['user' => $user]);
+        
         $cartItems = [];
         $total = 0;
-
-        foreach ($cart as $id => $quantity) {
-            $product = $productRepository->find($id);
-            if ($product) {
+        
+        if ($cart) {
+            foreach ($cart->getItems() as $item) {
                 $cartItems[] = [
-                    'id' => $product->getId(),
-                    'name' => $product->getName(),
-                    'price' => $product->getPrice(),
-                    'image' => $product->getImagePath(),
-                    'quantity' => $quantity
+                    'id' => $item->getProduct()->getId(),
+                    'name' => $item->getProduct()->getName(),
+                    'price' => $item->getProduct()->getPrice(),
+                    'quantity' => $item->getQuantity(),
+                    'image' => $item->getProduct()->getImagePath()
                 ];
-                $total += $product->getPrice() * $quantity;
+                $total += $item->getProduct()->getPrice() * $item->getQuantity();
             }
         }
 
@@ -40,111 +44,146 @@ class CartController extends AbstractController
         ]);
     }
 
+    #[Route('/cart/add/{id}', name: 'cart_add', methods: ['POST'])]
+    public function addToCart(
+        int $id, 
+        Request $request, 
+        ProductRepository $productRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        try {
+            $user = $this->getUser();
+            if (!$user) {
+                throw new \Exception('Utilisateur non connecté');
+            }
+
+            $product = $productRepository->find($id);
+            if (!$product) {
+                throw new \Exception('Produit non trouvé');
+            }
+
+            // Débogage
+            dump([
+                'user' => $user,
+                'product_id' => $product->getId(),
+                'product_name' => $product->getName()
+            ]);
+
+            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+            if (!$cart) {
+                $cart = new Cart();
+                $cart->setUser($user);
+                $entityManager->persist($cart);
+                
+                // Débogage
+                dump('Nouveau panier créé');
+            }
+
+            $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
+                'cart' => $cart,
+                'product' => $product
+            ]);
+
+            if ($cartItem) {
+                $cartItem->setQuantity($cartItem->getQuantity() + 1);
+                dump('Quantité mise à jour');
+            } else {
+                $cartItem = new CartItem();
+                $cartItem->setCart($cart)
+                        ->setProduct($product)
+                        ->setQuantity(1);
+                $entityManager->persist($cartItem);
+                dump('Nouvel item ajouté');
+            }
+
+            $entityManager->flush();
+            dump('Sauvegarde effectuée');
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Produit ajouté au panier',
+                'cartCount' => array_sum(array_map(fn($item) => $item->getQuantity(), $cart->getItems()->toArray()))
+            ]);
+        } catch (\Exception $e) {
+            dump('Erreur:', $e->getMessage());
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     #[Route('/cart/update/{id}', name: 'cart_update', methods: ['POST'])]
-    public function update(int $id, Request $request, SessionInterface $session, ProductRepository $productRepository): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        $change = $data['change'] ?? 0;
-        
-        $cart = $session->get('cart', []);
-        
-        if (isset($cart[$id])) {
-            $cart[$id] += $change;
-            if ($cart[$id] <= 0) {
-                unset($cart[$id]);
-            }
+    public function updateCart(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
+        }
+
+        $cartItem = $entityManager->getRepository(CartItem::class)->find($id);
+        if (!$cartItem || $cartItem->getCart()->getUser() !== $user) {
+            return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
+        }
+
+        $quantity = $request->request->get('quantity', 0);
+        if ($quantity <= 0) {
+            $entityManager->remove($cartItem);
+        } else {
+            $cartItem->setQuantity($quantity);
         }
         
-        $session->set('cart', $cart);
-        
-        // Recalculer le total
+        $entityManager->flush();
+
+        $cart = $cartItem->getCart();
         $total = 0;
-        $cartItems = [];
-        foreach ($cart as $productId => $quantity) {
-            $product = $productRepository->find($productId);
-            if ($product) {
-                $total += $product->getPrice() * $quantity;
-                if ($productId == $id) {
-                    $itemTotal = $product->getPrice() * $quantity;
-                }
-            }
-        }
+        $itemCount = 0;
         
+        foreach ($cart->getItems() as $item) {
+            $total += $item->getProduct()->getPrice() * $item->getQuantity();
+            $itemCount += $item->getQuantity();
+        }
+
         return new JsonResponse([
             'success' => true,
-            'itemId' => $id,
-            'quantity' => $cart[$id] ?? 0,
-            'itemTotal' => $itemTotal ?? 0,
             'total' => $total,
-            'itemCount' => array_sum($cart)
+            'cartCount' => $itemCount
         ]);
     }
 
     #[Route('/cart/remove/{id}', name: 'cart_remove', methods: ['POST'])]
-    public function remove(int $id, SessionInterface $session, ProductRepository $productRepository): JsonResponse
-    {
-        $cart = $session->get('cart', []);
-        
-        if (isset($cart[$id])) {
-            unset($cart[$id]);
+    public function removeFromCart(
+        int $id,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
         }
-        
-        $session->set('cart', $cart);
-        
-        // Recalculer le total
+
+        $cartItem = $entityManager->getRepository(CartItem::class)->find($id);
+        if (!$cartItem || $cartItem->getCart()->getUser() !== $user) {
+            return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
+        }
+
+        $cart = $cartItem->getCart();
+        $entityManager->remove($cartItem);
+        $entityManager->flush();
+
         $total = 0;
-        foreach ($cart as $productId => $quantity) {
-            $product = $productRepository->find($productId);
-            if ($product) {
-                $total += $product->getPrice() * $quantity;
-            }
+        $itemCount = 0;
+        foreach ($cart->getItems() as $item) {
+            $total += $item->getProduct()->getPrice() * $item->getQuantity();
+            $itemCount += $item->getQuantity();
         }
-        
+
         return new JsonResponse([
             'success' => true,
             'total' => $total,
-            'itemCount' => array_sum($cart)
+            'cartCount' => $itemCount
         ]);
-    }
-
-    #[Route('/cart/add/{id}', name: 'cart_add', methods: ['POST'])]
-    public function addToCart(int $id, Request $request, SessionInterface $session, ProductRepository $productRepository): JsonResponse
-    {
-        $product = $productRepository->find($id);
-        
-        if (!$product) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Produit non trouvé'
-            ], 404);
-        }
-
-        $cart = $session->get('cart', []);
-        
-        if (isset($cart[$id])) {
-            $cart[$id]++;
-        } else {
-            $cart[$id] = 1;
-        }
-        
-        $session->set('cart', $cart);
-        
-        $cartCount = array_sum($cart);
-        
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Produit ajouté au panier',
-            'cartCount' => $cartCount
-        ]);
-    }
-
-    private function getCartItems(): array
-    {
-        // Dans une vraie application, vous récupéreriez ces données depuis une session ou une base de données
-        return [
-            ['id' => 1, 'name' => 'Processeur Intel Core i7', 'price' => 349.99, 'quantity' => 1],
-            ['id' => 2, 'name' => 'Carte graphique NVIDIA RTX 3080', 'price' => 699.99, 'quantity' => 1],
-            ['id' => 3, 'name' => 'SSD Samsung 1To', 'price' => 129.99, 'quantity' => 2],
-        ];
     }
 }
