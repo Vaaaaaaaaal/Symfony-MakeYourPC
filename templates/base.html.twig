@@ -11,6 +11,12 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% block javascripts %}
         {{ importmap('app') }}
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                lucide.createIcons();
+            });
+        </script>
         {% endblock %}
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
         <script src="https://unpkg.com/lucide@latest"></script>

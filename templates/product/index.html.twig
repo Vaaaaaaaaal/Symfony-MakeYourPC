@@ -61,7 +61,7 @@
                     </div>
                 {% else %}
                     {% for product in products %}
-                        <div class="product-tile">
+                        <div class="product-tile" onclick="window.location.href='{{ path('app_product_detail', {id: product.id}) }}'" style="cursor: pointer;">
                             <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
                             <h4>{{ product.name }}</h4>
                             <div class="rating">
@@ -78,7 +78,7 @@
                             </div>
                             <div class="price-card">{{ product.price|number_format(2, ',', ' ') }} €</div>
                             <p class="type">{{ product.type }}</p>
-                            <button class="btn-add-to-cart" title="Ajouter au panier">
+                            <button class="btn-add-to-cart" title="Ajouter au panier" onclick="event.stopPropagation();">
                                 <i data-lucide="shopping-cart"></i>
                             </button>
                         </div>

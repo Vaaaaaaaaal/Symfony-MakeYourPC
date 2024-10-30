@@ -18,6 +18,13 @@ use App\Form\ProductType;
 
 class ProductController extends AbstractController
 {
+    private $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     #[Route('/products', name: 'app_products')]
     public function index(Request $request, ProductRepository $productRepository): Response
     {
@@ -250,5 +257,18 @@ class ProductController extends AbstractController
                 'message' => 'Erreur lors de la suppression: ' . $e->getMessage()
             ], 500);
         }
+    }
+    
+    #[Route('/product/{id}', name: 'app_product_detail')]
+    public function detailProduct(Product $product): Response
+    {
+        return $this->render('product/details.html.twig', [  // ← C'est ce fichier
+            'product' => $product,
+            'relatedProducts' => $this->productRepository->findBy(
+                ['type' => $product->getType()],
+                ['createdAt' => 'DESC'],
+                4
+            )
+        ]);
     }
 }
