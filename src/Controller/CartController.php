@@ -102,7 +102,7 @@ class CartController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Produit ajouté au panier',
-                'cartCount' => array_sum(array_map(fn($item) => $item->getQuantity(), $cart->getItems()->toArray()))
+                'cartCount' => $cart->getItemsCount()
             ]);
         } catch (\Exception $e) {
             dump('Erreur:', $e->getMessage());
@@ -150,7 +150,7 @@ class CartController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'total' => $total,
-            'cartCount' => $itemCount
+            'cartCount' => $cart->getItemsCount()
         ]);
     }
 
@@ -183,7 +183,7 @@ class CartController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'total' => $total,
-            'cartCount' => $itemCount
+            'cartCount' => $cart->getItemsCount()
         ]);
     }
 }

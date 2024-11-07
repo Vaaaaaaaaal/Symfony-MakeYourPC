@@ -9,7 +9,13 @@
             <li class="cart-icon">
                 <a href="{{ path('app_cart') }}">
                     <i data-lucide="shopping-cart"></i>
-                    <span class="cart-count">{{ app.session.get('cart')|default([])|reduce((carry, v) => carry + v, 0) }}</span>
+                    <span class="cart-count">
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            {{ app.user.cartItemsCount }}
+                        {% else %}
+                            {{ app.session.get('cart')|default([])|reduce((carry, v) => carry + v, 0) }}
+                        {% endif %}
+                    </span>
                 </a>
             </li>
             <li class="user-menu">

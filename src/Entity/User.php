@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: "users")]
@@ -42,9 +44,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $telephone = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cart::class)]
+    private Collection $carts;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->carts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,5 +165,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->createdAt = $createdAt;
         return $this;
+    }
+
+    public function getCartItemsCount(): int
+    {
+        // On prend le dernier panier créé (le plus récent)
+        $latestCart = $this->carts->last();
+        
+        return $latestCart ? $latestCart->getItemsCount() : 0;
+    }
+
+    public function getCarts(): Collection
+    {
+        return $this->carts;
     }
 }
