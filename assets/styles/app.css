@@ -2165,7 +2165,6 @@ footer {
 .item-quantity {
   display: flex;
   align-items: center;
-  margin: 0 1rem;
 }
 
 .quantity-btn {
@@ -2183,14 +2182,13 @@ footer {
 }
 
 .quantity {
-  margin: 0 0.5rem;
-  font-weight: bold;
+  margin: 0 1rem;
+  color: #b3d1d3;
 }
 
 .item-total {
   font-weight: bold;
   color: #3498db;
-  margin-right: 1rem;
 }
 
 .remove-item {
@@ -2343,4 +2341,28 @@ footer {
   .form-actions {
     flex-direction: column;
   }
+}
+
+.rating-stars {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.rating-stars.interactive .star {
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.rating-stars.interactive .star:hover {
+  transform: scale(1.2);
+}
+
+.star.filled {
+  color: #ffd700;
+  stroke: #ffd700;
+}
+
+.rating-stars.interactive .star:hover ~ .star {
+  color: initial;
+  stroke: initial;
 }

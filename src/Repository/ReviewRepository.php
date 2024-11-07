@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Review;
+use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,21 @@ class ReviewRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getAverageRating(Product $product): float
+    {
+        $reviews = $this->findBy(['product' => $product]);
+        if (empty($reviews)) {
+            return 0;
+        }
+
+        $total = 0;
+        foreach ($reviews as $review) {
+            $total += $review->getRating();
+        }
+
+        return $total / count($reviews);
     }
 }
 
