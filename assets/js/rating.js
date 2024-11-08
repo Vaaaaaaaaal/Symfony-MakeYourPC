@@ -14,13 +14,20 @@ document.addEventListener("DOMContentLoaded", function () {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
         },
         body: JSON.stringify({
-          productId: productId,
-          rating: rating,
+          productId: parseInt(productId),
+          rating: parseInt(rating),
         }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            return response.json().then((err) => Promise.reject(err));
+          }
+          return response.json();
+        })
         .then((data) => {
           if (data.success) {
             // Mise à jour visuelle
@@ -30,14 +37,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 s.classList.add("filled");
               }
             });
-            document.querySelector(
-              ".rating-value"
-            ).textContent = `${data.newRating}/5`;
+            const ratingValue = document.querySelector(".rating-value");
+            if (ratingValue) {
+              ratingValue.textContent = `${data.newRating}/5`;
+            }
           }
         })
         .catch((error) => {
           console.error("Erreur:", error);
-          alert("Une erreur est survenue lors de la notation");
+          alert(error.error || "Une erreur est survenue lors de la notation");
         });
     });
   });

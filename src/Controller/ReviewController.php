@@ -26,66 +26,62 @@ class ReviewController extends AbstractController
     #[Route('/rate', name: 'app_review_rate', methods: ['POST'])]
     public function rate(Request $request): JsonResponse
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        
-        $content = $request->getContent();
-        $data = json_decode($content, true);
-        
-        // Log pour déboguer
-        $this->logger->info('Contenu reçu:', ['content' => $content, 'data' => $data]);
-        
-        $productId = $data['productId'] ?? null;
-        $rating = $data['rating'] ?? null;
-        
-        if (!$productId || !$rating) {
-            // Log pour déboguer
-            $this->logger->error('Données manquantes:', [
-                'productId' => $productId,
-                'rating' => $rating
-            ]);
-            return new JsonResponse(['error' => 'Données manquantes'], 400);
-        }
-        
         try {
+            $data = json_decode($request->getContent(), true);
+            if (!$data) {
+                throw new \Exception('Données JSON invalides');
+            }
+
+            $productId = $data['productId'] ?? null;
+            $rating = $data['rating'] ?? null;
+
+            if (!$productId || !$rating) {
+                throw new \Exception('ProductId et rating sont requis');
+            }
+
             $product = $this->productRepository->find($productId);
             if (!$product) {
-                throw new NotFoundHttpException('Produit non trouvé');
+                throw new \Exception('Produit non trouvé');
             }
-            
-            $existingReview = $this->reviewRepository->findOneBy([
-                'user' => $this->getUser(),
-                'product' => $product
+
+            $user = $this->getUser();
+            if (!$user) {
+                throw new \Exception('Utilisateur non connecté');
+            }
+
+            // Créer ou mettre à jour la note
+            $review = $this->reviewRepository->findOneBy([
+                'product' => $product,
+                'user' => $user
             ]);
 
-            if ($existingReview) {
-                $existingReview->setRating((int)$rating);
-                $this->reviewRepository->save($existingReview, true);
-                $this->logger->info('Review existante mise à jour');
-            } else {
+            if (!$review) {
                 $review = new Review();
-                $review->setUser($this->getUser());
                 $review->setProduct($product);
-                $review->setRating((int)$rating);
+                $review->setUser($user);
                 $review->setCreatedAt(new \DateTimeImmutable());
-                
-                $this->reviewRepository->save($review, true);
-                $this->logger->info('Nouvelle review créée');
             }
             
-            $newAverage = $this->reviewRepository->getAverageRating($product);
-            $product->setRating($newAverage);
+            $review->setRating((float)$rating);
+            $this->entityManager->persist($review);
             $this->entityManager->flush();
-            
+
+            // Calculer et mettre à jour la moyenne
+            $newAverageRating = $this->reviewRepository->getAverageRating($product);
+            $product->setRating($newAverageRating);
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+
             return new JsonResponse([
                 'success' => true,
-                'newRating' => $newAverage
+                'newRating' => number_format($newAverageRating, 1)
             ]);
+
         } catch (\Exception $e) {
-            $this->logger->error('Erreur lors de la sauvegarde:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return new JsonResponse(['error' => 'Une erreur est survenue'], 500);
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 400);
         }
     }
 } 

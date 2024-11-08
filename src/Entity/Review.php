@@ -13,16 +13,16 @@ class Review
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
     #[ORM\ManyToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    #[ORM\Column]
-    private ?int $rating = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\Column(type: 'float')]
+    private ?float $rating = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -54,12 +54,12 @@ class Review
         return $this;
     }
 
-    public function getRating(): ?int
+    public function getRating(): ?float
     {
         return $this->rating;
     }
 
-    public function setRating(int $rating): self
+    public function setRating(float $rating): self
     {
         $this->rating = $rating;
         return $this;
