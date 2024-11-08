@@ -83,7 +83,8 @@
                 fetch(`/cart/update/${itemId}`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ change: change })
                 })
@@ -94,7 +95,7 @@
                         if (data.quantity > 0) {
                             item.querySelector('.quantity').textContent = data.quantity;
                             item.querySelector('.item-total').textContent = 
-                                `${(data.itemTotal).toFixed(2).replace('.', ',')} €`;
+                                `${data.itemTotal.toFixed(2).replace('.', ',')} €`;
                         } else {
                             item.remove();
                         }
@@ -106,26 +107,10 @@
                             location.reload();
                         }
                     }
-                });
-            }
-
-            function removeItem(itemId) {
-                fetch(`/cart/remove/${itemId}`, {
-                    method: 'POST'
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const item = document.querySelector(`.cart-item[data-id="${itemId}"]`);
-                        item.remove();
-                        
-                        updateCartTotals(data.total);
-                        updateCartCount(data.itemCount);
-                        
-                        if (data.itemCount === 0) {
-                            location.reload();
-                        }
-                    }
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue lors de la mise à jour du panier');
                 });
             }
 
@@ -138,8 +123,40 @@
             function updateCartCount(count) {
                 const cartCount = document.querySelector('.cart-count');
                 if (cartCount) {
-                    cartCount.textContent = count;
+                    if (count === 0) {
+                        cartCount.style.display = 'none';
+                    } else {
+                        cartCount.style.display = 'block';
+                        cartCount.textContent = count;
+                    }
                 }
+            }
+
+            function removeItem(itemId) {
+                fetch(`/cart/remove/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = document.querySelector(`.cart-item[data-id="${itemId}"]`);
+                        item.remove();
+                        
+                        updateCartTotals(data.total);
+                        updateCartCount(data.cartCount);
+                        
+                        if (data.cartCount === 0) {
+                            window.location.reload();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
             }
         });
     </script>

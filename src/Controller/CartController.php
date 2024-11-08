@@ -102,7 +102,7 @@ class CartController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Produit ajouté au panier',
-                'cartCount' => $cart->getItemsCount()
+                'cartCount' => count($cart->getItems())
             ]);
         } catch (\Exception $e) {
             dump('Erreur:', $e->getMessage());
@@ -117,73 +117,111 @@ class CartController extends AbstractController
     public function updateCart(
         int $id,
         Request $request,
+        ProductRepository $productRepository,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $user = $this->getUser();
-        if (!$user) {
-            return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
-        }
+        try {
+            $user = $this->getUser();
+            if (!$user) {
+                return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
+            }
 
-        $cartItem = $entityManager->getRepository(CartItem::class)->find($id);
-        if (!$cartItem || $cartItem->getCart()->getUser() !== $user) {
-            return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
-        }
+            $data = json_decode($request->getContent(), true);
+            $change = $data['change'] ?? 0;
 
-        $quantity = $request->request->get('quantity', 0);
-        if ($quantity <= 0) {
-            $entityManager->remove($cartItem);
-        } else {
-            $cartItem->setQuantity($quantity);
-        }
-        
-        $entityManager->flush();
+            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+            $product = $productRepository->find($id);
+            
+            $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
+                'cart' => $cart,
+                'product' => $product
+            ]);
 
-        $cart = $cartItem->getCart();
-        $total = 0;
-        $itemCount = 0;
-        
-        foreach ($cart->getItems() as $item) {
-            $total += $item->getProduct()->getPrice() * $item->getQuantity();
-            $itemCount += $item->getQuantity();
-        }
+            if (!$cartItem) {
+                return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
+            }
 
-        return new JsonResponse([
-            'success' => true,
-            'total' => $total,
-            'cartCount' => $cart->getItemsCount()
-        ]);
+            $newQuantity = $cartItem->getQuantity() + $change;
+            
+            if ($newQuantity <= 0) {
+                $entityManager->remove($cartItem);
+            } else {
+                $cartItem->setQuantity($newQuantity);
+            }
+            
+            $entityManager->flush();
+
+            // Calculer les nouveaux totaux
+            $itemTotal = $cartItem->getProduct()->getPrice() * $newQuantity;
+            $total = 0;
+            foreach ($cart->getItems() as $item) {
+                $total += $item->getProduct()->getPrice() * $item->getQuantity();
+            }
+
+            // Compter uniquement le nombre de produits différents
+            $itemCount = count($cart->getItems());
+
+            return new JsonResponse([
+                'success' => true,
+                'quantity' => $newQuantity,
+                'itemTotal' => $itemTotal,
+                'total' => $total,
+                'itemCount' => $itemCount
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
     #[Route('/cart/remove/{id}', name: 'cart_remove', methods: ['POST'])]
     public function removeFromCart(
         int $id,
+        ProductRepository $productRepository,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $user = $this->getUser();
-        if (!$user) {
-            return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
+        try {
+            $user = $this->getUser();
+            if (!$user) {
+                return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
+            }
+
+            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
+            $product = $productRepository->find($id);
+            
+            $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
+                'cart' => $cart,
+                'product' => $product
+            ]);
+
+            if (!$cartItem) {
+                return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
+            }
+
+            // Supprimer l'item
+            $entityManager->remove($cartItem);
+            $entityManager->flush();
+
+            // Recalculer le total après la suppression
+            $total = 0;
+            foreach ($cart->getItems() as $item) {
+                $total += $item->getProduct()->getPrice() * $item->getQuantity();
+            }
+
+            // Compter uniquement le nombre de produits différents
+            $itemCount = count($cart->getItems());
+
+            return new JsonResponse([
+                'success' => true,
+                'total' => $total,
+                'cartCount' => $itemCount,
+                'message' => 'Produit supprimé avec succès'
+            ]);
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la suppression'
+            ], 500);
         }
-
-        $cartItem = $entityManager->getRepository(CartItem::class)->find($id);
-        if (!$cartItem || $cartItem->getCart()->getUser() !== $user) {
-            return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
-        }
-
-        $cart = $cartItem->getCart();
-        $entityManager->remove($cartItem);
-        $entityManager->flush();
-
-        $total = 0;
-        $itemCount = 0;
-        foreach ($cart->getItems() as $item) {
-            $total += $item->getProduct()->getPrice() * $item->getQuantity();
-            $itemCount += $item->getQuantity();
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'total' => $total,
-            'cartCount' => $cart->getItemsCount()
-        ]);
     }
 }
