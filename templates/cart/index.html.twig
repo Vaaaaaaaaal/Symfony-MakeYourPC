@@ -66,6 +66,10 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.quantity-btn').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true));
+            });
+            
             const cartItems = document.querySelectorAll('.cart-item');
 
             cartItems.forEach(item => {
@@ -74,12 +78,36 @@
                 const removeBtn = item.querySelector('.remove-item');
                 const itemId = item.dataset.id;
 
-                minusBtn?.addEventListener('click', () => updateQuantity(itemId, -1));
-                plusBtn?.addEventListener('click', () => updateQuantity(itemId, 1));
-                removeBtn?.addEventListener('click', () => removeItem(itemId));
+                if (minusBtn) {
+                    minusBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        updateQuantity(itemId, -1);
+                    }, { once: false });
+                }
+
+                if (plusBtn) {
+                    plusBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        updateQuantity(itemId, 1);
+                    }, { once: false });
+                }
+
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        removeItem(itemId);
+                    }, { once: false });
+                }
             });
 
             function updateQuantity(itemId, change) {
+                const item = document.querySelector(`.cart-item[data-id="${itemId}"]`);
+                const currentQuantity = parseInt(item.querySelector('.quantity').textContent);
+                
+                if (change < 0 && currentQuantity <= 1) {
+                    return;
+                }
+
                 fetch(`/cart/update/${itemId}`, {
                     method: 'POST',
                     headers: {
@@ -91,26 +119,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const item = document.querySelector(`.cart-item[data-id="${itemId}"]`);
-                        if (data.quantity > 0) {
-                            item.querySelector('.quantity').textContent = data.quantity;
-                            item.querySelector('.item-total').textContent = 
-                                `${data.itemTotal.toFixed(2).replace('.', ',')} €`;
-                        } else {
-                            item.remove();
-                        }
+                        item.querySelector('.quantity').textContent = data.quantity;
+                        item.querySelector('.item-total').textContent = 
+                            `${data.itemTotal.toFixed(2).replace('.', ',')} €`;
                         
                         updateCartTotals(data.total);
                         updateCartCount(data.itemCount);
-                        
-                        if (data.itemCount === 0) {
-                            location.reload();
-                        }
                     }
                 })
                 .catch(error => {
                     console.error('Erreur:', error);
-                    alert('Une erreur est survenue lors de la mise à jour du panier');
                 });
             }
 

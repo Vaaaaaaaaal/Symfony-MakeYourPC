@@ -143,12 +143,12 @@ class CartController extends AbstractController
 
             $newQuantity = $cartItem->getQuantity() + $change;
             
-            if ($newQuantity <= 0) {
-                $entityManager->remove($cartItem);
-            } else {
-                $cartItem->setQuantity($newQuantity);
+            // Empêcher la quantité d'être inférieure à 1
+            if ($newQuantity < 1) {
+                $newQuantity = 1;
             }
             
+            $cartItem->setQuantity($newQuantity);
             $entityManager->flush();
 
             // Calculer les nouveaux totaux
@@ -158,15 +158,12 @@ class CartController extends AbstractController
                 $total += $item->getProduct()->getPrice() * $item->getQuantity();
             }
 
-            // Compter uniquement le nombre de produits différents
-            $itemCount = count($cart->getItems());
-
             return new JsonResponse([
                 'success' => true,
                 'quantity' => $newQuantity,
                 'itemTotal' => $itemTotal,
                 'total' => $total,
-                'itemCount' => $itemCount
+                'itemCount' => count($cart->getItems())
             ]);
         } catch (\Exception $e) {
             return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
