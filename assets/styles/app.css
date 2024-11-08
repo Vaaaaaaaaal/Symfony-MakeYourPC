@@ -1004,6 +1004,702 @@ footer {
   }
 }
 
+/* Styles pour les messages d'erreur de formulaire */
+.form-error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  list-style: none;
+  padding: 0;
+}
+
+.form-error > li {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+}
+
+/* Style spécifique pour l'erreur de correspondance des mots de passe */
+.password-mismatch {
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #e74c3c;
+  color: #e74c3c;
+}
+
+/* Mise en évidence des champs de mot de passe en cas d'erreur */
+.password-error input {
+  border-color: #e74c3c;
+}
+
+/* Animation pour attirer l'attention sur l'erreur */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+.alert-danger {
+  font-size: 0.85rem;
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Style pour les messages flash */
+.alert {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border-left: 3px solid;
+}
+
+.alert-danger {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.alert-success {
+  background-color: rgba(46, 204, 113, 0.1);
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+/* Animation pour les messages d'erreur */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+.alert-danger {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Style pour le champ de mot de passe avec l'œil */
+.password-group {
+  position: relative;
+}
+
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #b3d1d3;
+  padding: 5px;
+}
+
+.password-toggle:hover {
+  color: #3498db;
+}
+
+.password-input {
+  padding-right: 40px !important;
+}
+
+/* Styles pour la gestion des utilisateurs */
+.manage-users {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.user-table th,
+.user-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.user-table th {
+  color: #6294c6;
+  font-weight: bold;
+  background-color: #1a1a1a;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.user-table td {
+  color: #b3d1d3;
+}
+
+.user-table .actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action.edit {
+  color: #3498db;
+}
+
+.btn-action.delete {
+  color: #e74c3c;
+}
+
+.btn-action:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.btn-action i {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2px;
+}
+
+/* Ajoutez ces styles à la fin du fichier */
+.role-select {
+  background-color: #333;
+  color: #b3d1d3;
+  border: 1px solid #444;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.role-select option {
+  background-color: #222222;
+  color: #b3d1d3;
+}
+
+/* Ajoutez ces styles pour le select désactivé */
+.role-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #2a2a2a;
+}
+
+/* Styles pour les modales */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.modal-content h2 {
+  color: #6294c6;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+
+.modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #b3d1d3;
+}
+
+.modal .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.modal .form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.product-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  background-color: #222222;
+  border-radius: 12px;
+  padding: 3rem;
+  margin: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  margin: 1rem;
+}
+
+.product-info h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.product-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.product-type {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.product-rating {
+  color: #ffd700;
+}
+
+.product-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  margin: 1rem 0;
+}
+
+.product-stock {
+  margin: 1rem 0;
+  padding: 1rem 0;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.product-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  background-color: #222222;
+  border-radius: 12px;
+  padding: 3rem;
+  margin: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-container {
+  position: relative;
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  margin: 1rem;
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  margin: 1rem;
+}
+
+.product-header {
+  margin-bottom: 1rem;
+}
+
+.product-category {
+  display: inline-block;
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.product-info h1 {
+  font-size: 2.5rem;
+  color: #b3d1d3;
+  margin: 1rem 0;
+  line-height: 1.2;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.star {
+  width: 24px;
+  height: 24px;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.rating-value {
+  color: #b3d1d3;
+  font-size: 1.1rem;
+  margin-left: 0.5rem;
+}
+
+.product-price {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #6294c6;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: baseline;
+}
+
+.product-price::after {
+  content: "€";
+  font-size: 2rem;
+  margin-left: 0.5rem;
+}
+
+.product-stock {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  margin: 1rem 0;
+}
+
+.product-stock.in-stock {
+  color: #2ecc71;
+  border-left: 4px solid #2ecc71;
+}
+
+.product-stock.out-of-stock {
+  color: #e74c3c;
+  border-left: 4px solid #e74c3c;
+}
+
+.product-stock svg {
+  width: 24px;
+  height: 24px;
+}
+
+.product-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.quantity-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.quantity-btn i {
+  color: white;
+  stroke: white;
+  width: 18px;
+  height: 18px;
+}
+
+.quantity-btn:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.quantity-btn:active {
+  transform: scale(0.95);
+}
+
+.quantity-selector input {
+  width: 70px;
+  text-align: center;
+  border: none;
+  background: none;
+  color: #b3d1d3;
+  font-size: 1.1rem;
+  padding: 0.75rem;
+  -moz-appearance: textfield;
+  margin: 0;
+}
+
+.quantity-selector input::-webkit-outer-spin-button,
+.quantity-selector input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.add-to-cart-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.add-to-cart-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Section produits similaires */
+.related-products {
+  margin-top: 4rem;
+  padding: 2rem;
+  background-color: #222222;
+  border-radius: 12px;
+}
+
+.related-products h2 {
+  color: #6294c6;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #333;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.product-tile {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+}
+
+.product-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.product-tile img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.product-tile h4 {
+  color: #b3d1d3;
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  height: 2.8em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-tile .rating {
+  margin: 0.5rem 0;
+}
+
+.product-tile .price-card {
+  display: inline-block;
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .product-main {
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-main {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image-container {
+    min-height: 300px;
+  }
+
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .quantity-selector {
+    width: 100%;
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .product-price {
+    font-size: 2.5rem;
+  }
+
+  .product-info h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-detail {
+    margin: 60px auto;
+    padding: 1rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+
+  .product-image-container {
+    min-height: 250px;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Styles pour la page d'administration */
 .admin-dashboard {
   margin-top: 2rem;
@@ -1469,7 +2165,6 @@ footer {
 .item-quantity {
   display: flex;
   align-items: center;
-  margin: 0 1rem;
 }
 
 .quantity-btn {
@@ -1487,14 +2182,13 @@ footer {
 }
 
 .quantity {
-  margin: 0 0.5rem;
-  font-weight: bold;
+  margin: 0 1rem;
+  color: #b3d1d3;
 }
 
 .item-total {
   font-weight: bold;
   color: #3498db;
-  margin-right: 1rem;
 }
 
 .remove-item {
@@ -1649,290 +2343,28 @@ footer {
   }
 }
 
-/* Styles pour les messages d'erreur de formulaire */
-.form-error {
-  color: #e74c3c;
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
-  list-style: none;
-  padding: 0;
+.rating-stars {
+  display: inline-flex;
+  gap: 0.25rem;
 }
 
-.form-error > li {
-  color: #e74c3c;
-  font-size: 0.85rem;
-  padding: 0.25rem 0;
-}
-
-/* Style spécifique pour l'erreur de correspondance des mots de passe */
-.password-mismatch {
-  font-size: 0.85rem;
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  background-color: rgba(231, 76, 60, 0.1);
-  border-radius: 4px;
-  border-left: 3px solid #e74c3c;
-  color: #e74c3c;
-}
-
-/* Mise en évidence des champs de mot de passe en cas d'erreur */
-.password-error input {
-  border-color: #e74c3c;
-}
-
-/* Animation pour attirer l'attention sur l'erreur */
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-3px);
-  }
-  75% {
-    transform: translateX(3px);
-  }
-}
-
-.alert-danger {
-  font-size: 0.85rem;
-  animation: shake 0.4s ease-in-out;
-}
-
-/* Style pour les messages flash */
-.alert {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  border-left: 3px solid;
-}
-
-.alert-danger {
-  background-color: rgba(231, 76, 60, 0.1);
-  border-color: #e74c3c;
-  color: #e74c3c;
-}
-
-.alert-success {
-  background-color: rgba(46, 204, 113, 0.1);
-  border-color: #2ecc71;
-  color: #2ecc71;
-}
-
-/* Animation pour les messages d'erreur */
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-3px);
-  }
-  75% {
-    transform: translateX(3px);
-  }
-}
-
-.alert-danger {
-  animation: shake 0.4s ease-in-out;
-}
-
-/* Style pour le champ de mot de passe avec l'œil */
-.password-group {
-  position: relative;
-}
-
-.password-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+.rating-stars.interactive .star {
   cursor: pointer;
-  color: #b3d1d3;
-  padding: 5px;
+  transition: transform 0.1s ease;
 }
 
-.password-toggle:hover {
-  color: #3498db;
+.rating-stars.interactive .star:hover {
+  transform: scale(1.2);
 }
 
-.password-input {
-  padding-right: 40px !important;
+.star.filled {
+  color: #ffd700;
+  stroke: #ffd700;
 }
 
-/* Styles pour la gestion des utilisateurs */
-.manage-users {
-  background-color: #222222;
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-
-.user-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.user-table th,
-.user-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #444;
-}
-
-.user-table th {
-  color: #6294c6;
-  font-weight: bold;
-  background-color: #1a1a1a;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.user-table td {
-  color: #b3d1d3;
-}
-
-.user-table .actions {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.btn-action {
-  background: none;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-action.edit {
-  color: #3498db;
-}
-
-.btn-action.delete {
-  color: #e74c3c;
-}
-
-.btn-action:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
-}
-
-.btn-action i {
-  width: 20px;
-  height: 20px;
-  stroke-width: 2px;
-}
-
-/* Ajoutez ces styles à la fin du fichier */
-.role-select {
-  background-color: #333;
-  color: #b3d1d3;
-  border: 1px solid #444;
-  padding: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.role-select:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-.role-select option {
-  background-color: #222222;
-  color: #b3d1d3;
-}
-
-/* Ajoutez ces styles pour le select désactivé */
-.role-select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background-color: #2a2a2a;
-}
-
-/* Styles pour les modales */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: #222222;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-}
-
-.modal-content h2 {
-  color: #6294c6;
-  margin-bottom: 1.5rem;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.btn-delete {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-delete:hover {
-  background-color: #c0392b;
-}
-
-.modal .form-group {
-  margin-bottom: 1rem;
-}
-
-.modal .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #b3d1d3;
-}
-
-.modal .form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #333;
-  border: 1px solid #444;
-  color: #fff;
-  border-radius: 4px;
-}
-
-.modal .form-group input:focus {
-  outline: none;
-  border-color: #3498db;
+.rating-stars.interactive .star:hover ~ .star {
+  color: initial;
+  stroke: initial;
 }
 
 .notification {

@@ -61,20 +61,19 @@
                     </div>
                 {% else %}
                     {% for product in products %}
-                        <div class="product-tile" data-product-id="{{ product.id }}">
+                        <div class="product-tile" onclick="window.location.href='{{ path('app_product_detail', {id: product.id}) }}'" style="cursor: pointer;">
                             <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
                             <h4>{{ product.name }}</h4>
                             <div class="rating">
+                                {% set rating = product.rating %}
                                 {% for i in 1..5 %}
-                                    {% if i <= product.rating %}
+                                    {% if i <= rating %}
                                         <i data-lucide="star" class="star filled"></i>
-                                    {% elseif i <= product.rating + 0.5 %}
-                                        <i data-lucide="star-half" class="star filled"></i>
                                     {% else %}
                                         <i data-lucide="star" class="star"></i>
                                     {% endif %}
                                 {% endfor %}
-                                <span class="rating-value ml-2">{{ product.rating|number_format(1) }}</span>
+                                <span class="rating-value ml-2">{{ rating|number_format(1) }}</span>
                             </div>
                             <div class="price-card">{{ product.price|number_format(2, ',', ' ') }} €</div>
                             <p class="type">{{ product.type }}</p>

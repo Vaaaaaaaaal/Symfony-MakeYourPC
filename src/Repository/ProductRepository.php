@@ -70,4 +70,11 @@ class ProductRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function updateRating(Product $product, float $newRating): void
+    {
+        $product->setRating($newRating);
+        $this->getEntityManager()->persist($product);
+        $this->getEntityManager()->flush();
+    }
 }

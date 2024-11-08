@@ -15,9 +15,19 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Form\ProductType;
+use App\Repository\ReviewRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Entity\Review;
 
 class ProductController extends AbstractController
 {
+    private $productRepository;
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     #[Route('/products', name: 'app_products')]
     public function index(Request $request, ProductRepository $productRepository): Response
     {
@@ -249,6 +259,83 @@ class ProductController extends AbstractController
                 'success' => false, 
                 'message' => 'Erreur lors de la suppression: ' . $e->getMessage()
             ], 500);
+        }
+    }
+    
+    #[Route('/product/{id}', name: 'app_product_detail')]
+    public function detailProduct(Product $product): Response
+    {
+        return $this->render('product/details.html.twig', [  // ← C'est ce fichier
+            'product' => $product,
+            'relatedProducts' => $this->productRepository->findBy(
+                ['type' => $product->getType()],
+                ['createdAt' => 'DESC'],
+                4
+            )
+        ]);
+    }
+
+    #[Route('/api/product/rate', name: 'app_product_rate', methods: ['POST'])]
+    public function rateProduct(Request $request, ReviewRepository $reviewRepository): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        
+        $data = json_decode($request->getContent(), true);
+        $productId = $data['productId'] ?? null;
+        $rating = $data['rating'] ?? null;
+        
+        if (!$productId || !$rating) {
+            return new JsonResponse(['error' => 'Données manquantes'], 400);
+        }
+        
+        try {
+            $product = $this->productRepository->find($productId);
+            if (!$product) {
+                throw new NotFoundHttpException('Produit non trouvé');
+            }
+            
+            // Vérifier si l'utilisateur a déjà noté ce produit
+            $existingReview = $reviewRepository->findOneBy([
+                'user' => $this->getUser(),
+                'product' => $product
+            ]);
+
+            if ($existingReview) {
+                // Mettre à jour la note existante
+                $existingReview->setRating((int)$rating);
+                $reviewRepository->save($existingReview, true);
+            } else {
+                // Créer une nouvelle note
+                $review = new Review();
+                $review->setUser($this->getUser());
+                $review->setProduct($product);
+                $review->setRating((int)$rating);
+                $review->setCreatedAt(new \DateTimeImmutable());
+                
+                $reviewRepository->save($review, true);
+            }
+            
+            // Calculer la nouvelle moyenne
+            $reviews = $reviewRepository->findBy(['product' => $product]);
+            $total = 0;
+            $count = count($reviews);
+            
+            foreach ($reviews as $review) {
+                $total += $review->getRating();
+            }
+            
+            $newAverage = $count > 0 ? $total / $count : 0;
+            
+            // Mettre à jour la note moyenne du produit
+            $product->setRating($newAverage);
+            $this->entityManager->flush();
+            
+            return new JsonResponse([
+                'success' => true,
+                'newRating' => round($newAverage, 1)
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Une erreur est survenue'], 500);
         }
     }
 }
