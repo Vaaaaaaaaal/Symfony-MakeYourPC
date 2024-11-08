@@ -59,14 +59,23 @@
                             <button type="button" class="quantity-btn" data-action="decrease">
                                 <i data-lucide="minus"></i>
                             </button>
-                            <input type="number" value="1" min="1" max="{{ product.stock }}" id="quantity">
+                            <input type="number" 
+                                   value="{{ cartQuantity > 0 ? cartQuantity : 1 }}" 
+                                   min="1" 
+                                   max="{{ product.stock }}" 
+                                   id="quantity"
+                                   data-current-quantity="{{ cartQuantity }}">
                             <button type="button" class="quantity-btn" data-action="increase">
                                 <i data-lucide="plus"></i>
                             </button>
                         </div>
                         <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
                             <i data-lucide="shopping-cart"></i>
-                            Ajouter au panier
+                            {% if cartQuantity > 0 %}
+                                Mettre à jour le panier
+                            {% else %}
+                                Ajouter au panier
+                            {% endif %}
                         </button>
                     </div>
                 {% endif %}
@@ -78,89 +87,132 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
+        // Assurons-nous que le code ne s'exécute qu'une seule fois
+        if (!window.cartInitialized) {
+            window.cartInitialized = true;
             
-            const quantityInput = document.getElementById('quantity');
-            const maxStock = {{ product.stock }};
-            
-            function updateQuantity(action) {
-                let currentValue = parseInt(quantityInput.value) || 1;
+            document.addEventListener('DOMContentLoaded', function() {
+                lucide.createIcons();
                 
-                if (action === 'decrease' && currentValue > 1) {
-                    quantityInput.value = currentValue - 1;
-                } else if (action === 'increase' && currentValue < maxStock) {
-                    quantityInput.value = currentValue + 1;
-                }
-            }
+                const quantityInput = document.getElementById('quantity');
+                const decreaseBtn = document.querySelector('[data-action="decrease"]');
+                const increaseBtn = document.querySelector('[data-action="increase"]');
+                const addToCartBtn = document.querySelector('.add-to-cart-btn');
+                const cartQuantityBadge = document.querySelector('.cart-quantity');
+                
+                // Supprimer les anciens écouteurs d'événements s'ils existent
+                const clearListeners = (element) => {
+                    if (element) {
+                        const newElement = element.cloneNode(true);
+                        element.parentNode.replaceChild(newElement, element);
+                        return newElement;
+                    }
+                    return null;
+                };
 
-            document.querySelectorAll('.quantity-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    updateQuantity(this.dataset.action);
-                });
-            });
-
-            quantityInput.addEventListener('change', function() {
-                let value = parseInt(this.value);
-                if (isNaN(value) || value < 1) {
-                    this.value = 1;
-                } else if (value > maxStock) {
-                    this.value = maxStock;
-                }
-            });
-
-            // Système de notation
-            const ratingContainer = document.querySelector('.rating-stars.interactive');
-            if (!ratingContainer) return;
-
-            const stars = ratingContainer.querySelectorAll('.star');
-            const productId = document.querySelector('.product-rating').dataset.productId;
-
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    const rating = this.dataset.rating;
-                    
-                    fetch('/review/rate', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({
-                            productId: parseInt(productId),
-                            rating: parseInt(rating)
-                        })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur réseau');
+                // Réinitialiser les écouteurs
+                const newDecreaseBtn = clearListeners(decreaseBtn);
+                const newIncreaseBtn = clearListeners(increaseBtn);
+                const newQuantityInput = clearListeners(quantityInput);
+                const newAddToCartBtn = clearListeners(addToCartBtn);
+                
+                // Gestion des boutons + et -
+                if (newDecreaseBtn && newIncreaseBtn && newQuantityInput) {
+                    newDecreaseBtn.addEventListener('click', function() {
+                        const currentValue = parseInt(newQuantityInput.value);
+                        if (currentValue > 1) {
+                            newQuantityInput.value = currentValue - 1;
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            // Mise à jour visuelle
-                            stars.forEach(s => {
-                                s.classList.remove('filled');
-                                if (s.dataset.rating <= rating) {
-                                    s.classList.add('filled');
-                                }
-                            });
-                            const ratingValue = document.querySelector('.rating-value');
-                            if (ratingValue) {
-                                ratingValue.textContent = `${data.newRating}/5`;
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue lors de la notation');
                     });
-                });
+
+                    newIncreaseBtn.addEventListener('click', function() {
+                        const currentValue = parseInt(newQuantityInput.value);
+                        const maxStock = parseInt(newQuantityInput.getAttribute('max'));
+                        if (currentValue < maxStock) {
+                            newQuantityInput.value = currentValue + 1;
+                        }
+                    });
+
+                    // Validation de l'input manuel
+                    newQuantityInput.addEventListener('change', function() {
+                        let value = parseInt(this.value);
+                        const max = parseInt(this.getAttribute('max'));
+                        if (isNaN(value) || value < 1) value = 1;
+                        if (value > max) value = max;
+                        this.value = value;
+                    });
+                }
+
+                // Gestion de l'ajout au panier
+                if (newAddToCartBtn) {
+                    newAddToCartBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Désactiver le bouton pendant la requête
+                        this.disabled = true;
+                        
+                        const productId = this.dataset.productId;
+                        const quantity = parseInt(newQuantityInput.value) || 1;
+
+                        fetch('/cart/add/' + productId, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ 
+                                quantity: quantity
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Mettre à jour la quantité actuelle
+                                newQuantityInput.dataset.currentQuantity = quantity;
+                                
+                                // Mettre à jour le texte du bouton
+                                newAddToCartBtn.innerHTML = `
+                                    <i data-lucide="shopping-cart"></i>
+                                    Mettre à jour le panier
+                                `;
+                                lucide.createIcons();
+                                
+                                // Mettre à jour le badge du panier
+                                if (cartQuantityBadge) {
+                                    cartQuantityBadge.textContent = data.cartQuantity;
+                                    cartQuantityBadge.style.display = data.cartQuantity > 0 ? 'flex' : 'none';
+                                }
+
+                                // Notification de succès
+                                const notification = document.createElement('div');
+                                notification.className = 'notification success';
+                                notification.innerHTML = `
+                                    <div class="notification-content">
+                                        <span>${data.message}</span>
+                                    </div>
+                                `;
+                                document.body.appendChild(notification);
+                                setTimeout(() => notification.remove(), 3000);
+                            }
+                        })
+                        .catch(error => {
+                            const notification = document.createElement('div');
+                            notification.className = 'notification error';
+                            notification.innerHTML = `
+                                <div class="notification-content">
+                                    <span>${error.message || 'Une erreur est survenue'}</span>
+                                </div>
+                            `;
+                            document.body.appendChild(notification);
+                            setTimeout(() => notification.remove(), 3000);
+                        })
+                        .finally(() => {
+                            // Réactiver le bouton après la requête
+                            this.disabled = false;
+                        });
+                    });
+                }
             });
-        });
+        }
     </script>
 {% endblock %}

@@ -52,6 +52,9 @@ class CartController extends AbstractController
         EntityManagerInterface $entityManager
     ): JsonResponse {
         try {
+            $data = json_decode($request->getContent(), true);
+            $newQuantity = $data['quantity'] ?? 1;
+
             $user = $this->getUser();
             if (!$user) {
                 throw new \Exception('Utilisateur non connecté');
@@ -62,21 +65,16 @@ class CartController extends AbstractController
                 throw new \Exception('Produit non trouvé');
             }
 
-            // Débogage
-            dump([
-                'user' => $user,
-                'product_id' => $product->getId(),
-                'product_name' => $product->getName()
-            ]);
+            // Vérifier si la nouvelle quantité est disponible en stock
+            if ($product->getStock() < $newQuantity) {
+                throw new \Exception('Stock insuffisant');
+            }
 
             $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
             if (!$cart) {
                 $cart = new Cart();
                 $cart->setUser($user);
                 $entityManager->persist($cart);
-                
-                // Débogage
-                dump('Nouveau panier créé');
             }
 
             $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
@@ -85,31 +83,39 @@ class CartController extends AbstractController
             ]);
 
             if ($cartItem) {
-                $cartItem->setQuantity($cartItem->getQuantity() + 1);
-                dump('Quantité mise à jour');
+                // Mettre à jour directement avec la nouvelle quantité
+                $cartItem->setQuantity($newQuantity);
             } else {
+                // Créer un nouveau CartItem
                 $cartItem = new CartItem();
                 $cartItem->setCart($cart)
                         ->setProduct($product)
-                        ->setQuantity(1);
+                        ->setQuantity($newQuantity);
                 $entityManager->persist($cartItem);
-                dump('Nouvel item ajouté');
             }
 
             $entityManager->flush();
-            dump('Sauvegarde effectuée');
+
+            // Calculer la quantité totale dans le panier
+            $totalQuantity = array_reduce(
+                $cart->getItems()->toArray(),
+                function($sum, $item) {
+                    return $sum + $item->getQuantity();
+                },
+                0
+            );
 
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Produit ajouté au panier',
-                'cartCount' => count($cart->getItems())
+                'message' => 'Panier mis à jour',
+                'cartQuantity' => $totalQuantity
             ]);
+
         } catch (\Exception $e) {
-            dump('Erreur:', $e->getMessage());
             return new JsonResponse([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
-            ], 500);
+                'message' => $e->getMessage()
+            ], 400);
         }
     }
 
@@ -220,5 +226,22 @@ class CartController extends AbstractController
                 'message' => 'Une erreur est survenue lors de la suppression'
             ], 500);
         }
+    }
+
+    private function isDuplicateRequest(?string $requestId): bool
+    {
+        if (!$requestId) {
+            return false;
+        }
+
+        $cache = $this->cache; // Injectez le service de cache
+        $key = 'request_' . $requestId;
+        
+        if ($cache->has($key)) {
+            return true;
+        }
+        
+        $cache->set($key, true, 60); // Cache pour 60 secondes
+        return false;
     }
 }
