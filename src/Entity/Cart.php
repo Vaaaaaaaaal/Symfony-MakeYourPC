@@ -91,4 +91,13 @@ class Cart
         // On retourne le nombre de produits uniques
         return count($uniqueProductIds);
     }
+
+    public function getTotal(): float
+    {
+        $total = 0;
+        foreach ($this->items as $item) {
+            $total += $item->getProduct()->getPrice() * $item->getQuantity();
+        }
+        return $total;
+    }
 }

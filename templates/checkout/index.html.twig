@@ -2,6 +2,16 @@
 
 {% block title %}Paiement - MakeYourPC{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/checkout.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <h1 class="my-4">Finaliser votre commande</h1>
@@ -42,16 +52,68 @@
                         </div>
                     </div>
 
+                    <div class="payment-info mt-4">
+                        <h2>Informations de paiement</h2>
+                        <div class="form-group">
+                            {{ form_row(form.cardNumber, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'autocomplete': 'cc-number'
+                                }
+                            }) }}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form_row(form.cardExpiry, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'autocomplete': 'cc-exp'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {{ form_row(form.cardCvc, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'autocomplete': 'cc-csc'
+                                    }
+                                }) }}
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn-checkout mt-4">
-                        Procéder au paiement
-                        <i data-lucide="arrow-right"></i>
+                        Valider le paiement
+                        <i data-lucide="credit-card"></i>
                     </button>
                 {{ form_end(form) }}
             </div>
 
             <div class="order-summary">
                 <h2>Récapitulatif de la commande</h2>
-                <!-- Le récapitulatif sera ajouté dynamiquement via JavaScript -->
+                <div class="cart-items">
+                    {% set total = 0 %}
+                    {% for item in cart.items %}
+                        {% set itemTotal = item.product.price * item.quantity %}
+                        {% set total = total + itemTotal %}
+                        <div class="cart-item">
+                            <div class="item-details">
+                                <h4>{{ item.product.name }}</h4>
+                                <p>Quantité: {{ item.quantity }}</p>
+                                <p>Prix unitaire: {{ item.product.price|number_format(2, ',', ' ') }} €</p>
+                            </div>
+                            <div class="item-total">
+                                {{ itemTotal|number_format(2, ',', ' ') }} €
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="cart-total">
+                    <h3>Total</h3>
+                    <div class="total-amount">
+                        {{ total|number_format(2, ',', ' ') }} €
+                    </div>
+                </div>
             </div>
         </div>
     </div>
