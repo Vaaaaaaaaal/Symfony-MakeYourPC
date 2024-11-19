@@ -41,7 +41,10 @@
 
                     <div class="shipping-info mt-4">
                         <h2>Adresse de livraison</h2>
-                        {{ form_row(form.address) }}
+
+                        <div class="form-group">
+                            {{ form_row(form.address) }}
+                        </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 {{ form_row(form.city) }}
@@ -102,15 +105,12 @@
                                 <p>Quantité: {{ item.quantity }}</p>
                                 <p>Prix unitaire: {{ item.product.price|number_format(2, ',', ' ') }} €</p>
                             </div>
-                            <div class="item-total">
-                                {{ itemTotal|number_format(2, ',', ' ') }} €
-                            </div>
                         </div>
                     {% endfor %}
                 </div>
                 <div class="cart-total">
                     <h3>Total</h3>
-                    <div class="total-amount">
+                    <div class="item-total">
                         {{ total|number_format(2, ',', ' ') }} €
                     </div>
                 </div>

@@ -2472,27 +2472,36 @@ footer {
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   color: #b3d1d3;
+  font-weight: 500;
 }
 
 .form-group input {
-  width: 100%;
-  padding: 0.5rem;
+  width: 90%;
+  padding: 0.8rem 1rem;
   border: 1px solid #3498db;
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: #333333;
   color: white;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2980b9;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .btn-checkout {
@@ -2706,4 +2715,86 @@ footer {
 
 .btn-secondary:hover {
   background-color: #2980b9;
+}
+
+/* Style du récapitulatif de commande */
+.order-summary {
+  background-color: #222222;
+  padding: 2rem;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.order-summary h2 {
+  color: #6294c6;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+/* Style des items dans le récapitulatif */
+.cart-items .cart-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #1a1a1a;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.cart-items .cart-item:hover {
+  transform: translateX(5px);
+}
+
+.cart-items .item-details {
+  flex: 1;
+}
+
+.cart-items .item-details h4 {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.cart-items .item-details p {
+  color: #b3d1d3;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+/* Style du total */
+.cart-total {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 2px solid #333;
+}
+
+.cart-total h3 {
+  color: #b3d1d3;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.cart-total .item-total {
+  color: #3498db;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .order-summary {
+    margin-top: 2rem;
+  }
+
+  .cart-items .cart-item {
+    padding: 0.75rem;
+  }
+
+  .cart-items .item-details h4 {
+    font-size: 1rem;
+  }
 }
