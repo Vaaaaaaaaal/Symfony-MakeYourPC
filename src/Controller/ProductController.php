@@ -18,6 +18,8 @@ use App\Form\ProductType;
 use App\Repository\ReviewRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\Review;
+use App\Entity\Cart;
+use App\Entity\CartItem;
 
 class ProductController extends AbstractController
 {
@@ -263,15 +265,34 @@ class ProductController extends AbstractController
     }
     
     #[Route('/product/{id}', name: 'app_product_detail')]
-    public function detailProduct(Product $product): Response
-    {
-        return $this->render('product/details.html.twig', [  // ← C'est ce fichier
+    public function detail(
+        int $id, 
+        ProductRepository $productRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $product = $productRepository->find($id);
+        if (!$product) {
+            throw $this->createNotFoundException('Produit non trouvé');
+        }
+
+        // Récupérer la quantité dans le panier pour ce produit
+        $cartQuantity = 0;
+        if ($this->getUser()) {
+            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $this->getUser()]);
+            if ($cart) {
+                $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
+                    'cart' => $cart,
+                    'product' => $product
+                ]);
+                if ($cartItem) {
+                    $cartQuantity = $cartItem->getQuantity();
+                }
+            }
+        }
+
+        return $this->render('product/details.html.twig', [
             'product' => $product,
-            'relatedProducts' => $this->productRepository->findBy(
-                ['type' => $product->getType()],
-                ['createdAt' => 'DESC'],
-                4
-            )
+            'cartQuantity' => $cartQuantity
         ]);
     }
 
