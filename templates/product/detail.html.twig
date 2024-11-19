@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="product-detail">
+            <div class="product-image">
+                <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
+            </div>
+            
+            <div class="product-info">
+                <h1>{{ product.name }}</h1>
+                
+                <div class="product-meta">
+                    <div class="rating">
+                        {% set rating = product.rating %}
+                        {% for i in 1..5 %}
+                            {% if i <= rating %}
+                                <i data-lucide="star" class="star filled"></i>
+                            {% else %}
+                                <i data-lucide="star" class="star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="rating-value">{{ rating|number_format(1) }}</span>
+                    </div>
+                    
+                    <div class="product-type">
+                        <i data-lucide="tag"></i>
+                        <span>{{ product.type.name }}</span>
+                    </div>
+                </div>
+                
+                <div class="price">{{ product.price|number_format(2, ',', ' ') }} €</div>
+                
+                <div class="stock-status">
+                    {% if product.stock > 0 %}
+                        <span class="in-stock">En stock ({{ product.stock }})</span>
+                    {% else %}
+                        <span class="out-of-stock">Rupture de stock</span>
+                    {% endif %}
+                </div>
+                
+                {% if product.stock > 0 %}
+                    <button class="btn-add-to-cart" type="button" data-product-id="{{ product.id }}">
+                        <i data-lucide="shopping-cart"></i>
+                        Ajouter au panier
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToCartButton = document.querySelector('.btn-add-to-cart');
+            
+            if (addToCartButton) {
+                addToCartButton.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    
+                    fetch(`/cart/add/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token('add-to-cart') }}',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const cartCount = document.querySelector('.cart-count');
+                            if (cartCount) {
+                                cartCount.textContent = data.cartCount;
+                                cartCount.style.display = data.cartCount > 0 ? 'inline-block' : 'none';
+                            }
+                            showNotification('Produit ajouté au panier', 'success');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('Erreur lors de l\'ajout au panier', 'error');
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %} 
