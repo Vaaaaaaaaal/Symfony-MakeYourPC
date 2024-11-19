@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ProductController extends AbstractController
 {
@@ -55,6 +56,62 @@ class ProductController extends AbstractController
     public function detail(Product $product): Response
     {
         return $this->render('product/detail.html.twig', [
+            'product' => $product
+        ]);
+    }
+
+    #[Route('/admin/product/add', name: 'app_add_product')]
+    public function addProduct(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $product = new Product();
+        $form = $this->createForm(ProductType::class, $product);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($product);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Le produit a été ajouté avec succès');
+            return $this->redirectToRoute('app_admin_products');
+        }
+        
+        return $this->render('admin/add_product.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/admin/product/add/confirm', name: 'app_add_product_confirm')]
+    public function confirmAddProduct(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        // Logique de confirmation ici
+        
+        return $this->redirectToRoute('app_admin_products');
+    }
+
+    #[Route('/admin/product/{id}/edit', name: 'app_edit_product')]
+    public function editProduct(
+        Product $product, 
+        Request $request, 
+        EntityManagerInterface $entityManager
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $form = $this->createForm(ProductType::class, $product);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Le produit a été modifié avec succès');
+            return $this->redirectToRoute('app_admin_products');
+        }
+        
+        return $this->render('admin/edit_product.html.twig', [
+            'form' => $form->createView(),
             'product' => $product
         ]);
     }
