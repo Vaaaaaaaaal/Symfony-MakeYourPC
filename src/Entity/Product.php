@@ -39,6 +39,10 @@ class Product
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Review::class)]
     private Collection $reviews;
 
+    #[ORM\ManyToOne(targetEntity: Type::class, inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Type $type = null;
+
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
@@ -123,5 +127,16 @@ class Product
     public function getReviews(): Collection
     {
         return $this->reviews;
+    }
+
+    public function getType(): ?Type
+    {
+        return $this->type;
+    }
+
+    public function setType(?Type $type): static
+    {
+        $this->type = $type;
+        return $this;
     }
 }
