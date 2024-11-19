@@ -38,9 +38,9 @@
                                 </select>
                             {% endif %}
                         </td>
-                        <td class="actions">
+                        <td class="actions-container">
                             <button class="btn-action edit" title="Modifier">
-                                <i data-lucide="edit"></i>
+                                <i class="fas fa-edit"></i>
                             </button>
                             {% if not user.isAdmin and user.id != app.user.id %}
                                 <button class="btn-action delete" title="Supprimer">
