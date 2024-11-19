@@ -44,21 +44,46 @@ class UserController extends AbstractController
     #[Route('/admin', name: 'app_admin')]
     public function adminDashboard(
         UserRepository $userRepository,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        EntityManagerInterface $entityManager
     ): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        // Ajoutez ici la logique pour récupérer les statistiques et les données ncessaires
+        // Récupérer le nombre total de commandes
+        $orderCount = $entityManager->createQueryBuilder()
+            ->select('COUNT(o.id)')
+            ->from('App\Entity\Order', 'o')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Récupérer la somme totale des commandes
+        $totalRevenue = $entityManager->createQueryBuilder()
+            ->select('SUM(o.totalAmount)')
+            ->from('App\Entity\Order', 'o')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0.00;
+
+        // Récupérer les 5 dernières commandes
+        $recentOrders = $entityManager->createQueryBuilder()
+            ->select('o, u')
+            ->from('App\Entity\Order', 'o')
+            ->join('o.user', 'u')
+            ->orderBy('o.createdAt', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
         $stats = [
             'users' => $userRepository->count(['isAdmin' => false]),
-            'orders' => 0,
-            'revenue' => 0.00,
+            'orders' => $orderCount,
+            'revenue' => $totalRevenue,
             'products' => $productRepository->count([]),
         ];
 
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
+            'recentOrders' => $recentOrders,
         ]);
     }
 

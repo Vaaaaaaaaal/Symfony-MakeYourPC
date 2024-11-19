@@ -144,4 +144,37 @@ class CheckoutController extends AbstractController
     {
         return $this->render('checkout/confirmation.html.twig');
     }
+
+    #[Route('/admin/order/{id}/view', name: 'app_admin_order_view')]
+    public function viewOrder(Order $order): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        return $this->render('admin/order/view.html.twig', [
+            'order' => $order
+        ]);
+    }
+
+    #[Route('/admin/order/{id}/edit', name: 'app_admin_order_edit')]
+    public function editOrder(
+        Order $order,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $form = $this->createForm(OrderEditType::class, $order);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Commande mise à jour avec succès');
+            return $this->redirectToRoute('app_admin');
+        }
+
+        return $this->render('admin/order/edit.html.twig', [
+            'order' => $order,
+            'form' => $form->createView()
+        ]);
+    }
 }

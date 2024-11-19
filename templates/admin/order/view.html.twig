@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la commande #{{ order.id }} - MakeYourPC{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-4">Détails de la commande #{{ order.id }}</h1>
+        
+        <div class="admin-section">
+            <div class="order-details-grid">
+                <div class="detail-card">
+                    <h2><i data-lucide="info" class="section-icon"></i> Informations de commande</h2>
+                    <div class="detail-content">
+                        <p><strong>Date :</strong> {{ order.createdAt|date('d/m/Y H:i') }}</p>
+                        <p><strong>Total :</strong> {{ order.totalAmount|number_format(2, ',', ' ') }} €</p>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h2><i data-lucide="user" class="section-icon"></i> Client</h2>
+                    <div class="detail-content">
+                        <p><strong>Nom :</strong> {{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
+                        <p><strong>Email :</strong> {{ order.shipping.email }}</p>
+                        <p><strong>Téléphone :</strong> {{ order.shipping.phone }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h2><i data-lucide="map-pin" class="section-icon"></i> Adresse de livraison</h2>
+                    <div class="detail-content">
+                        <p><strong>Adresse :</strong> {{ order.shipping.address }}</p>
+                        <p><strong>Ville :</strong> {{ order.shipping.city }}</p>
+                        <p><strong>Code postal :</strong> {{ order.shipping.postalCode }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card mt-4">
+                <h2><i data-lucide="package" class="section-icon"></i> Produits commandés</h2>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.price|number_format(2, ',', ' ') }} €</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ (item.price * item.quantity)|number_format(2, ',', ' ') }} €</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions mt-4">
+            <a href="{{ path('app_admin') }}" class="btn btn-secondary">
+                <i data-lucide="arrow-left"></i> Retour au tableau de bord
+            </a>
+        </div>
+    </div>
+{% endblock %} 
