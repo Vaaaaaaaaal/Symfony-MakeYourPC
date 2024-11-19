@@ -88,8 +88,8 @@ class ProductController extends AbstractController
                 'full_path' => 'public/images/products/' . $product->getImagePath()
             ]);
         }
-        
         return $this->render('admin/manage_products.html.twig', [
+            
             'products' => $products,
         ]);
     }
@@ -167,51 +167,33 @@ class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/product/edit/{id}', name: 'app_edit_product', methods: ['GET', 'POST'])]
-    public function editProduct(
-        Request $request, 
-        Product $product,
-        EntityManagerInterface $entityManager
-    ): Response
+    #[Route('/admin/product/edit/{id}', name: 'app_edit_product')]
+    public function editProduct(Request $request, Product $product, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                // Gestion de l'image
+            // Gestion de l'image si nécessaire
+            if ($form->has('image') && $form->get('image')->getData()) {
                 $imageFile = $form->get('image')->getData();
-                if ($imageFile) {
-                    // Suppression de l'ancienne image si elle existe
-                    if ($product->getImagePath()) {
-                        $oldImagePath = $this->getParameter('kernel.project_dir') . '/public/images/products/' . $product->getImagePath();
-                        if (file_exists($oldImagePath)) {
-                            unlink($oldImagePath);
-                        }
-                    }
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
 
-                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                    $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
-                    $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-
-                    try {
-                        $imageFile->move(
-                            $this->getParameter('products_directory'),
-                            $newFilename
-                        );
-                        $product->setImagePath($newFilename);
-                    } catch (FileException $e) {
-                        $this->addFlash('error', 'Une erreur est survenue lors du téléchargement de l\'image');
-                        return $this->redirectToRoute('app_edit_product', ['id' => $product->getId()]);
-                    }
+                try {
+                    $imageFile->move(
+                        $this->getParameter('products_directory'),
+                        $newFilename
+                    );
+                    $product->setImagePath($newFilename);
+                } catch (FileException $e) {
+                    // Gérer l'erreur
                 }
-
-                $entityManager->flush();
-                $this->addFlash('success', 'Le produit a été modifié avec succès');
-                return $this->redirectToRoute('app_admin_products');
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Une erreur est survenue lors de la modification du produit');
             }
+
+            $em->flush();
+
+            $this->addFlash('success', 'Le produit a été modifié avec succès');
+            return $this->redirectToRoute('app_admin_products');
         }
 
         return $this->render('admin/edit_product.html.twig', [
@@ -229,7 +211,6 @@ class ProductController extends AbstractController
     ): JsonResponse
     {
         try {
-            // Vérification du jeton CSRF
             if (!$this->isCsrfTokenValid('delete-product', $request->headers->get('X-CSRF-TOKEN'))) {
                 return new JsonResponse([
                     'success' => false,
@@ -246,7 +227,7 @@ class ProductController extends AbstractController
                 ], 404);
             }
 
-            // Suppression de l'image associée si elle existe
+            // Suppression de l'image si elle existe
             if ($product->getImagePath()) {
                 $imagePath = $this->getParameter('kernel.project_dir') . '/public/images/products/' . $product->getImagePath();
                 if (file_exists($imagePath)) {
@@ -254,17 +235,31 @@ class ProductController extends AbstractController
                 }
             }
 
-            $entityManager->remove($product);
-            $entityManager->flush();
-            
-            return new JsonResponse([
-                'success' => true, 
-                'message' => 'Le produit a été supprimé avec succès'
-            ]);
+            // Suppression des relations avant de supprimer le produit
+            $entityManager->beginTransaction();
+            try {
+                // Supprimer d'abord les cartItems associés
+                $cartItems = $entityManager->getRepository(CartItem::class)->findBy(['product' => $product]);
+                foreach ($cartItems as $cartItem) {
+                    $entityManager->remove($cartItem);
+                }
+                
+                $entityManager->remove($product);
+                $entityManager->flush();
+                $entityManager->commit();
+
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Produit supprimé avec succès'
+                ]);
+            } catch (\Exception $e) {
+                $entityManager->rollback();
+                throw $e;
+            }
         } catch (\Exception $e) {
             return new JsonResponse([
-                'success' => false, 
-                'message' => 'Erreur lors de la suppression: ' . $e->getMessage()
+                'success' => false,
+                'message' => 'Erreur lors de la suppression : ' . $e->getMessage()
             ], 500);
         }
     }
