@@ -22,7 +22,6 @@
                     <tr>
                         <th>Image</th>
                         <th>Nom</th>
-                        <th>Type</th>
                         <th>Prix</th>
                         <th>Stock</th>
                         <th>Actions</th>
@@ -181,6 +180,30 @@
                     modal.style.display = 'none';
                 }
             });
+
+            const searchInput = document.getElementById('product-search');
+            const productTable = document.querySelector('.product-table tbody');
+            const productRows = Array.from(productTable.querySelectorAll('tr'));
+
+            const searchProducts = (searchTerm) => {
+                searchTerm = searchTerm.toLowerCase().trim();
+                
+                productRows.forEach(row => {
+                    const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const shouldShow = productName.includes(searchTerm);
+                    row.style.display = shouldShow ? '' : 'none';
+                });
+            };
+
+            searchInput.addEventListener('input', (e) => {
+                searchProducts(e.target.value);
+            });
+
+            // Pour le bouton de recherche
+            document.querySelector('.btn-search').addEventListener('click', (e) => {
+                e.preventDefault();
+                searchProducts(searchInput.value);
+            });
         });
     </script>
 
@@ -281,6 +304,57 @@
                 transform: translateX(0);
                 opacity: 1;
             }
+        }
+
+        .btn-edit {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: #3498db; /* Bleu plus moderne */
+            transition: color 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            color: #2980b9; /* Bleu plus foncé au survol */
+        }
+
+        /* Pour aligner les boutons d'action */
+        td .btn-edit,
+        td .btn-delete {
+            margin: 0 5px;
+            font-size: 1.1rem;
+        }
+
+        .search-products {
+            position: relative;
+            display: flex;
+            gap: 0.5rem;
+            max-width: 300px;
+        }
+
+        .search-products input {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        .btn-search {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .btn-search:hover {
+            color: #2980b9;
         }
     </style>
 {% endblock %}
