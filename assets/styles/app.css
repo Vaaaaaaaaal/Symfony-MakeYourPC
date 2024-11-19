@@ -2660,3 +2660,79 @@ footer {
 .btn-cancel:hover {
   background-color: #c0392b;
 }
+
+.order-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.detail-card {
+  background-color: #222222;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-card h2 {
+  color: #6294c6;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-icon {
+  width: 24px;
+  height: 24px;
+  color: #3498db;
+}
+
+.detail-content p {
+  margin-bottom: 0.75rem;
+  color: #b3d1d3;
+}
+
+.detail-content p strong {
+  color: #ffffff;
+  margin-right: 0.5rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background-color: #1a1a1a;
+  color: #6294c6;
+  padding: 1rem;
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #2980b9;
+}
