@@ -6,28 +6,47 @@
     <div class="container">
         <div class="profile-container">
             <div class="profile-info">
-                <h2>Mes informations</h2>
+                <h2><i data-lucide="user"></i> Mes informations</h2>
                 <p><strong>Nom :</strong> {{ user.name }}</p>
                 <p><strong>Prénom :</strong> {{ user.surname }}</p>
                 <p><strong>Email :</strong> {{ user.email }}</p>
                 <p><strong>Adresse :</strong> {{ user.adresse ?: 'Non renseignée' }}</p>
                 <p><strong>Téléphone :</strong> {{ user.telephone ?: 'Non renseigné' }}</p>
-                <a href="{{ path('app_profile_edit') }}" class="btn-edit-profile">Modifier mes informations</a>
+                <a href="{{ path('app_profile_edit') }}" class="btn-edit-profile">
+                    <i data-lucide="edit"></i>
+                    Modifier mes informations
+                </a>
             </div>
 
             <div class="order-history">
-                <h2>Historique des commandes</h2>
+                <h2><i data-lucide="shopping-bag"></i> Historique des commandes</h2>
                 {% if orders is empty %}
                     <p>Aucune commande pour le moment.</p>
                 {% else %}
                     <div class="orders-list">
                         {% for order in orders %}
-                            <div class="order-card">
-                                <div class="order-header">
-                                    <h3>Commande #{{ order.id }}</h3>
-                                    <span class="order-date">{{ order.date }}</span>
+                            <div class="order-card" data-order-id="{{ order.id }}">
+                                <div class="order-summary">
+                                    <div class="order-info">
+                                        <span class="order-number">
+                                            <i data-lucide="package"></i>
+                                            Commande #{{ order.id }}
+                                        </span>
+                                        <span class="order-date">
+                                            <i data-lucide="calendar"></i>
+                                            {{ order.date }}
+                                        </span>
+                                        <span class="order-amount">
+                                            <i data-lucide="credit-card"></i>
+                                            {{ order.total|number_format(2, ',', ' ') }} €
+                                        </span>
+                                    </div>
+                                    <button class="btn-toggle">
+                                        <i data-lucide="chevron-down"></i>
+                                    </button>
                                 </div>
-                                <div class="order-details">
+
+                                <div class="order-details" style="display: none;">
                                     <div class="order-items">
                                         {% for item in order.items %}
                                             <div class="order-item">
@@ -42,16 +61,12 @@
                                     
                                     {% if order.shipping %}
                                         <div class="order-shipping">
-                                            <h4>Adresse de livraison</h4>
+                                            <h4><i data-lucide="truck"></i> Adresse de livraison</h4>
                                             <p>{{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
                                             <p>{{ order.shipping.address }}</p>
                                             <p>{{ order.shipping.postalCode }} {{ order.shipping.city }}</p>
                                         </div>
                                     {% endif %}
-                                    
-                                    <div class="order-total">
-                                        Total : {{ order.total|number_format(2, ',', ' ') }} €
-                                    </div>
                                 </div>
                             </div>
                         {% endfor %}
@@ -60,6 +75,30 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.order-card').forEach(card => {
+                const summary = card.querySelector('.order-summary');
+                const details = card.querySelector('.order-details');
+                const toggle = card.querySelector('.btn-toggle');
+                const icon = toggle.querySelector('i');
+
+                summary.addEventListener('click', () => {
+                    const isOpen = details.style.display !== 'none';
+                    details.style.display = isOpen ? 'none' : 'block';
+                    icon.setAttribute('data-lucide', isOpen ? 'chevron-down' : 'chevron-up');
+                    lucide.createIcons(); // Rafraîchir les icônes
+                    
+                    // Ajouter/Retirer la classe active
+                    card.classList.toggle('active');
+                });
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block stylesheets %}
