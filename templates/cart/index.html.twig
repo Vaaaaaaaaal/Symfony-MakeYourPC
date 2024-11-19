@@ -10,18 +10,19 @@
             <div class="cart-container">
                 <div class="cart-items">
                     {% for item in cartItems %}
-                        <div class="cart-item" data-id="{{ item.id }}">
+                        <div class="cart-item" data-id="{{ item.id }}" data-stock="{{ item.stock }}">
                             <div class="item-image">
                                 <img src="{{ asset('images/products/' ~ item.image) }}" alt="{{ item.name }}" class="cart-item-image">
                             </div>
                             <div class="item-details">
                                 <h3>{{ item.name }}</h3>
                                 <p class="item-price">{{ item.price|number_format(2, ',', ' ') }} €</p>
+
                             </div>
                             <div class="item-quantity">
                                 <button class="quantity-btn minus" data-action="decrease">-</button>
                                 <span class="quantity">{{ item.quantity }}</span>
-                                <button class="quantity-btn plus" data-action="increase">+</button>
+                                <button class="quantity-btn plus" data-action="increase" {% if item.quantity >= item.stock %}disabled{% endif %}>+</button>
                             </div>
                             <div class="item-total">
                                 {{ (item.price * item.quantity)|number_format(2, ',', ' ') }} €

@@ -32,7 +32,8 @@ class CartController extends AbstractController
                     'name' => $item->getProduct()->getName(),
                     'price' => $item->getProduct()->getPrice(),
                     'quantity' => $item->getQuantity(),
-                    'image' => $item->getProduct()->getImagePath()
+                    'image' => $item->getProduct()->getImagePath(),
+                    'stock' => $item->getProduct()->getStock()
                 ];
                 $total += $item->getProduct()->getPrice() * $item->getQuantity();
             }
@@ -67,7 +68,11 @@ class CartController extends AbstractController
 
             // Vérifier si la nouvelle quantité est disponible en stock
             if ($product->getStock() < $newQuantity) {
-                throw new \Exception('Stock insuffisant');
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Stock insuffisant',
+                    'availableStock' => $product->getStock()
+                ], 400);
             }
 
             $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
@@ -108,7 +113,8 @@ class CartController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Panier mis à jour',
-                'cartQuantity' => $totalQuantity
+                'cartQuantity' => $totalQuantity,
+                'stockRemaining' => $product->getStock() - $newQuantity
             ]);
 
         } catch (\Exception $e) {
@@ -149,6 +155,15 @@ class CartController extends AbstractController
 
             $newQuantity = $cartItem->getQuantity() + $change;
             
+            // Vérifier le stock disponible
+            if ($newQuantity > $product->getStock()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Stock insuffisant',
+                    'availableStock' => $product->getStock()
+                ], 400);
+            }
+            
             // Empêcher la quantité d'être inférieure à 1
             if ($newQuantity < 1) {
                 $newQuantity = 1;
@@ -169,7 +184,8 @@ class CartController extends AbstractController
                 'quantity' => $newQuantity,
                 'itemTotal' => $itemTotal,
                 'total' => $total,
-                'itemCount' => count($cart->getItems())
+                'itemCount' => count($cart->getItems()),
+                'stockRemaining' => $product->getStock() - $newQuantity
             ]);
         } catch (\Exception $e) {
             return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
