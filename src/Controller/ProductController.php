@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Entity\Review;
 use App\Entity\Cart;
 use App\Entity\CartItem;
+use App\Entity\Type;
 
 class ProductController extends AbstractController
 {
@@ -36,13 +37,17 @@ class ProductController extends AbstractController
         $search = $request->query->get('search');
         $priceMin = $request->query->get('price_min') ? (float) $request->query->get('price_min') : null;
         $priceMax = $request->query->get('price_max') ? (float) $request->query->get('price_max') : null;
-        $type = $request->query->get('type');
         $rating = $request->query->get('rating') ? (float) $request->query->get('rating') : null;
 
-        $products = $productRepository->findByFilters($search, $priceMin, $priceMax, $type, $rating);
+        $products = $productRepository->findByFilters(
+            $search,
+            $priceMin,
+            $priceMax,
+            $rating
+        );
 
         return $this->render('product/index.html.twig', [
-            'products' => $products,
+            'products' => $products
         ]);
     }
 

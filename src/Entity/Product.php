@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -19,10 +21,6 @@ class Product
     #[ORM\Column(length: 255)]
     private ?float $price = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $type = null;
-
-
     #[ORM\Column]
     private ?int $stock = null;
 
@@ -37,6 +35,14 @@ class Product
 
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $rating = null;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Review::class)]
+    private Collection $reviews;
+
+    public function __construct()
+    {
+        $this->reviews = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -62,17 +68,6 @@ class Product
     public function setPrice(float $price): static
     {
         $this->price = $price;
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
         return $this;
     }
 
@@ -123,5 +118,10 @@ class Product
     public function getImageUrl(): string
     {
         return $this->imagePath ? 'images/products/' . $this->imagePath : 'images/products/default.png';
+    }
+
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
     }
 }
