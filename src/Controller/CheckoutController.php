@@ -39,11 +39,11 @@ class CheckoutController extends AbstractController
             $shipping = new OrderShipping();
             $shipping->setOrderRef($order);
             
-            $shipping->setFirstName($user->getName() ?? '');
-            $shipping->setLastName($user->getSurname() ?? '');
-            $shipping->setEmail($user->getEmail() ?? '');
-            $shipping->setPhone($user->getTelephone() ?? '');
-            $shipping->setAddress($user->getAdresse() ?? '');
+            $shipping->setFirstName($user->name);
+            $shipping->setLastName($user->surname);
+            $shipping->setEmail($user->email);
+            $shipping->setPhone($user->telephone);
+            $shipping->setAddress($user->adresse);
             
             $form = $this->createForm(CheckoutType::class, $shipping);
             $form->handleRequest($request);

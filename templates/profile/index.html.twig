@@ -20,30 +20,49 @@
                 {% if orders is empty %}
                     <p>Aucune commande pour le moment.</p>
                 {% else %}
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Commande #</th>
-                                <th>Date</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for order in orders %}
-                                <tr>
-                                    <td>
-                                        <img src="{{ asset('images/' ~ order.image) }}" alt="Product" class="order-image">
-                                    </td>
-                                    <td>{{ order.id }}</td>
-                                    <td>{{ order.date }}</td>
-                                    <td>{{ order.total }}€</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="orders-list">
+                        {% for order in orders %}
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <h3>Commande #{{ order.id }}</h3>
+                                    <span class="order-date">{{ order.date }}</span>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-items">
+                                        {% for item in order.items %}
+                                            <div class="order-item">
+                                                <div class="item-info">
+                                                    <span class="item-name">{{ item.product.name }}</span>
+                                                    <span class="item-quantity">x{{ item.quantity }}</span>
+                                                </div>
+                                                <span class="item-price">{{ (item.price * item.quantity)|number_format(2, ',', ' ') }} €</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    {% if order.shipping %}
+                                        <div class="order-shipping">
+                                            <h4>Adresse de livraison</h4>
+                                            <p>{{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
+                                            <p>{{ order.shipping.address }}</p>
+                                            <p>{{ order.shipping.postalCode }} {{ order.shipping.city }}</p>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="order-total">
+                                        Total : {{ order.total|number_format(2, ',', ' ') }} €
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
 {% endblock %}
