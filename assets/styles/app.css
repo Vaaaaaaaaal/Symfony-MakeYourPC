@@ -2488,7 +2488,7 @@ footer {
 }
 
 .form-group input {
-  width: 90%;
+  width: 100%;
   padding: 0.8rem 1rem;
   border: 1px solid #3498db;
   border-radius: 6px;
