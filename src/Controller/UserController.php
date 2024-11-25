@@ -33,9 +33,8 @@ class UserController extends AbstractController
 
         $user = $security->getUser();
         
-        // Redirigez en fonction du rôle de l'utilisateur
         if ($security->isGranted('ROLE_ADMIN')) {
-            return $this->redirectToRoute('app_admin');  // Correction ici
+            return $this->redirectToRoute('app_admin'); 
         } else {
             return $this->redirectToRoute('app_home');
         }
