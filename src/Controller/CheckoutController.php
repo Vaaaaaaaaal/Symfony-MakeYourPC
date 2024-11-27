@@ -51,16 +51,31 @@ class CheckoutController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $entityManager->beginTransaction();
                 try {
+                    foreach ($cart->getItems() as $cartItem) {
+                        $product = $cartItem->getProduct();
+                        if ($product->getStock() < $cartItem->getQuantity()) {
+                            throw new \Exception('Stock insuffisant pour ' . $product->getName());
+                        }
+                    }
+
                     $total = 0;
                     foreach ($cart->getItems() as $cartItem) {
+                        $product = $cartItem->getProduct();
+                        $quantity = $cartItem->getQuantity();
+                        
                         $orderItem = new OrderItem();
                         $orderItem->setOrder($order)
-                                 ->setProduct($cartItem->getProduct())
-                                 ->setQuantity($cartItem->getQuantity())
-                                 ->setPrice($cartItem->getProduct()->getPrice());
+                                 ->setProduct($product)
+                                 ->setQuantity($quantity)
+                                 ->setPrice($product->getPrice());
 
+                        $newStock = $product->getStock() - $quantity;
+                        $product->setStock($newStock);
+                        
                         $entityManager->persist($orderItem);
-                        $total += $cartItem->getProduct()->getPrice() * $cartItem->getQuantity();
+                        $entityManager->persist($product);
+                        
+                        $total += $product->getPrice() * $quantity;
                     }
 
                     $order->setTotalAmount($total);
@@ -77,7 +92,7 @@ class CheckoutController extends AbstractController
                 } catch (\Exception $e) {
                     $entityManager->rollback();
                     $logger->error('Erreur lors du traitement : ' . $e->getMessage());
-                    $this->addFlash('error', 'Une erreur est survenue lors du traitement de votre commande');
+                    $this->addFlash('error', $e->getMessage());
                 }
             }
 
