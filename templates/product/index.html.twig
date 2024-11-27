@@ -33,10 +33,11 @@
                         <label for="type">Type de produit</label>
                         <select class="form-control" id="type" name="type">
                             <option value="">Tous</option>
-                            <option value="cpu" {% if app.request.query.get('type') == 'cpu' %}selected{% endif %}>CPU</option>
-                            <option value="gpu" {% if app.request.query.get('type') == 'gpu' %}selected{% endif %}>GPU</option>
-                            <option value="ssd" {% if app.request.query.get('type') == 'ssd' %}selected{% endif %}>SSD</option>
-                            <option value="motherboard" {% if app.request.query.get('type') == 'motherboard' %}selected{% endif %}>Carte mère</option>
+                            {% for type in types %}
+                                <option value="{{ type.id }}" {% if app.request.query.get('type') == type.id %}selected{% endif %}>
+                                    {{ type.name }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">

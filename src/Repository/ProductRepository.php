@@ -39,29 +39,35 @@ class ProductRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByFilters($search = null, $priceMin = null, $priceMax = null, $rating = null)
+    public function findBySearchCriteria(array $criteria)
     {
         $qb = $this->createQueryBuilder('p')
-            ->select('p');
+            ->leftJoin('p.type', 't')
+            ->addSelect('t');
 
-        if ($search) {
+        if (isset($criteria['search'])) {
             $qb->andWhere('p.name LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
+               ->setParameter('search', '%' . $criteria['search'] . '%');
         }
 
-        if ($priceMin) {
-            $qb->andWhere('p.price >= :priceMin')
-               ->setParameter('priceMin', $priceMin);
+        if (isset($criteria['price_min'])) {
+            $qb->andWhere('p.price >= :price_min')
+               ->setParameter('price_min', $criteria['price_min']);
         }
 
-        if ($priceMax) {
-            $qb->andWhere('p.price <= :priceMax')
-               ->setParameter('priceMax', $priceMax);
+        if (isset($criteria['price_max'])) {
+            $qb->andWhere('p.price <= :price_max')
+               ->setParameter('price_max', $criteria['price_max']);
         }
 
-        if ($rating) {
+        if (isset($criteria['type'])) {
+            $qb->andWhere('t.id = :type')
+               ->setParameter('type', $criteria['type']);
+        }
+
+        if (isset($criteria['rating'])) {
             $qb->andWhere('p.rating >= :rating')
-               ->setParameter('rating', $rating);
+               ->setParameter('rating', $criteria['rating']);
         }
 
         return $qb->getQuery()->getResult();

@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des types - Administration{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="types-header">
+            <h1 class="page-title">
+                <i data-lucide="tags" class="section-icon"></i>
+                Gestion des types
+            </h1>
+            <a href="{{ path('app_admin_types_new') }}" class="btn-new-type">
+                <i data-lucide="plus-circle"></i>
+                Nouveau type
+            </a>
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                <i data-lucide="check-circle"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th><i data-lucide="hash"></i> ID</th>
+                        <th><i data-lucide="tag"></i> Nom</th>
+                        <th><i data-lucide="settings"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for type in types %}
+                        <tr>
+                            <td>{{ type.id }}</td>
+                            <td>{{ type.name }}</td>
+                            <td class="type-actions">
+                                <a href="{{ path('app_admin_types_edit', {'id': type.id}) }}" class="btn-edit" title="Modifier">
+                                    <i data-lucide="edit-2"></i>
+                                </a>
+                                <form method="post" action="{{ path('app_admin_types_delete', {'id': type.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce type ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ type.id) }}">
+                                    <button class="btn-delete" title="Supprimer">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">Aucun type trouvé</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %} 

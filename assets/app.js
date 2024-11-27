@@ -7,6 +7,7 @@
 import { Turbo } from "@hotwired/turbo-rails";
 import { createIcons, Icons } from "lucide";
 import "./js/animations.js";
+import "./styles/admin.css";
 import "./styles/app.css";
 
 console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");
