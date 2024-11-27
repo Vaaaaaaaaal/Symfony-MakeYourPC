@@ -48,58 +48,36 @@ class CheckoutController extends AbstractController
             $form = $this->createForm(CheckoutType::class, $shipping);
             $form->handleRequest($request);
 
-            if ($form->isSubmitted()) {
-                $logger->info('Formulaire soumis');
-                
-                if ($form->isValid()) {
-                    $logger->info('Formulaire valide');
-                    try {
-                        $cardNumber = preg_replace('/\s+/', '', $form->get('cardNumber')->getData());
-                        $cardExpiry = $form->get('cardExpiry')->getData();
-                        $cardCvc = $form->get('cardCvc')->getData();
+            if ($form->isSubmitted() && $form->isValid()) {
+                $entityManager->beginTransaction();
+                try {
+                    $total = 0;
+                    foreach ($cart->getItems() as $cartItem) {
+                        $orderItem = new OrderItem();
+                        $orderItem->setOrder($order)
+                                 ->setProduct($cartItem->getProduct())
+                                 ->setQuantity($cartItem->getQuantity())
+                                 ->setPrice($cartItem->getProduct()->getPrice());
 
-                        if (!preg_match('/^[0-9]{16}$/', $cardNumber) ||
-                            !preg_match('/^(0[1-9]|1[0-2])\/([0-9]{2})$/', $cardExpiry) ||
-                            !preg_match('/^[0-9]{3,4}$/', $cardCvc)) {
-                            throw new \Exception('Les informations de paiement sont invalides');
-                        }
-
-                        $total = 0;
-                        foreach ($cart->getItems() as $cartItem) {
-                            $orderItem = new OrderItem();
-                            $orderItem->setOrder($order)
-                                     ->setProduct($cartItem->getProduct())
-                                     ->setQuantity($cartItem->getQuantity())
-                                     ->setPrice($cartItem->getProduct()->getPrice());
-
-                            $entityManager->persist($orderItem);
-                            $total += $cartItem->getProduct()->getPrice() * $cartItem->getQuantity();
-                        }
-
-                        $order->setTotalAmount($total);
-                        
-                        $entityManager->beginTransaction();
-                        try {
-                            $entityManager->persist($order);
-                            $entityManager->persist($shipping);
-                            $entityManager->remove($cart);
-                            $entityManager->flush();
-                            $entityManager->commit();
-
-                            $this->addFlash('success', 'Votre commande a été validée avec succès !');
-                            return $this->redirectToRoute('app_checkout_confirmation');
-                        } catch (\Exception $e) {
-                            $entityManager->rollback();
-                            $logger->error('Erreur lors de la persistance : ' . $e->getMessage());
-                            throw $e;
-                        }
-                    } catch (\Exception $e) {
-                        $logger->error('Erreur de validation : ' . $e->getMessage());
-                        $this->addFlash('error', $e->getMessage());
+                        $entityManager->persist($orderItem);
+                        $total += $cartItem->getProduct()->getPrice() * $cartItem->getQuantity();
                     }
-                } else {
-                    $logger->error('Formulaire invalide : ' . json_encode($form->getErrors(true)));
-                    $this->addFlash('error', 'Le formulaire contient des erreurs');
+
+                    $order->setTotalAmount($total);
+                    
+                    $entityManager->persist($order);
+                    $entityManager->persist($shipping);
+                    $entityManager->remove($cart);
+                    $entityManager->flush();
+                    $entityManager->commit();
+
+                    $this->addFlash('success', 'Votre commande a été validée avec succès !');
+                    return $this->redirectToRoute('app_checkout_confirmation');
+                    
+                } catch (\Exception $e) {
+                    $entityManager->rollback();
+                    $logger->error('Erreur lors du traitement : ' . $e->getMessage());
+                    $this->addFlash('error', 'Une erreur est survenue lors du traitement de votre commande');
                 }
             }
 
@@ -107,6 +85,7 @@ class CheckoutController extends AbstractController
                 'form' => $form->createView(),
                 'cart' => $cart
             ]);
+            
         } catch (\Exception $e) {
             $logger->error('Erreur générale : ' . $e->getMessage());
             $this->addFlash('error', 'Une erreur est survenue');

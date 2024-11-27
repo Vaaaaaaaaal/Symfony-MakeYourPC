@@ -9,65 +9,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             
-            const patterns = {
-                firstName: /^[A-Za-zÀ-ÿ\s]{2,30}$/,
-                lastName: /^[A-Za-zÀ-ÿ\s]{2,30}$/,
-                email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                phone: /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-                address: /^[A-Za-zÀ-ÿ0-9\s,.-]{5,100}$/,
-                city: /^[A-Za-zÀ-ÿ\s-]{2,50}$/,
-                postalCode: /^[0-9]{5}$/,
-                cardNumber: /^[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}$/,
-                cardExpiry: /^(0[1-9]|1[0-2])\/([0-9]{2})$/,
-                cardCvc: /^[0-9]{3,4}$/
-            };
-
+            // On désactive la validation HTML5 native
+            form.setAttribute('novalidate', true);
+            
+            // On laisse le formulaire se soumettre naturellement
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                let isValid = true;
-                
-                Object.keys(patterns).forEach(field => {
-                    const input = form.querySelector(`[name$="[${field}]"]`);
-                    const value = input.value.trim();
-                    
-                    if (!value) {
-                        showError(input, 'Ce champ est obligatoire');
-                        isValid = false;
-                    } else if (!patterns[field].test(value)) {
-                        showError(input, 'Format invalide');
-                        isValid = false;
-                    } else {
-                        removeError(input);
-                    }
-                });
-
-                if (isValid) {
-                    form.submit();
-                }
+                // Le formulaire sera validé côté serveur
+                return true;
             });
-
-            function showError(input, message) {
-                const errorDiv = input.nextElementSibling?.classList.contains('error-message') 
-                    ? input.nextElementSibling 
-                    : document.createElement('div');
-                
-                errorDiv.textContent = message;
-                errorDiv.className = 'error-message text-danger mt-1';
-                
-                if (!input.nextElementSibling?.classList.contains('error-message')) {
-                    input.parentNode.insertBefore(errorDiv, input.nextElementSibling);
-                }
-                input.classList.add('is-invalid');
-            }
-
-            function removeError(input) {
-                const errorDiv = input.nextElementSibling;
-                if (errorDiv?.classList.contains('error-message')) {
-                    errorDiv.remove();
-                }
-                input.classList.remove('is-invalid');
-                input.classList.add('is-valid');
-            }
         });
     </script>
 {% endblock %}
