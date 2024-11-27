@@ -2,6 +2,158 @@
 
 {% block title %}Modifier un produit - MakeYourPC{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.querySelector('.file-input');
+            const imagePreview = document.getElementById('imagePreview');
+            const dropZone = document.getElementById('dropZone');
+            const uploadInfo = dropZone.querySelector('.upload-info');
+
+            // Fonction pour mettre à jour l'aperçu
+            function updatePreview(file) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Créer l'élément img
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'Aperçu';
+                        
+                        // Vider la div de prévisualisation et ajouter la nouvelle image
+                        imagePreview.innerHTML = '';
+                        imagePreview.appendChild(img);
+                        
+                        // Mettre à jour le texte de la zone de dépôt
+                        uploadInfo.innerHTML = `
+                            <i data-lucide="check-circle"></i>
+                            <p>Image sélectionnée : ${file.name}</p>
+                            <span>Cliquez pour changer d'image</span>
+                        `;
+                        // Réinitialiser les icônes Lucide
+                        lucide.createIcons();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // Gérer le changement de fichier via l'input
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                updatePreview(file);
+            });
+
+            // Gérer le drag & drop
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                imageInput.files = e.dataTransfer.files;
+                updatePreview(file);
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .image-upload {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .current-image {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .current-image img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        .upload-zone {
+            position: relative;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #2a2a2a;
+        }
+
+        .upload-zone.dragover {
+            border-color: #2ecc71;
+            background: #2c3e50;
+        }
+
+        .upload-zone .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+        }
+
+        .upload-info i {
+            font-size: 2rem;
+            color: #3498db;
+        }
+
+        .upload-info p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .upload-info span {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .no-image {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: #7f8c8d;
+        }
+
+        .no-image i {
+            font-size: 3rem;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="edit-header">
@@ -81,7 +233,7 @@
                     </div>
                     <div class="card-body">
                         <div class="image-upload">
-                            <div class="current-image">
+                            <div class="current-image" id="imagePreview">
                                 {% if product.imagePath %}
                                     <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="Image actuelle">
                                 {% else %}
@@ -91,8 +243,8 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <div class="upload-zone">
-                                {{ form_widget(form.image, {'attr': {'class': 'file-input'}}) }}
+                            <div class="upload-zone" id="dropZone">
+                                {{ form_widget(form.image, {'attr': {'class': 'file-input', 'accept': 'image/jpeg,image/png,image/webp'}}) }}
                                 <div class="upload-info">
                                     <i data-lucide="upload-cloud"></i>
                                     <p>Glissez une image ou cliquez pour sélectionner</p>

@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\ProductType;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class ProductController extends AbstractController
 {
@@ -97,7 +99,8 @@ class ProductController extends AbstractController
     public function editProduct(
         Product $product, 
         Request $request, 
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
@@ -105,8 +108,35 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $imageFile = $form->get('image')->getData();
             
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('products_directory'),
+                        $newFilename
+                    );
+                    
+                    // Supprimer l'ancienne image si elle existe
+                    if ($product->getImagePath()) {
+                        $oldImagePath = $this->getParameter('products_directory').'/'.$product->getImagePath();
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                        }
+                    }
+                    
+                    $product->setImagePath($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image');
+                    return $this->redirectToRoute('app_edit_product', ['id' => $product->getId()]);
+                }
+            }
+            
+            $entityManager->flush();
             $this->addFlash('success', 'Le produit a été modifié avec succès');
             return $this->redirectToRoute('app_admin_products');
         }
