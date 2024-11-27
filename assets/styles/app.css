@@ -2870,10 +2870,6 @@ footer {
   color: #666;
 }
 
-.price-input .form-input {
-  padding-left: 2rem;
-}
-
 .image-upload {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2990,4 +2986,40 @@ footer {
   .image-upload {
     grid-template-columns: 1fr;
   }
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--bg-secondary);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s;
+  color: var(--text-primary);
+}
+
+.form-control:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
