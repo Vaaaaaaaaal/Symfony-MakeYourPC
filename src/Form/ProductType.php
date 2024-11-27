@@ -25,11 +25,13 @@ class ProductType extends AbstractType
                     'placeholder' => 'Entrez le nom du produit'
                 ]
             ])
-            ->add('price', MoneyType::class, [
+            ->add('price', NumberType::class, [
                 'label' => 'Prix',
-                'currency' => 'EUR',
+                'scale' => 2,
                 'attr' => [
-                    'placeholder' => 'Entrez le prix'
+                    'placeholder' => 'Entrez le prix',
+                    'step' => '0.01',
+                    'min' => '0'
                 ]
             ])
             ->add('stock', NumberType::class, [

@@ -5,315 +5,115 @@
 {% block body %}
     <div class="container">
         <div class="edit-header">
-            <h1 class="page-title">
-                <i data-lucide="edit-3" class="section-icon"></i>
+            <h1>
+                <i data-lucide="edit-3"></i>
                 Modifier le produit
             </h1>
+            <nav class="breadcrumb">
+                <a href="{{ path('app_admin_products') }}">Produits</a>
+                <i data-lucide="chevron-right"></i>
+                <span>Modification</span>
+            </nav>
         </div>
 
         {% for message in app.flashes('success') %}
-            <div class="alert alert-success">
+            <div class="alert success">
                 <i data-lucide="check-circle"></i>
                 {{ message }}
             </div>
         {% endfor %}
 
         {% for message in app.flashes('error') %}
-            <div class="alert alert-danger">
+            <div class="alert error">
                 <i data-lucide="alert-circle"></i>
                 {{ message }}
             </div>
         {% endfor %}
 
-        <div class="edit-product-container">
-            {{ form_start(form, {'attr': {'class': 'edit-product-form'}}) }}
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <i data-lucide="info" class="section-icon"></i>
-                        Informations du produit
-                    </h3>
-                    <div class="form-grid">
+        {{ form_start(form, {'attr': {'class': 'edit-form'}}) }}
+            <div class="form-grid">
+                <div class="form-card">
+                    <div class="card-header">
+                        <i data-lucide="info"></i>
+                        <h2>Informations générales</h2>
+                    </div>
+                    <div class="card-body">
                         <div class="form-group">
-                            {{ form_label(form.name, 'Nom du produit', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.name, {'attr': {'class': 'form-control dark'}}) }}
+                            {{ form_label(form.name, 'Nom du produit') }}
+                            {{ form_widget(form.name, {'attr': {'class': 'form-input'}}) }}
+                            {{ form_errors(form.name) }}
                         </div>
 
                         <div class="form-group">
-                            {{ form_label(form.type, 'Type de produit', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.type, {'attr': {'class': 'form-select dark'}}) }}
-                        </div>
-
-                        <div class="form-group price-group">
-                            {{ form_label(form.price, 'Prix (€)', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.price, {'attr': {'class': 'form-control dark'}}) }}
-                        </div>
-
-                        <div class="form-group">
-                            {{ form_label(form.stock, 'Stock', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.stock, {'attr': {'class': 'form-control dark'}}) }}
+                            {{ form_label(form.type, 'Catégorie') }}
+                            {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.type) }}
                         </div>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <i data-lucide="image" class="section-icon"></i>
-                        Image du produit
-                    </h3>
-                    <div class="image-grid">
-                        <div class="current-image-container">
-                            {% if product.imagePath %}
-                                <div class="current-image">
-                                    <img src="{{ asset('images/products/' ~ product.imagePath) }}" 
-                                         alt="Image actuelle" 
-                                         class="product-image">
-                                </div>
-                            {% else %}
-                                <div class="no-image">
-                                    <i data-lucide="image-off"></i>
-                                    <p>Aucune image</p>
-                                </div>
-                            {% endif %}
+                <div class="form-card">
+                    <div class="card-header">
+                        <i data-lucide="shopping-cart"></i>
+                        <h2>Prix et stock</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            {{ form_label(form.price, 'Prix (€)') }}
+                            <div class="price-input">
+                                {{ form_widget(form.price, {'attr': {'class': 'form-input'}}) }}
+                            </div>
+                            {{ form_errors(form.price) }}
                         </div>
 
-                        <div class="new-image-container">
-                            {{ form_widget(form.image, {'attr': {'class': 'form-control-file dark'}}) }}
-                            <div class="image-help">
-                                <i data-lucide="info" class="info-icon"></i>
-                                <span>Formats acceptés : JPEG, PNG, WEBP (max 1MB)</span>
+                        <div class="form-group">
+                            {{ form_label(form.stock, 'Stock disponible') }}
+                            {{ form_widget(form.stock, {'attr': {'class': 'form-input'}}) }}
+                            {{ form_errors(form.stock) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-card full-width">
+                    <div class="card-header">
+                        <i data-lucide="image"></i>
+                        <h2>Image du produit</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="image-upload">
+                            <div class="current-image">
+                                {% if product.imagePath %}
+                                    <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="Image actuelle">
+                                {% else %}
+                                    <div class="no-image">
+                                        <i data-lucide="image-off"></i>
+                                        <p>Aucune image</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="upload-zone">
+                                {{ form_widget(form.image, {'attr': {'class': 'file-input'}}) }}
+                                <div class="upload-info">
+                                    <i data-lucide="upload-cloud"></i>
+                                    <p>Glissez une image ou cliquez pour sélectionner</p>
+                                    <span>Formats acceptés : JPEG, PNG, WEBP (max 1MB)</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">
-                        <i data-lucide="save"></i>
-                        Enregistrer les modifications
-                    </button>
-                    <a href="{{ path('app_admin_products') }}" class="btn-cancel">
-                        <i data-lucide="x"></i>
-                        Annuler
-                    </a>
-                </div>
-            {{ form_end(form) }}
-        </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <i data-lucide="save"></i>
+                    Enregistrer les modifications
+                </button>
+                <a href="{{ path('app_admin_products') }}" class="btn-cancel">
+                    <i data-lucide="x"></i>
+                    Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
     </div>
-
-    <style>
-        .edit-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--text-primary);
-            font-size: 1.75rem;
-            margin-bottom: 0;
-        }
-
-        .edit-product-container {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-section {
-            background: #242424;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent-color);
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #333;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin: 0;
-            position: relative;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #b3b3b3;
-            font-weight: 500;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .form-control.dark, .form-select.dark {
-            width: 100%;
-            height: 45px;
-            padding: 0.75rem;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: white;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-        }
-
-        .price-group .form-control.dark {
-            padding-left: 2rem;
-        }
-
-        .price-group {
-            position: relative;
-        }
-
-        .price-group::before {
-            content: '€';
-            position: absolute;
-            left: 0.75rem;
-            top: 2.3rem;
-            color: #666;
-            z-index: 1;
-        }
-
-        .price-group .input-group-text {
-            display: none;
-        }
-
-        .form-select.dark {
-            padding-right: 2.5rem;
-        }
-
-        .form-control.dark:focus, .form-select.dark:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-            outline: none;
-        }
-
-        .image-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .current-image-container, .new-image-container {
-            background: #1a1a1a;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .product-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .no-image {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            padding: 2rem;
-            color: #666;
-        }
-
-        .no-image i {
-            width: 48px;
-            height: 48px;
-            opacity: 0.5;
-        }
-
-        .form-control-file.dark {
-            width: 100%;
-            padding: 0.6rem;
-            background: #1a1a1a;
-            border: 2px dashed #333;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .form-control-file.dark:hover {
-            border-color: var(--accent-color);
-        }
-
-        .image-help {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            color: #666;
-            font-size: 0.875rem;
-        }
-
-        .info-icon {
-            width: 16px;
-            height: 16px;
-            color: var(--accent-color);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            justify-content: flex-end;
-        }
-
-        .btn-save, .btn-cancel {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-        }
-
-        .btn-save {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .btn-save:hover {
-            background: #4f46e5;
-            transform: translateY(-2px);
-        }
-
-        .btn-cancel {
-            background: #333;
-            color: #b3b3b3;
-        }
-
-        .btn-cancel:hover {
-            background: #dc2626;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 {% endblock %} 
