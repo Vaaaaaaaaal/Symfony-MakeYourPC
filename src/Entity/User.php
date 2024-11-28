@@ -44,11 +44,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $telephone = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cart::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cart::class, orphanRemoval: true)]
     private Collection $carts;
-
-    #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private ?Cart $cart = null;
 
     public function __construct()
     {
@@ -170,27 +167,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCartItemsCount(): int
-    {
-        // On prend le dernier panier créé (le plus récent)
-        $latestCart = $this->carts->last();
-        
-        return $latestCart ? $latestCart->getItemsCount() : 0;
-    }
-
     public function getCarts(): Collection
     {
         return $this->carts;
     }
 
-    public function getCart(): ?Cart
+    public function addCart(Cart $cart): self
     {
-        return $this->cart;
+        if (!$this->carts->contains($cart)) {
+            $this->carts->add($cart);
+            $cart->setUser($this);
+        }
+        return $this;
     }
 
-    public function setCart(?Cart $cart): self
+    public function removeCart(Cart $cart): self
     {
-        $this->cart = $cart;
+        if ($this->carts->removeElement($cart)) {
+            if ($cart->getUser() === $this) {
+                $cart->setUser(null);
+            }
+        }
         return $this;
+    }
+
+    public function getCurrentCart(): ?Cart
+    {
+        return $this->carts->last() ?: null;
+    }
+
+    public function getCartItemsCount(): int
+    {
+        $cart = $this->getCurrentCart();
+        if (!$cart) {
+            return 0;
+        }
+        
+        return $cart->getItemsCount();
     }
 }
