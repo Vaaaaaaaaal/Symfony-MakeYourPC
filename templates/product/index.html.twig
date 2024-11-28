@@ -62,21 +62,23 @@
                     </div>
                 {% else %}
                     {% for product in products %}
-                        <div class="product-tile" onclick="window.location.href='{{ path('app_product_detail', {id: product.id}) }}'" style="cursor: pointer;">
-                            <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
-                            <h4>{{ product.name }}</h4>
-                            <div class="rating">
-                                {% set rating = product.rating %}
-                                {% for i in 1..5 %}
-                                    {% if i <= rating %}
-                                        <i data-lucide="star" class="star filled"></i>
-                                    {% else %}
-                                        <i data-lucide="star" class="star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                                <span class="rating-value ml-2">{{ rating|number_format(1) }}</span>
+                        <div class="product-tile">
+                            <div class="product-content" onclick="window.location.href='{{ path('app_product_detail', {id: product.id}) }}'">
+                                <img src="{{ asset('images/products/' ~ product.imagePath) }}" alt="{{ product.name }}">
+                                <h4>{{ product.name }}</h4>
+                                <div class="rating">
+                                    {% set rating = product.rating %}
+                                    {% for i in 1..5 %}
+                                        {% if i <= rating %}
+                                            <i data-lucide="star" class="star filled"></i>
+                                        {% else %}
+                                            <i data-lucide="star" class="star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="rating-value ml-2">{{ rating|number_format(1) }}</span>
+                                </div>
+                                <div class="price-card">{{ product.price|number_format(2, ',', ' ') }} €</div>
                             </div>
-                            <div class="price-card">{{ product.price|number_format(2, ',', ' ') }} €</div>
                             <button class="btn-add-to-cart" type="button" data-product-id="{{ product.id }}">
                                 <i data-lucide="shopping-cart"></i>
                             </button>
@@ -95,11 +97,7 @@
             const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
             
             addToCartButtons.forEach(button => {
-                button.replaceWith(button.cloneNode(true));
-                
-                const newButton = document.querySelector(`.btn-add-to-cart[data-product-id="${button.dataset.productId}"]`);
-                
-                newButton.addEventListener('click', function(e) {
+                button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     
@@ -129,7 +127,7 @@
                             const cartCount = document.querySelector('.cart-count');
                             if (cartCount) {
                                 cartCount.textContent = data.cartCount;
-                                cartCount.style.display = data.cartCount > 0 ? 'inline-block' : 'none';
+                                cartCount.style.display = 'block';
                             }
                             showNotification('Produit ajouté au panier', 'success');
                         }
@@ -141,7 +139,7 @@
                     .finally(() => {
                         this.disabled = false;
                     });
-                }, { once: true });
+                });
             });
         });
 

@@ -113,7 +113,7 @@ class CartController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Panier mis à jour',
-                'cartQuantity' => $totalQuantity,
+                'cartCount' => $totalQuantity,
                 'stockRemaining' => $product->getStock() - $newQuantity
             ]);
 
