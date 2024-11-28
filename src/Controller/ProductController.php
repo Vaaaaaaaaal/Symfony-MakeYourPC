@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Form\ProductType;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use App\Entity\Cart;
 
 class ProductController extends AbstractController
 {
@@ -56,10 +57,33 @@ class ProductController extends AbstractController
     }
 
     #[Route('/product/{id}', name: 'app_product_detail')]
-    public function detail(Product $product): Response
+    public function detail(Product $product, Request $request): Response
     {
+        // Récupérer la quantité dans le panier pour ce produit
+        $cartQuantity = 0;
+        
+        // Si l'utilisateur est connecté
+        if ($this->getUser()) {
+            $cart = $this->getUser()->getCart();
+            if ($cart) {
+                $cartItem = $cart->getItems()->filter(function($item) use ($product) {
+                    return $item->getProduct()->getId() === $product->getId();
+                })->first();
+                
+                if ($cartItem) {
+                    $cartQuantity = $cartItem->getQuantity();
+                }
+            }
+        } 
+        // Si l'utilisateur n'est pas connecté, vérifier le panier en session
+        else {
+            $cart = $request->getSession()->get('cart', []);
+            $cartQuantity = $cart[$product->getId()] ?? 0;
+        }
+
         return $this->render('product/detail.html.twig', [
-            'product' => $product
+            'product' => $product,
+            'cartQuantity' => $cartQuantity
         ]);
     }
 
