@@ -227,12 +227,12 @@ class CartController extends AbstractController
             }
 
             // Compter uniquement le nombre de produits différents
-            $itemCount = count($cart->getItems());
+            $totalQuantity = count($cart->getItems());
 
             return new JsonResponse([
                 'success' => true,
                 'total' => $total,
-                'cartCount' => $itemCount,
+                'cartCount' => $totalQuantity,
                 'message' => 'Produit supprimé avec succès'
             ]);
 

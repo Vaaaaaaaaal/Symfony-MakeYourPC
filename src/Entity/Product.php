@@ -28,7 +28,7 @@ class Product
     private ?string $image = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
     private ?string $imagePath = null;
@@ -45,6 +45,7 @@ class Product
 
     public function __construct()
     {
+        $this->created_at = new \DateTimeImmutable();
         $this->reviews = new ArrayCollection();
     }
 

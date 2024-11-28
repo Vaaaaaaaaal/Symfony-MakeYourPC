@@ -166,7 +166,12 @@
                         item.remove();
                         
                         updateCartTotals(data.total);
-                        updateCartCount(data.cartCount);
+                        
+                        const cartCount = document.querySelector('.cart-count');
+                        if (cartCount) {
+                            cartCount.textContent = data.cartCount;
+                            cartCount.style.display = data.cartCount > 0 ? 'block' : 'none';
+                        }
                         
                         if (data.cartCount === 0) {
                             window.location.reload();

@@ -64,8 +64,11 @@ class ProductController extends AbstractController
     }
 
     #[Route('/admin/product/add', name: 'app_add_product')]
-    public function addProduct(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function addProduct(
+        Request $request, 
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger
+    ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
         $product = new Product();
@@ -73,6 +76,28 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                
+                try {
+                    $imageFile->move(
+                        $this->getParameter('products_directory'),
+                        $newFilename
+                    );
+                    $product->setImagePath($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image');
+                    return $this->redirectToRoute('app_add_product');
+                }
+            } else {
+                // Définir une image par défaut si aucune image n'est uploadée
+                $product->setImagePath('default.png');
+            }
+            
             $entityManager->persist($product);
             $entityManager->flush();
             
