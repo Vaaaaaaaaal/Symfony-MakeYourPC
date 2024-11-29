@@ -1,5 +1,5 @@
 <header>
-    <nav class="container">
+    <nav class="container-nav">
         <a href="{{ path('app_home') }}" class="logo">
             <img src="{{ asset('images/Logo.svg') }}" alt="Logo MakeYourPC" class="img-fluid" style="width: auto; height: 50px; max-width: 100%; margin-top: 10px;">
         </a>
@@ -114,5 +114,10 @@
     }
     .dropdown-item i {
         margin-right: 8px;
+    }
+    .container-nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 13px 20px;
     }
 </style>
