@@ -64,7 +64,7 @@ class ProductController extends AbstractController
         
         // Si l'utilisateur est connecté
         if ($this->getUser()) {
-            $cart = $this->getUser()->getCart();
+            $cart = $this->getUser()-> getCart();
             if ($cart) {
                 $cartItem = $cart->getItems()->filter(function($item) use ($product) {
                     return $item->getProduct()->getId() === $product->getId();

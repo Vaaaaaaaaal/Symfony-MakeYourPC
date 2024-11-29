@@ -47,8 +47,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Cart::class, orphanRemoval: true)]
     private Collection $carts;
 
-    private ?Cart $cart = null;
-
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -195,7 +193,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCurrentCart(): ?Cart
     {
-        return $this->carts->last() ?: null;
+        if ($this->carts->isEmpty()) {
+            return null;
+        }
+        
+        // Retourne le dernier panier créé
+        return $this->carts->last();
     }
 
     public function getCartItemsCount(): int
@@ -210,12 +213,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCart(): ?Cart
     {
-        return $this->cart;
-    }
-
-    public function setCart(?Cart $cart): self
-    {
-        $this->cart = $cart;
-        return $this;
+        return $this->getCurrentCart();
     }
 }
