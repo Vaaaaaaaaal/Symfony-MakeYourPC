@@ -11,11 +11,7 @@
 <div class="auth-container">
     <h2 class="auth-title">Connexion</h2>
     
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
+
     
     <form method="post" class="auth-form">
         {% if error %}

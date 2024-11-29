@@ -161,19 +161,6 @@
             </nav>
         </div>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert success">
-                <i data-lucide="check-circle"></i>
-                {{ message }}
-            </div>
-        {% endfor %}
-
-        {% for message in app.flashes('error') %}
-            <div class="alert error">
-                <i data-lucide="alert-circle"></i>
-                {{ message }}
-            </div>
-        {% endfor %}
 
         {{ form_start(form, {'attr': {'class': 'edit-form'}}) }}
             <div class="form-grid">

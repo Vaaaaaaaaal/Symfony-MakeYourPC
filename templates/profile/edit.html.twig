@@ -7,18 +7,7 @@
         <div class="edit-profile-container">
             <h2>Modifier mon profil</h2>
 
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success">
-                    {{ message }}
-                </div>
-            {% endfor %}
-
-            {% for message in app.flashes('error') %}
-                <div class="alert alert-danger {% if message == 'Les mots de passe ne correspondent pas' %}password-mismatch{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-
+            
             {{ form_start(form, {'attr': {'class': 'edit-profile-form'}}) }}
                 <div class="form-group">
                     {{ form_label(form.name) }}
