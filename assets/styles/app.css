@@ -841,9 +841,8 @@ footer {
 
 /* Styles pour la page de profil */
 .profile-container {
-  display: flex;
-  gap: 2rem;
-  margin-top: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 
 .profile-info,
