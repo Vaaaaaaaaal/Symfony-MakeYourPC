@@ -13,14 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/address')]
 class AddressController extends AbstractController
 {
-    #[Route('/', name: 'app_address_index', methods: ['GET'])]
-    public function index(): Response
-    {
-        return $this->render('address/index.html.twig', [
-            'addresses' => $this->getUser()->getAddresses()
-        ]);
-    }
-
     #[Route('/new', name: 'app_address_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -34,7 +26,7 @@ class AddressController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Adresse ajoutée avec succès.');
-            return $this->redirectToRoute('app_address_index');
+            return $this->redirectToRoute('app_profile');
         }
 
         return $this->render('address/new.html.twig', [
@@ -58,7 +50,7 @@ class AddressController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Adresse modifiée avec succès.');
-            return $this->redirectToRoute('app_address_index');
+            return $this->redirectToRoute('app_profile');
         }
 
         return $this->render('address/edit.html.twig', [
@@ -83,6 +75,6 @@ class AddressController extends AbstractController
             $this->addFlash('success', 'Adresse supprimée avec succès.');
         }
 
-        return $this->redirectToRoute('app_address_index');
+        return $this->redirectToRoute('app_profile');
     }
 } 

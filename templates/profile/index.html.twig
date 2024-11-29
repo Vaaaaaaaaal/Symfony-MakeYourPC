@@ -3,112 +3,94 @@
 {% block title %}Mon profil - MakeYourPC{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="profile-container">
-            <div class="profile-info">
-                <h2><i data-lucide="user"></i> Mes informations</h2>
-                <p><strong>Nom :</strong> {{ user.name }}</p>
-                <p><strong>Prénom :</strong> {{ user.surname }}</p>
-                <p><strong>Email :</strong> {{ user.email }}</p>
-                <p><strong>Adresse :</strong> {{ user.adresse ?: 'Non renseignée' }}</p>
-                <p><strong>Téléphone :</strong> {{ user.telephone ?: 'Non renseigné' }}</p>
-                <a href="{{ path('app_profile_edit') }}" class="btn-edit-profile">
-                    <i data-lucide="edit"></i>
+<div class="page-wrapper">
+    <div class="profile-container">
+        <!-- Section Informations -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i data-lucide="user-circle-2"></i>
+                <h2>Mes informations</h2>
+            </div>
+            <div class="section-content">
+                <div class="info-item">
+                    <i data-lucide="user"></i>
+                    <div class="info-text">
+                        <span class="label">Nom</span>
+                        <span class="value">{{ user.name }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i data-lucide="user"></i>
+                    <div class="info-text">
+                        <span class="label">Prénom</span>
+                        <span class="value">{{ user.surname }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i data-lucide="mail"></i>
+                    <div class="info-text">
+                        <span class="label">Email</span>
+                        <span class="value">{{ user.email }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i data-lucide="phone"></i>
+                    <div class="info-text">
+                        <span class="label">Téléphone</span>
+                        <span class="value">{{ user.telephone ?: 'Non renseigné' }}</span>
+                    </div>
+                </div>
+                <a href="{{ path('app_profile_edit') }}" class="link-action">
                     Modifier mes informations
                 </a>
             </div>
+        </div>
 
-            <div class="addresses-section">
-                <h2><i data-lucide="map-pin"></i> Mes adresses</h2>
+        <!-- Section Adresses -->
+        <div class="profile-section">
+            <div class="section-header">
+                <div class="header-left">
+                    <i data-lucide="map-pin"></i>
+                    <h2>Mes adresses</h2>
+                </div>
+                <a href="{{ path('app_address_new') }}" class="btn-new">
+                    <i data-lucide="plus-circle"></i>
+                    Nouvelle adresse
+                </a>
+            </div>
+            <div class="section-content">
                 {% if user.addresses is empty %}
-                    <p>Vous n'avez pas encore enregistré d'adresse.</p>
+                    <div class="empty-state">
+                        <i data-lucide="package-x"></i>
+                        <p>Aucune adresse enregistrée</p>
+                    </div>
                 {% else %}
-                    <div class="addresses-grid">
+                    <div class="addresses-list">
                         {% for address in user.addresses %}
-                            <div class="address-card">
+                            <div class="address-item">
                                 <div class="address-header">
                                     <h3>{{ address.name }}</h3>
                                     <div class="address-actions">
-                                        <a href="{{ path('app_address_edit', {'id': address.id}) }}" class="btn-edit">
-                                            <i data-lucide="edit"></i>
+                                        <a href="{{ path('app_address_edit', {'id': address.id}) }}" class="action-btn edit">
+                                            <i data-lucide="edit-3"></i>
                                         </a>
                                         <form method="post" action="{{ path('app_address_delete', {'id': address.id}) }}" 
-                                              style="display: inline-block"
-                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette adresse ?');">
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette adresse ?');"
+                                              class="delete-form">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ address.id) }}">
-                                            <button type="submit" class="btn-delete">
+                                            <button type="submit" class="action-btn delete">
                                                 <i data-lucide="trash-2"></i>
                                             </button>
                                         </form>
                                     </div>
                                 </div>
-                                <div class="address-content">
-                                    <p>{{ address.firstname }} {{ address.lastname }}</p>
-                                    <p>{{ address.address }}</p>
-                                    <p>{{ address.postal }} {{ address.city }}</p>
-                                    <p>{{ address.country }}</p>
+                                <div class="address-details">
+                                    <p><i data-lucide="user"></i> {{ address.firstname }} {{ address.lastname }}</p>
+                                    <p><i data-lucide="home"></i> {{ address.address }}</p>
+                                    <p><i data-lucide="map-pin"></i> {{ address.postal }} {{ address.city }}</p>
+                                    <p><i data-lucide="globe"></i> {{ address.country }}</p>
                                     {% if address.phone %}
-                                        <p>Tél: {{ address.phone }}</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                <a href="{{ path('app_address_new') }}" class="btn-add-address">
-                    <i data-lucide="plus"></i>
-                    Ajouter une nouvelle adresse
-                </a>
-            </div>
-
-            <div class="order-history">
-                <h2><i data-lucide="shopping-bag"></i> Historique des commandes</h2>
-                {% if orders is empty %}
-                    <p>Aucune commande pour le moment.</p>
-                {% else %}
-                    <div class="orders-list">
-                        {% for order in orders %}
-                            <div class="order-card" data-order-id="{{ order.id }}">
-                                <div class="order-summary">
-                                    <div class="order-info">
-                                        <span class="order-number">
-                                            <i data-lucide="package"></i>
-                                            Commande #{{ order.id }}
-                                        </span>
-                                        <span class="order-date">
-                                            <i data-lucide="calendar"></i>
-                                            {{ order.date }}
-                                        </span>
-                                        <span class="order-amount">
-                                            <i data-lucide="credit-card"></i>
-                                            {{ order.total|number_format(2, ',', ' ') }} €
-                                        </span>
-                                    </div>
-                                    <button class="btn-toggle">
-                                        <i data-lucide="chevron-down"></i>
-                                    </button>
-                                </div>
-
-                                <div class="order-details" style="display: none;">
-                                    <div class="order-items">
-                                        {% for item in order.items %}
-                                            <div class="order-item">
-                                                <div class="item-info">
-                                                    <span class="item-name">{{ item.product.name }}</span>
-                                                    <span class="item-quantity">x{{ item.quantity }}</span>
-                                                </div>
-                                                <span class="item-price">{{ (item.price * item.quantity)|number_format(2, ',', ' ') }} €</span>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    
-                                    {% if order.shipping %}
-                                        <div class="order-shipping">
-                                            <h4><i data-lucide="truck"></i> Adresse de livraison</h4>
-                                            <p>{{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
-                                            <p>{{ order.shipping.address }}</p>
-                                            <p>{{ order.shipping.postalCode }} {{ order.shipping.city }}</p>
-                                        </div>
+                                        <p><i data-lucide="phone"></i> {{ address.phone }}</p>
                                     {% endif %}
                                 </div>
                             </div>
@@ -117,96 +99,125 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Section Commandes -->
+        <div class="profile-section">
+            <div class="section-header">
+                <i data-lucide="shopping-bag"></i>
+                <h2>Historique des commandes</h2>
+            </div>
+            <div class="section-content">
+                {% if orders is empty %}
+                    <div class="empty-state">
+                        <i data-lucide="package-x"></i>
+                        <p>Aucune commande pour le moment</p>
+                        <a href="{{ path('app_products') }}" class="link-action">
+                            Découvrir nos produits
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.order-card').forEach(card => {
-                const summary = card.querySelector('.order-summary');
-                const details = card.querySelector('.order-details');
-                const toggle = card.querySelector('.btn-toggle');
-                const icon = toggle.querySelector('i');
-
-                summary.addEventListener('click', () => {
-                    const isOpen = details.style.display !== 'none';
-                    details.style.display = isOpen ? 'none' : 'block';
-                    icon.setAttribute('data-lucide', isOpen ? 'chevron-down' : 'chevron-up');
-                    lucide.createIcons(); // Rafraîchir les icônes
-                    
-                    // Ajouter/Retirer la classe active
-                    card.classList.toggle('active');
-                });
-            });
-        });
-    </script>
+</div>
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
     <style>
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
         .profile-container {
-            padding: 2rem 0;
+            display: grid;
+            gap: 2rem;
         }
 
-        .profile-info, .addresses-section, .order-history {
-            background: #2a2a2a;
+        .profile-section {
+            background: white;
             border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            color: #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.2s;
         }
 
-        h2 {
-            color: #3498db;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .btn-edit-profile, .btn-add-address {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: #3498db;
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .btn-edit-profile:hover, .btn-add-address:hover {
-            background: #2980b9;
-            color: white;
+        .profile-section:hover {
             transform: translateY(-2px);
         }
 
-        .addresses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .address-card {
-            background: #333333;
-            border: 1px solid #404040;
-            border-radius: 8px;
+        .section-header {
+            display: flex;
+            align-items: center;
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
         }
 
-        .address-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        .section-header i {
+            color: #4a90e2;
+            margin-right: 0.8rem;
+            width: 24px;
+            height: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        /* Style des informations personnelles */
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .info-item i {
+            color: #6c757d;
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        .info-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-bottom: 0.2rem;
+        }
+
+        .value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        /* Style des adresses */
+        .addresses-list {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .address-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.2rem;
+            position: relative;
         }
 
         .address-header {
@@ -214,145 +225,141 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #404040;
         }
 
         .address-header h3 {
             margin: 0;
+            color: #2c3e50;
             font-size: 1.1rem;
-            color: #3498db;
         }
 
         .address-actions {
             display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn-edit, .btn-delete {
-            padding: 0.5rem;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            background: #2a2a2a;
-        }
-
-        .btn-edit {
-            color: #3498db;
-        }
-
-        .btn-edit:hover {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-delete {
-            color: #e74c3c;
-        }
-
-        .btn-delete:hover {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .address-content p {
-            margin: 0.5rem 0;
-            color: #b0b0b0;
-        }
-
-        /* Style pour l'historique des commandes */
-        .order-card {
-            background: #333333;
-            border: 1px solid #404040;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-        }
-
-        .order-summary {
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .order-summary:hover {
-            background: #404040;
-        }
-
-        .order-info {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .order-number, .order-date, .order-amount {
-            display: flex;
-            align-items: center;
             gap: 0.5rem;
-            color: #e0e0e0;
         }
 
-        .btn-toggle {
-            background: transparent;
+        .action-btn {
+            background: none;
             border: none;
-            color: #3498db;
-            cursor: pointer;
             padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
         }
 
-        .order-details {
-            padding: 1rem;
-            border-top: 1px solid #404040;
-            background: #2a2a2a;
+        .action-btn.edit {
+            color: #4a90e2;
         }
 
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            color: #b0b0b0;
+        .action-btn.delete {
+            color: #dc3545;
         }
 
-        .order-shipping {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #404040;
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
         }
 
-        .order-shipping h4 {
-            color: #3498db;
+        .address-details p {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            margin: 0.5rem 0;
+            color: #4a5568;
         }
 
-        /* Style pour les informations de base */
-        .profile-info p {
-            margin: 0.75rem 0;
-            display: flex;
+        .address-details i {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* Style des boutons et liens */
+        .link-action, .btn-new {
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
-        .profile-info strong {
-            color: #3498db;
-            min-width: 120px;
+        .link-action {
+            color: #4a90e2;
+            background: rgba(74, 144, 226, 0.1);
         }
 
-        /* Animations */
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
+        .btn-new {
+            color: white;
+            background: #4a90e2;
+        }
+
+        .btn-new i {
+            margin-right: 0.5rem;
+        }
+
+        .link-action:hover, .btn-new:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* État vide */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-wrapper {
+                margin: 1rem auto;
+            }
+
+            .profile-container {
+                gap: 1rem;
+            }
+
+            .section-header {
+                padding: 1rem;
+            }
+
+            .section-content {
+                padding: 1rem;
+            }
+
+            .addresses-list {
+                grid-template-columns: 1fr;
+            }
+
+            .address-item {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation de chargement */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .order-details {
-            animation: slideDown 0.3s ease-out;
+        .profile-section {
+            animation: fadeIn 0.3s ease-out;
         }
     </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
 {% endblock %}
