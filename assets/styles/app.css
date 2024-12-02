@@ -2406,6 +2406,7 @@ footer {
   padding: 2rem;
   border-radius: 8px;
   height: fit-content;
+  margin-left: 3rem;
 }
 
 .form-row {

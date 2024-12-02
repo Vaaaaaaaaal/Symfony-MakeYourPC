@@ -11,29 +11,25 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function formatCardNumber(input) {
-    let value = input.value.replace(/\D/g, "");
-    let formattedValue = "";
-
-    for (let i = 0; i < value.length && i < 16; i++) {
-      if (i > 0 && i % 4 === 0) {
-        formattedValue += " ";
-      }
-      formattedValue += value[i];
-    }
-
+    let value = input.value.replace(/\s/g, "").replace(/\D/g, "");
+    let maskedValue = value.replace(/\d/g, "X");
+    let formattedValue = maskedValue.replace(/(.{4})/g, "$1 ").trim();
+    formattedValue = formattedValue.substring(0, 19);
     input.value = formattedValue;
+    input.dataset.realValue = value;
   }
 
   function formatExpiry(input) {
     let value = input.value.replace(/\D/g, "");
+    let maskedValue = value.replace(/\d/g, "X");
     let formattedValue = "";
-
-    if (value.length >= 2) {
-      formattedValue = value.substr(0, 2) + "/" + value.substr(2, 2);
+    if (maskedValue.length >= 2) {
+      formattedValue =
+        maskedValue.substr(0, 2) + "/" + maskedValue.substr(2, 2);
     } else {
-      formattedValue = value;
+      formattedValue = maskedValue;
     }
-
+    input.dataset.realValue = value;
     input.value = formattedValue;
   }
 
