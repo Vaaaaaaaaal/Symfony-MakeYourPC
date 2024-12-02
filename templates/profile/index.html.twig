@@ -124,17 +124,16 @@
                                     <div class="order-left">
                                         <div class="order-number">
                                             <span class="hash">#</span>
-                                            <span class="label">COMMANDE</span>
                                             <span class="number">{{ order.id }}</span>
-                                        </div>
-                                        <div class="order-datetime">
-                                            <i data-lucide="calendar"></i>
-                                            <span>{{ order.date }}</span>
                                         </div>
                                     </div>
                                     <div class="order-right">
                                         <div class="order-amount">
                                             {{ order.total|number_format(2, ',', ' ') }} €
+                                        </div>
+                                        <div class="order-datetime">
+                                            <i data-lucide="calendar"></i>
+                                            <span>{{ order.date }}</span>
                                         </div>
                                         <div class="toggle-btn" aria-label="Voir les détails">
                                             <i data-lucide="chevron-down"></i>
@@ -142,21 +141,19 @@
                                     </div>
                                 </div>
 
-                                <div class="order-details">
+                                <div class="order-details" style="display: none;">
                                     <div class="products-list">
                                         {% for item in order.items %}
                                             <div class="product-item">
                                                 <div class="product-info">
                                                     <i data-lucide="package"></i>
-                                                    <span class="product-name">{{ item.product.name }}</span>
-                                                </div>
-                                                <div class="product-details">
-                                                    <span class="quantity">
-                                                        × {{ item.quantity }}
-                                                    </span>
-                                                    <span class="price">
-                                                        {{ item.price|number_format(2, ',', ' ') }} €
-                                                    </span>
+                                                    <div class="product-details">
+                                                        <span class="product-name">{{ item.product.name }}</span>
+                                                        <div class="product-meta">
+                                                            <span class="quantity">× {{ item.quantity }}</span>
+                                                            <span class="price">{{ item.price|number_format(2, ',', ' ') }}€</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -168,10 +165,10 @@
                                                 <i data-lucide="truck"></i>
                                                 <span>Adresse de livraison</span>
                                             </div>
-                                            <div class="shipping-details">
-                                                <p>{{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
-                                                <p>{{ order.shipping.address }}</p>
-                                                <p>{{ order.shipping.postalCode }} {{ order.shipping.city }}</p>
+                                            <div class="shipping-address">
+                                                <p class="shipping-name">{{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
+                                                <p class="shipping-street">{{ order.shipping.address }}</p>
+                                                <p class="shipping-city">{{ order.shipping.postalCode }} {{ order.shipping.city }}</p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -541,24 +538,20 @@
             align-items: center;
             gap: 0.5rem;
             color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .order-datetime i {
-            width: 1.2rem;
-            height: 1.2rem;
+            width: 1rem;
+            height: 1rem;
             color: var(--accent-color);
         }
 
-        .order-right {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
 
         .order-amount {
             color: var(--text-primary);
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .toggle-btn {
@@ -580,10 +573,77 @@
         }
 
         .order-details {
-            display: none;
-            padding: 0 1.5rem 1.5rem;
-            animation: slideDown 0.3s ease-out;
+            padding: 1.5rem;
+            background: var(--bg-hover);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .products-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .product-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-info i {
+            color: var(--accent-color);
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .product-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .shipping-info {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
             border-top: 1px solid var(--border-color);
+        }
+
+        .shipping-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .shipping-address {
+            padding-left: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .shipping-address p {
+            margin: 0.35rem 0;
+        }
+
+        .shipping-name {
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         /* Animations */
@@ -627,8 +687,9 @@
             }
 
             .order-right {
-                align-items: center;
-                gap: 1rem;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.5rem;
             }
 
             .toggle-btn {
@@ -653,6 +714,8 @@
 
         function toggleOrderDetails(element) {
             const card = element.closest('.order-card');
+            const details = card.querySelector('.order-details');
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
             card.classList.toggle('active');
         }
     </script>
