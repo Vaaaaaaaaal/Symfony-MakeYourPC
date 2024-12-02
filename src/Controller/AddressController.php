@@ -25,7 +25,6 @@ class AddressController extends AbstractController
             $entityManager->persist($address);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Adresse ajoutée avec succès.');
             return $this->redirectToRoute('app_profile');
         }
 
@@ -38,7 +37,6 @@ class AddressController extends AbstractController
     #[Route('/{id}/edit', name: 'app_address_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Address $address, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier que l'adresse appartient bien à l'utilisateur connecté
         if ($address->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cette adresse.');
         }
@@ -49,7 +47,6 @@ class AddressController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', 'Adresse modifiée avec succès.');
             return $this->redirectToRoute('app_profile');
         }
 
@@ -72,7 +69,6 @@ class AddressController extends AbstractController
             $entityManager->remove($address);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Adresse supprimée avec succès.');
         }
 
         return $this->redirectToRoute('app_profile');

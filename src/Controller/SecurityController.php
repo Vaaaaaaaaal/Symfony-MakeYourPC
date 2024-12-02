@@ -41,7 +41,6 @@ class SecurityController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         if ($this->getUser()) {
-            $this->addFlash('info', 'Vous êtes déjà inscrit et connecté.');
             return $this->redirectToRoute('app_home');
         }
 
@@ -60,11 +59,9 @@ class SecurityController extends AbstractController
             try {
                 $entityManager->persist($user);
                 $entityManager->flush();
-                $this->addFlash('success', 'Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.');
                 return $this->redirectToRoute('app_login');
             } catch (\Exception $e) {
                 $logger->error('Erreur lors de la création de l\'utilisateur', ['error' => $e->getMessage()]);
-                $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.');
             }
         }
 

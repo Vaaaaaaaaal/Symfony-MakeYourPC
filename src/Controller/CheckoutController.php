@@ -29,7 +29,6 @@ class CheckoutController extends AbstractController
             $cart = $cartRepository->findOneBy(['user' => $user]);
 
             if (!$cart || $cart->getItems()->isEmpty()) {
-                $this->addFlash('error', 'Votre panier est vide');
                 return $this->redirectToRoute('app_cart');
             }
 
@@ -86,13 +85,11 @@ class CheckoutController extends AbstractController
                     $entityManager->flush();
                     $entityManager->commit();
 
-                    $this->addFlash('success', 'Votre commande a été validée avec succès !');
                     return $this->redirectToRoute('app_checkout_confirmation');
                     
                 } catch (\Exception $e) {
                     $entityManager->rollback();
                     $logger->error('Erreur lors du traitement : ' . $e->getMessage());
-                    $this->addFlash('error', $e->getMessage());
                 }
             }
 
@@ -103,7 +100,6 @@ class CheckoutController extends AbstractController
             
         } catch (\Exception $e) {
             $logger->error('Erreur générale : ' . $e->getMessage());
-            $this->addFlash('error', 'Une erreur est survenue');
             return $this->redirectToRoute('app_cart');
         }
     }
@@ -125,7 +121,6 @@ class CheckoutController extends AbstractController
                 $session->remove('cart');
                 $session->remove('pending_order_id');
 
-                $this->addFlash('success', 'Paiement effectué avec succès !');
                 return $this->redirectToRoute('app_order_confirmation');
             }
         }
@@ -162,7 +157,6 @@ class CheckoutController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            $this->addFlash('success', 'Commande mise à jour avec succès');
             return $this->redirectToRoute('app_admin');
         }
 

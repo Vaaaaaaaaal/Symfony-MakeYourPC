@@ -114,7 +114,6 @@ class ProductController extends AbstractController
                     );
                     $product->setImagePath($newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image');
                     return $this->redirectToRoute('app_add_product');
                 }
             } else {
@@ -125,7 +124,6 @@ class ProductController extends AbstractController
             $entityManager->persist($product);
             $entityManager->flush();
             
-            $this->addFlash('success', 'Le produit a été ajouté avec succès');
             return $this->redirectToRoute('app_admin_products');
         }
         
@@ -180,13 +178,11 @@ class ProductController extends AbstractController
                     
                     $product->setImagePath($newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image');
                     return $this->redirectToRoute('app_edit_product', ['id' => $product->getId()]);
                 }
             }
             
             $entityManager->flush();
-            $this->addFlash('success', 'Le produit a été modifié avec succès');
             return $this->redirectToRoute('app_admin_products');
         }
         

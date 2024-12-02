@@ -49,21 +49,18 @@ class UserController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        // Récupérer le nombre total de commandes
         $orderCount = $entityManager->createQueryBuilder()
             ->select('COUNT(o.id)')
             ->from('App\Entity\Order', 'o')
             ->getQuery()
             ->getSingleScalarResult();
 
-        // Récupérer la somme totale des commandes
         $totalRevenue = $entityManager->createQueryBuilder()
             ->select('SUM(o.totalAmount)')
             ->from('App\Entity\Order', 'o')
             ->getQuery()
             ->getSingleScalarResult() ?? 0.00;
 
-        // Récupérer les 5 dernières commandes
         $recentOrders = $entityManager->createQueryBuilder()
             ->select('o, u')
             ->from('App\Entity\Order', 'o')
@@ -98,23 +95,6 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/profile', name: 'app_profile')]
-    public function profile(Security $security): Response
-    {
-        $user = $security->getUser();
-        
-        // Simulons l'historique des commandes (à remplacer par de vraies données plus tard)
-        $orders = [
-            ['id' => 1, 'date' => '2023-05-01', 'total' => 599.99, 'image' => 'i7.png'],
-            ['id' => 2, 'date' => '2023-06-15', 'total' => 1299.99,  'image' => 'rtx.jpg'],
-            ['id' => 3, 'date' => '2023-07-20', 'total' => 799.99,  'image' => 'ssd.avif'],
-        ];
-
-        return $this->render('profile/index.html.twig', [
-            'user' => $user,
-            'orders' => $orders,
-        ]);
-    }
 
     #[Route('/profile/edit', name: 'app_profile_edit')]
     public function editProfile(
@@ -177,10 +157,8 @@ class UserController extends AbstractController
 
             try {
                 $entityManager->flush();
-                $this->addFlash('success', 'Profil mis à jour avec succès');
                 return $this->redirectToRoute('app_profile');
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour du profil');
             }
         }
 
