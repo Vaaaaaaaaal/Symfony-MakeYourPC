@@ -45,10 +45,22 @@ class CheckoutController extends AbstractController
             $shipping->setPhone($user->getTelephone() ?? '');
             $shipping->setAddress($user->getAdresse() ?? '');
             
-            $form = $this->createForm(CheckoutType::class, $shipping);
+            $form = $this->createForm(CheckoutType::class, $shipping, [
+                'user' => $user
+            ]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $selectedAddress = $form->get('savedAddress')->getData();
+                if ($selectedAddress) {
+                    $shipping->setFirstName($selectedAddress->getFirstname());
+                    $shipping->setLastName($selectedAddress->getLastname());
+                    $shipping->setAddress($selectedAddress->getAddress());
+                    $shipping->setPostalCode($selectedAddress->getPostal());
+                    $shipping->setCity($selectedAddress->getCity());
+                    $shipping->setPhone($selectedAddress->getPhone());
+                }
+
                 $entityManager->beginTransaction();
                 try {
                     foreach ($cart->getItems() as $cartItem) {
