@@ -86,7 +86,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        // Assurons-nous que le code ne s'exécute qu'une seule fois
         if (!window.cartInitialized) {
             window.cartInitialized = true;
             
@@ -99,7 +98,6 @@
                 const addToCartBtn = document.querySelector('.add-to-cart-btn');
                 const cartQuantityBadge = document.querySelector('.cart-quantity');
                 
-                // Supprimer les anciens écouteurs d'événements s'ils existent
                 const clearListeners = (element) => {
                     if (element) {
                         const newElement = element.cloneNode(true);
@@ -109,13 +107,11 @@
                     return null;
                 };
 
-                // Réinitialiser les écouteurs
                 const newDecreaseBtn = clearListeners(decreaseBtn);
                 const newIncreaseBtn = clearListeners(increaseBtn);
                 const newQuantityInput = clearListeners(quantityInput);
                 const newAddToCartBtn = clearListeners(addToCartBtn);
                 
-                // Gestion des boutons + et -
                 if (newDecreaseBtn && newIncreaseBtn && newQuantityInput) {
                     newDecreaseBtn.addEventListener('click', function() {
                         const currentValue = parseInt(newQuantityInput.value);
@@ -132,7 +128,6 @@
                         }
                     });
 
-                    // Validation de l'input manuel
                     newQuantityInput.addEventListener('change', function() {
                         let value = parseInt(this.value);
                         const max = parseInt(this.getAttribute('max'));
@@ -142,12 +137,10 @@
                     });
                 }
 
-                // Gestion de l'ajout au panier
                 if (newAddToCartBtn) {
                     newAddToCartBtn.addEventListener('click', function(e) {
                         e.preventDefault();
                         
-                        // Désactiver le bouton pendant la requête
                         this.disabled = true;
                         
                         const productId = this.dataset.productId;
@@ -166,23 +159,19 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Mettre à jour la quantité actuelle
                                 newQuantityInput.dataset.currentQuantity = quantity;
                                 
-                                // Mettre à jour le texte du bouton
                                 newAddToCartBtn.innerHTML = `
                                     <i data-lucide="shopping-cart"></i>
                                     Mettre à jour le panier
                                 `;
                                 lucide.createIcons();
                                 
-                                // Mettre à jour le badge du panier
                                 if (cartQuantityBadge) {
                                     cartQuantityBadge.textContent = data.cartQuantity;
                                     cartQuantityBadge.style.display = data.cartQuantity > 0 ? 'flex' : 'none';
                                 }
 
-                                // Notification de succès
                                 const notification = document.createElement('div');
                                 notification.className = 'notification success';
                                 notification.innerHTML = `
@@ -206,7 +195,6 @@
                             setTimeout(() => notification.remove(), 3000);
                         })
                         .finally(() => {
-                            // Réactiver le bouton après la requête
                             this.disabled = false;
                         });
                     });
@@ -245,7 +233,6 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            // Mise à jour visuelle
                             stars.forEach(s => {
                                 s.classList.remove('filled');
                                 if (s.dataset.rating <= rating) {
@@ -257,7 +244,6 @@
                                 ratingValue.textContent = `${data.newRating}/5`;
                             }
 
-                            // Notification de succès
                             const notification = document.createElement('div');
                             notification.className = 'notification success';
                             notification.innerHTML = `

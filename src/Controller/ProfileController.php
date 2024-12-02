@@ -21,7 +21,6 @@ class ProfileController extends AbstractController
         }
 
         try {
-            // Récupérer les commandes avec leurs relations
             $ordersQuery = $entityManager->createQueryBuilder()
                 ->select('o', 'i', 'p', 's')
                 ->from('App\Entity\Order', 'o')
@@ -36,7 +35,6 @@ class ProfileController extends AbstractController
             $rawOrders = $ordersQuery->getResult();
             $logger->info('Nombre de commandes trouvées : ' . count($rawOrders));
 
-            // Formater les données pour le template
             $orders = [];
             foreach ($rawOrders as $order) {
                 $orderData = [

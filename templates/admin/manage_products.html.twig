@@ -95,7 +95,6 @@
             console.log('Bouton annuler:', cancelDeleteButton);
             console.log('Bouton confirmer:', confirmDeleteButton);
             
-            // Gestionnaire pour les boutons de suppression
             document.querySelectorAll('.btn-delete').forEach(button => {
                 console.log('Ajout du gestionnaire sur le bouton:', button);
                 
@@ -114,7 +113,6 @@
                 });
             });
             
-            // Ajout du gestionnaire pour le bouton Confirmer
             confirmDeleteButton.addEventListener('click', async () => {
                 console.log('Confirmation de suppression pour le produit:', currentProductId);
                 
@@ -131,14 +129,11 @@
                     console.log('Réponse du serveur:', data);
 
                     if (data.success) {
-                        // Fermer le modal
                         modal.style.display = 'none';
                         
-                        // Supprimer la ligne du tableau
                         const productRow = document.querySelector(`[data-product-id="${currentProductId}"]`).closest('tr');
                         productRow.remove();
 
-                        // Afficher une notification de succès
                         showNotification('Le produit a été supprimé avec succès', 'success');
                     } else {
                         throw new Error(data.message || 'Erreur lors de la suppression');
@@ -149,7 +144,6 @@
                 }
             });
 
-            // Fonction pour afficher les notifications
             function showNotification(message, type) {
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
@@ -161,19 +155,16 @@
                 
                 document.body.appendChild(notification);
                 
-                // Supprimer la notification après 3 secondes
                 setTimeout(() => {
                     notification.remove();
                 }, 3000);
             }
 
-            // Gestionnaire pour le bouton Annuler
             cancelDeleteButton.addEventListener('click', () => {
                 console.log('Clic sur Annuler');
                 modal.style.display = 'none';
             });
             
-            // Fermeture en cliquant en dehors
             window.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     console.log('Clic en dehors du modal');
@@ -199,7 +190,6 @@
                 searchProducts(e.target.value);
             });
 
-            // Pour le bouton de recherche
             document.querySelector('.btn-search').addEventListener('click', (e) => {
                 e.preventDefault();
                 searchProducts(searchInput.value);

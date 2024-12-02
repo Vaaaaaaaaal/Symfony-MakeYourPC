@@ -26,7 +26,6 @@ class UserController extends AbstractController
     #[Route('/login/success', name: 'app_login_success')]
     public function loginSuccess(Security $security): Response
     {
-        // Vérifiez si l'utilisateur est connecté
         if (!$security->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('app_login');
         }
@@ -49,21 +48,18 @@ class UserController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        // Récupérer le nombre total de commandes
         $orderCount = $entityManager->createQueryBuilder()
             ->select('COUNT(o.id)')
             ->from('App\Entity\Order', 'o')
             ->getQuery()
             ->getSingleScalarResult();
 
-        // Récupérer la somme totale des commandes
         $totalRevenue = $entityManager->createQueryBuilder()
             ->select('SUM(o.totalAmount)')
             ->from('App\Entity\Order', 'o')
             ->getQuery()
             ->getSingleScalarResult() ?? 0.00;
 
-        // Récupérer les 5 dernières commandes
         $recentOrders = $entityManager->createQueryBuilder()
             ->select('o, u')
             ->from('App\Entity\Order', 'o')
@@ -103,7 +99,6 @@ class UserController extends AbstractController
     {
         $user = $security->getUser();
         
-        // Simulons l'historique des commandes (à remplacer par de vraies données plus tard)
         $orders = [
             ['id' => 1, 'date' => '2023-05-01', 'total' => 599.99, 'image' => 'i7.png'],
             ['id' => 2, 'date' => '2023-06-15', 'total' => 1299.99,  'image' => 'rtx.jpg'],
@@ -153,7 +148,7 @@ class UserController extends AbstractController
                 'mapped' => false,
                 'required' => false,
                 'label' => 'Nouveau mot de passe',
-                'invalid_message' => ' ',  // Message vide pour supprimer l'erreur par défaut
+                'invalid_message' => ' ', 
                 'attr' => [
                     'class' => 'form-control password-input',
                     'autocomplete' => 'new-password'
@@ -161,7 +156,7 @@ class UserController extends AbstractController
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer les modifications',
-                'attr' => ['class' => 'btn-save']  // Modifié pour utiliser notre nouvelle classe CSS
+                'attr' => ['class' => 'btn-save']  
             ])
             ->getForm();
 
@@ -198,7 +193,6 @@ class UserController extends AbstractController
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Empêcher l'auto-modification du rôle
         if ($user === $security->getUser()) {
             return new JsonResponse([
                 'success' => false,
@@ -273,7 +267,6 @@ class UserController extends AbstractController
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Empêcher la suppression de son propre compte
         if ($user === $security->getUser()) {
             return new JsonResponse([
                 'success' => false,
@@ -281,7 +274,6 @@ class UserController extends AbstractController
             ], 403);
         }
 
-        // Empêcher la suppression d'un admin
         if ($user->isAdmin()) {
             return new JsonResponse([
                 'success' => false,

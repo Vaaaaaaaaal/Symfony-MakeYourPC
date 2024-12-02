@@ -68,11 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (togglePassword && password) {
         togglePassword.addEventListener('click', function() {
-            // Change le type du champ
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
             
-            // Change l'icône
             this.querySelector('i').classList.toggle('fa-eye');
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });

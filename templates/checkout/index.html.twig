@@ -9,12 +9,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             
-            // On désactive la validation HTML5 native
             form.setAttribute('novalidate', true);
             
-            // On laisse le formulaire se soumettre naturellement
             form.addEventListener('submit', function(e) {
-                // Le formulaire sera validé côté serveur
                 return true;
             });
         });

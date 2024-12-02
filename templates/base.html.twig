@@ -62,13 +62,11 @@
                 }
 
                 window.addEventListener('scroll', checkScroll);
-                checkScroll(); // Vérifier au chargement de la page
+                checkScroll(); 
             }
 
-            // Exécuter l'animation au chargement initial
             document.addEventListener('DOMContentLoaded', animateElements);
 
-            // Exécuter l'animation lors de la navigation entre les pages
             document.addEventListener('turbo:load', animateElements);
         </script>
     </body>

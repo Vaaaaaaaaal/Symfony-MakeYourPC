@@ -66,7 +66,6 @@ class CartController extends AbstractController
                 throw new \Exception('Produit non trouvé');
             }
 
-            // Vérifier si la nouvelle quantité est disponible en stock
             if ($product->getStock() < $newQuantity) {
                 return new JsonResponse([
                     'success' => false,
@@ -88,10 +87,8 @@ class CartController extends AbstractController
             ]);
 
             if ($cartItem) {
-                // Mettre à jour directement avec la nouvelle quantité
                 $cartItem->setQuantity($newQuantity);
             } else {
-                // Créer un nouveau CartItem
                 $cartItem = new CartItem();
                 $cartItem->setCart($cart)
                         ->setProduct($product)
@@ -101,7 +98,6 @@ class CartController extends AbstractController
 
             $entityManager->flush();
 
-            // Calculer la quantité totale dans le panier
             $totalQuantity = array_reduce(
                 $cart->getItems()->toArray(),
                 function($sum, $item) {
@@ -155,7 +151,6 @@ class CartController extends AbstractController
 
             $newQuantity = $cartItem->getQuantity() + $change;
             
-            // Vérifier le stock disponible
             if ($newQuantity > $product->getStock()) {
                 return new JsonResponse([
                     'success' => false,
@@ -164,7 +159,6 @@ class CartController extends AbstractController
                 ], 400);
             }
             
-            // Empêcher la quantité d'être inférieure à 1
             if ($newQuantity < 1) {
                 $newQuantity = 1;
             }
@@ -172,7 +166,6 @@ class CartController extends AbstractController
             $cartItem->setQuantity($newQuantity);
             $entityManager->flush();
 
-            // Calculer les nouveaux totaux
             $itemTotal = $cartItem->getProduct()->getPrice() * $newQuantity;
             $total = 0;
             foreach ($cart->getItems() as $item) {
@@ -216,17 +209,14 @@ class CartController extends AbstractController
                 return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
             }
 
-            // Supprimer l'item
             $entityManager->remove($cartItem);
             $entityManager->flush();
 
-            // Recalculer le total après la suppression
             $total = 0;
             foreach ($cart->getItems() as $item) {
                 $total += $item->getProduct()->getPrice() * $item->getQuantity();
             }
 
-            // Compter uniquement le nombre de produits différents
             $totalQuantity = count($cart->getItems());
 
             return new JsonResponse([
@@ -250,14 +240,14 @@ class CartController extends AbstractController
             return false;
         }
 
-        $cache = $this->cache; // Injectez le service de cache
+        $cache = $this->cache; 
         $key = 'request_' . $requestId;
         
         if ($cache->has($key)) {
             return true;
         }
         
-        $cache->set($key, true, 60); // Cache pour 60 secondes
+        $cache->set($key, true, 60); 
         return false;
     }
 }
