@@ -46,54 +46,32 @@ class UserController extends AbstractController
     public function adminDashboard(
         UserRepository $userRepository,
         ProductRepository $productRepository,
-        EntityManagerInterface $entityManager
-    ): Response
-    {
+            OrderRepository $orderRepository
+    ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $orderCount = $entityManager->createQueryBuilder()
-            ->select('COUNT(o.id)')
-            ->from('App\Entity\Order', 'o')
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        $totalRevenue = $entityManager->createQueryBuilder()
-            ->select('SUM(o.totalAmount)')
-            ->from('App\Entity\Order', 'o')
-            ->getQuery()
-            ->getSingleScalarResult() ?? 0.00;
-
-        $recentOrders = $entityManager->createQueryBuilder()
-            ->select('o, u')
-            ->from('App\Entity\Order', 'o')
-            ->join('o.user', 'u')
-            ->orderBy('o.createdAt', 'DESC')
-            ->setMaxResults(5)
-            ->getQuery()
-            ->getResult();
+        $orderStats = $orderRepository->getAdminDashboardStats();
 
         $stats = [
             'users' => $userRepository->count(['isAdmin' => false]),
-            'orders' => $orderCount,
-            'revenue' => $totalRevenue,
+            'orders' => $orderStats['orderCount'],
+            'revenue' => $orderStats['totalRevenue'],
             'products' => $productRepository->count([]),
         ];
 
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
-            'recentOrders' => $recentOrders,
+            'recentOrders' => $orderStats['recentOrders'],
         ]);
     }
 
     #[Route('/admin/users', name: 'app_admin_users')]
-    public function manageUsers(EntityManagerInterface $entityManager): Response
+    public function manageUsers(UserRepository $userRepository): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        $users = $entityManager->getRepository(User::class)->findAll();
-
         return $this->render('admin/users.html.twig', [
-            'users' => $users
+            'users' => $userRepository->findAllUsers()
         ]);
     }
 
@@ -101,7 +79,7 @@ class UserController extends AbstractController
     public function editProfile(
         Request $request,
         Security $security,
-        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         UserPasswordHasherInterface $passwordHasher
     ): Response {
         /** @var \App\Entity\User $user */
@@ -149,17 +127,19 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('plainPassword')->getData();
-
-            if (!empty($plainPassword)) {
-                $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
-                $user->setPassword($hashedPassword);
-            }
-
             try {
-                $entityManager->flush();
+                $plainPassword = $form->get('plainPassword')->getData();
+
+                if (!empty($plainPassword)) {
+                    $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+                    $userRepository->updateUserPassword($user, $hashedPassword);
+                } else {
+                    $userRepository->updateUserProfile($user);
+                }
+
                 return $this->redirectToRoute('app_user_profile');
             } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour du profil');
             }
         }
 
@@ -172,7 +152,7 @@ class UserController extends AbstractController
     public function updateUserRole(
         User $user,
         Request $request,
-        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         Security $security
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -192,8 +172,7 @@ class UserController extends AbstractController
         }
 
         try {
-            $user->setIsAdmin($newRole === 'ROLE_ADMIN');
-            $entityManager->flush();
+            $userRepository->updateUserRole($user, $newRole === 'ROLE_ADMIN');
 
             return new JsonResponse([
                 'success' => true,
@@ -242,7 +221,7 @@ class UserController extends AbstractController
     #[Route('/admin/users/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
     public function deleteUser(
         User $user,
-        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         Security $security
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -262,8 +241,7 @@ class UserController extends AbstractController
         }
 
         try {
-            $entityManager->remove($user);
-            $entityManager->flush();
+            $userRepository->deleteUser($user);
 
             return new JsonResponse([
                 'success' => true,

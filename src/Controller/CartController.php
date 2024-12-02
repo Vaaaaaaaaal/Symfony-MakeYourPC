@@ -15,11 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CartController extends AbstractController
 {
+    public function __construct(
+        private CartRepository $cartRepository,
+        private ProductRepository $productRepository
+    ) {}
+
     #[Route('/cart', name: 'app_cart')]
-    public function index(CartRepository $cartRepository): Response
+    public function index(): Response
     {
         $user = $this->getUser();
-        $cart = $cartRepository->findOneBy(['user' => $user]);
+        $cart = $this->cartRepository->findOneBy(['user' => $user]);
         
         $cartItems = [];
         $total = 0;
@@ -34,8 +39,8 @@ class CartController extends AbstractController
                     'image' => $item->getProduct()->getImagePath(),
                     'stock' => $item->getProduct()->getStock()
                 ];
-                $total += $item->getProduct()->getPrice() * $item->getQuantity();
             }
+            $total = $this->cartRepository->getCartTotal($cart);
         }
 
         return $this->render('cart/index.html.twig', [
@@ -45,27 +50,23 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/add/{id}', name: 'cart_add', methods: ['POST'])]
-    public function addToCart(
-        int $id, 
-        Request $request, 
-        ProductRepository $productRepository,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
+    public function addToCart(int $id, Request $request): JsonResponse
+    {
         try {
             $data = json_decode($request->getContent(), true);
-            $newQuantity = $data['quantity'] ?? 1;
+            $quantity = $data['quantity'] ?? 1;
 
             $user = $this->getUser();
             if (!$user) {
                 throw new \Exception('Utilisateur non connecté');
             }
 
-            $product = $productRepository->find($id);
+            $product = $this->productRepository->find($id);
             if (!$product) {
                 throw new \Exception('Produit non trouvé');
             }
 
-            if ($product->getStock() < $newQuantity) {
+            if ($product->getStock() < $quantity) {
                 return new JsonResponse([
                     'success' => false,
                     'message' => 'Stock insuffisant',
@@ -73,43 +74,14 @@ class CartController extends AbstractController
                 ], 400);
             }
 
-            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
-            if (!$cart) {
-                $cart = new Cart();
-                $cart->setUser($user);
-                $entityManager->persist($cart);
-            }
-
-            $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
-                'cart' => $cart,
-                'product' => $product
-            ]);
-
-            if ($cartItem) {
-                $cartItem->setQuantity($newQuantity);
-            } else {
-                $cartItem = new CartItem();
-                $cartItem->setCart($cart)
-                        ->setProduct($product)
-                        ->setQuantity($newQuantity);
-                $entityManager->persist($cartItem);
-            }
-
-            $entityManager->flush();
-
-            $totalQuantity = array_reduce(
-                $cart->getItems()->toArray(),
-                function($sum, $item) {
-                    return $sum + $item->getQuantity();
-                },
-                0
-            );
+            $cart = $this->cartRepository->findOrCreateCart($user);
+            $cartItem = $this->cartRepository->addProductToCart($cart, $product, $quantity);
 
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Panier mis à jour',
-                'cartCount' => $totalQuantity,
-                'stockRemaining' => $product->getStock() - $newQuantity
+                'cartCount' => $this->cartRepository->getCartItemsCount($cart),
+                'stockRemaining' => $product->getStock() - $quantity
             ]);
 
         } catch (\Exception $e) {

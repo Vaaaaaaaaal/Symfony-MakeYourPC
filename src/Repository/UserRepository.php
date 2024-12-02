@@ -38,5 +38,33 @@ class UserRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function findAllUsers(): array
+    {
+        return $this->findAll();
+    }
+
+    public function updateUserRole(User $user, bool $isAdmin): void
+    {
+        $user->setIsAdmin($isAdmin);
+        $this->getEntityManager()->flush();
+    }
+
+    public function deleteUser(User $user): void
+    {
+        $this->getEntityManager()->remove($user);
+        $this->getEntityManager()->flush();
+    }
+
+    public function updateUserProfile(User $user): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
+    public function updateUserPassword(User $user, string $hashedPassword): void
+    {
+        $user->setPassword($hashedPassword);
+        $this->getEntityManager()->flush();
+    }
 }
 

@@ -15,9 +15,15 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use App\Entity\Cart;
 use App\Form\ProductFilterType;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\CartRepository;
 
 class ProductController extends AbstractController
 {
+    public function __construct(
+        private CartRepository $cartRepository
+    ) {}
+
     #[Route('/products', name: 'app_products')]
     public function index(Request $request, ProductRepository $productRepository, TypeRepository $typeRepository): Response
     {
@@ -52,7 +58,7 @@ class ProductController extends AbstractController
         $cartQuantity = 0;
         
         if ($this->getUser()) {
-            $cart = $this->getUser()-> getCart();
+            $cart = $this->cartRepository->findOneBy(['user' => $this->getUser()]);
             if ($cart) {
                 $cartItem = $cart->getItems()->filter(function($item) use ($product) {
                     return $item->getProduct()->getId() === $product->getId();
@@ -185,5 +191,44 @@ class ProductController extends AbstractController
         return $this->render('admin/manage_products.html.twig', [
             'products' => $products
         ]);
+    }
+
+    #[Route('/admin/product/delete/{id}', name: 'app_delete_product', methods: ['POST'])]
+    public function deleteProduct(
+        Product $product,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('delete-product', $request->headers->get('X-CSRF-TOKEN'))) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Token CSRF invalide'
+            ], 400);
+        }
+
+        try {
+            // Suppression de l'image associée si elle existe
+            if ($product->getImagePath() && $product->getImagePath() !== 'default.png') {
+                $imagePath = $this->getParameter('products_directory') . '/' . $product->getImagePath();
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+
+            $entityManager->remove($product);
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Produit supprimé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression du produit'
+            ], 500);
+        }
     }
 }

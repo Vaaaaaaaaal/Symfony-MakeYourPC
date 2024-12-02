@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Cart;
 use App\Entity\CartItem;
+use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +39,47 @@ class CartItemRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByCartAndProduct(Cart $cart, Product $product): ?CartItem
+    {
+        return $this->findOneBy([
+            'cart' => $cart,
+            'product' => $product
+        ]);
+    }
+
+    public function getItemTotal(CartItem $cartItem): float
+    {
+        return $cartItem->getProduct()->getPrice() * $cartItem->getQuantity();
+    }
+
+    public function updateQuantity(CartItem $cartItem, int $quantity): void
+    {
+        $cartItem->setQuantity($quantity);
+        $this->getEntityManager()->flush();
+    }
+
+    public function removeItem(CartItem $cartItem): void
+    {
+        $this->getEntityManager()->remove($cartItem);
+        $this->getEntityManager()->flush();
+    }
+
+    public function findItemsByCart(Cart $cart): array
+    {
+        return $this->createQueryBuilder('ci')
+            ->andWhere('ci.cart = :cart')
+            ->setParameter('cart', $cart)
+            ->leftJoin('ci.product', 'p')
+            ->addSelect('p')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function checkStockAvailability(CartItem $cartItem): bool
+    {
+        return $cartItem->getQuantity() <= $cartItem->getProduct()->getStock();
     }
 }
 

@@ -14,35 +14,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Repository\CartRepository;
 use Psr\Log\LoggerInterface;
+use App\Repository\OrderRepository;
 
 class CheckoutController extends AbstractController
 {
+    public function __construct(
+        private OrderRepository $orderRepository,
+        private CartRepository $cartRepository,
+        private LoggerInterface $logger
+    ) {}
+
     #[Route('/checkout', name: 'app_checkout')]
     public function index(
         Request $request,
-        EntityManagerInterface $entityManager,
-        CartRepository $cartRepository,
-        LoggerInterface $logger
+        EntityManagerInterface $entityManager
     ): Response {
         try {
             $user = $this->getUser();
-            $cart = $cartRepository->findOneBy(['user' => $user]);
+            $cart = $this->cartRepository->findOneBy(['user' => $user]);
 
             if (!$cart || $cart->getItems()->isEmpty()) {
                 return $this->redirectToRoute('app_cart');
             }
 
-            $order = new Order();
-            $order->setUser($user);
-            
-            $shipping = new OrderShipping();
-            $shipping->setOrderRef($order);
-            
-            $shipping->setFirstName($user->getName());
-            $shipping->setLastName($user->getSurname());
-            $shipping->setEmail($user->getEmail());
-            $shipping->setPhone($user->getTelephone() ?? '');
-            $shipping->setAddress($user->getAdresse() ?? '');
+            $shipping = $this->orderRepository->createOrderShipping(new Order(), $user);
             
             $form = $this->createForm(CheckoutType::class, $shipping, [
                 'user' => $user
@@ -50,58 +45,23 @@ class CheckoutController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $selectedAddress = $form->get('savedAddress')->getData();
-                if ($selectedAddress) {
-                    $shipping->setFirstName($selectedAddress->getFirstname());
-                    $shipping->setLastName($selectedAddress->getLastname());
-                    $shipping->setAddress($selectedAddress->getAddress());
-                    $shipping->setPostalCode($selectedAddress->getPostal());
-                    $shipping->setCity($selectedAddress->getCity());
-                    $shipping->setPhone($selectedAddress->getPhone());
-                }
-
-                $entityManager->beginTransaction();
                 try {
-                    foreach ($cart->getItems() as $cartItem) {
-                        $product = $cartItem->getProduct();
-                        if ($product->getStock() < $cartItem->getQuantity()) {
-                            throw new \Exception('Stock insuffisant pour ' . $product->getName());
-                        }
+                    $selectedAddress = $form->get('savedAddress')->getData();
+                    if ($selectedAddress) {
+                        $this->orderRepository->updateShippingFromAddress($shipping, $selectedAddress);
                     }
 
-                    $total = 0;
-                    foreach ($cart->getItems() as $cartItem) {
-                        $product = $cartItem->getProduct();
-                        $quantity = $cartItem->getQuantity();
-                        
-                        $orderItem = new OrderItem();
-                        $orderItem->setOrder($order)
-                                 ->setProduct($product)
-                                 ->setQuantity($quantity)
-                                 ->setPrice($product->getPrice());
-
-                        $newStock = $product->getStock() - $quantity;
-                        $product->setStock($newStock);
-                        
-                        $entityManager->persist($orderItem);
-                        $entityManager->persist($product);
-                        
-                        $total += $product->getPrice() * $quantity;
-                    }
-
-                    $order->setTotalAmount($total);
+                    $order = $this->orderRepository->createOrderFromCart($cart, $user);
+                    $shipping->setOrderRef($order);
                     
-                    $entityManager->persist($order);
                     $entityManager->persist($shipping);
-                    $entityManager->remove($cart);
-                    $entityManager->flush();
-                    $entityManager->commit();
+                    $this->orderRepository->finalizeOrder($order, $cart);
 
                     return $this->redirectToRoute('app_checkout_confirmation');
                     
                 } catch (\Exception $e) {
-                    $entityManager->rollback();
-                    $logger->error('Erreur lors du traitement : ' . $e->getMessage());
+                    $this->logger->error('Erreur lors du traitement : ' . $e->getMessage());
+                    $this->addFlash('error', 'Une erreur est survenue lors de la création de la commande');
                 }
             }
 
@@ -111,7 +71,7 @@ class CheckoutController extends AbstractController
             ]);
             
         } catch (\Exception $e) {
-            $logger->error('Erreur générale : ' . $e->getMessage());
+            $this->logger->error('Erreur générale : ' . $e->getMessage());
             return $this->redirectToRoute('app_cart');
         }
     }
@@ -119,17 +79,15 @@ class CheckoutController extends AbstractController
     #[Route('/checkout/payment', name: 'app_checkout_payment')]
     public function payment(
         Request $request, 
-        SessionInterface $session,
-        EntityManagerInterface $entityManager
+        SessionInterface $session
     ): Response {
         if ($request->isMethod('POST')) {
             $orderId = $session->get('pending_order_id');
-            $order = $entityManager->getRepository(Order::class)->find($orderId);
+            $order = $this->orderRepository->find($orderId);
 
             if ($order) {
-                $entityManager->persist($order);
-                $entityManager->flush();
-
+                $cart = $this->cartRepository->findOneBy(['user' => $this->getUser()]);
+                $this->orderRepository->finalizeOrder($order, $cart);
                 $session->remove('cart');
                 $session->remove('pending_order_id');
 
@@ -153,28 +111,6 @@ class CheckoutController extends AbstractController
         
         return $this->render('admin/order/view.html.twig', [
             'order' => $order
-        ]);
-    }
-
-    #[Route('/admin/order/{id}/edit', name: 'app_admin_order_edit')]
-    public function editOrder(
-        Order $order,
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
-        $form = $this->createForm(OrderEditType::class, $order);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            return $this->redirectToRoute('app_admin');
-        }
-
-        return $this->render('admin/order/edit.html.twig', [
-            'order' => $order,
-            'form' => $form->createView()
         ]);
     }
 }
