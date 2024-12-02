@@ -122,11 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Recharger la page pour mettre à jour l'interface
                     location.reload();
                 } else {
                     alert('Erreur lors du changement de rôle');
-                    // Remettre l'ancienne valeur
                     this.value = this.options[0].value;
                 }
             })
@@ -138,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Gestion de l'édition
     const editButtons = document.querySelectorAll('.btn-action.edit');
     const editForm = document.getElementById('editUserForm');
     let currentUserId = null;
@@ -148,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = this.closest('tr');
             currentUserId = row.querySelector('.role-select')?.dataset.userId;
             
-            // Pré-remplir le formulaire
             document.getElementById('editName').value = row.children[1].textContent;
             document.getElementById('editSurname').value = row.children[2].textContent;
             document.getElementById('editEmail').value = row.children[3].textContent;
@@ -189,7 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Gestion de la suppression
     const deleteButtons = document.querySelectorAll('.btn-action.delete');
     let userToDelete = null;
 
@@ -221,7 +216,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(() => {
-            // Suppression réussie, on ferme la modale et on recharge la page
             closeModal('deleteConfirmModal');
             location.reload();
         });

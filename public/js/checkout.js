@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Fonction pour permettre uniquement les chiffres
   function onlyNumbers(event) {
     if (
       !/[0-9]/.test(event.key) &&
@@ -11,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Fonction pour formater le numéro de carte
   function formatCardNumber(input) {
     let value = input.value.replace(/\D/g, "");
     let formattedValue = "";
@@ -26,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     input.value = formattedValue;
   }
 
-  // Fonction pour formater la date d'expiration
   function formatExpiry(input) {
     let value = input.value.replace(/\D/g, "");
     let formattedValue = "";
@@ -40,32 +37,27 @@ document.addEventListener("DOMContentLoaded", function () {
     input.value = formattedValue;
   }
 
-  // Fonction pour formater le CVC
   function formatCVC(input) {
     let value = input.value.replace(/\D/g, "");
     input.value = value.substr(0, 4);
   }
 
-  // Récupération des éléments
   const cardNumber = document.getElementById("checkout_cardNumber");
   const cardExpiry = document.getElementById("checkout_cardExpiry");
   const cardCVC = document.getElementById("checkout_cardCvc");
 
-  // Application des événements pour le numéro de carte
   if (cardNumber) {
     cardNumber.addEventListener("keydown", onlyNumbers);
     cardNumber.addEventListener("input", () => formatCardNumber(cardNumber));
-    cardNumber.setAttribute("maxlength", "19"); // 16 chiffres + 3 espaces
+    cardNumber.setAttribute("maxlength", "19");
   }
 
-  // Application des événements pour la date d'expiration
   if (cardExpiry) {
     cardExpiry.addEventListener("keydown", onlyNumbers);
     cardExpiry.addEventListener("input", () => formatExpiry(cardExpiry));
-    cardExpiry.setAttribute("maxlength", "5"); // MM/YY
+    cardExpiry.setAttribute("maxlength", "5");
   }
 
-  // Application des événements pour le CVC
   if (cardCVC) {
     cardCVC.addEventListener("keydown", onlyNumbers);
     cardCVC.addEventListener("input", () => formatCVC(cardCVC));

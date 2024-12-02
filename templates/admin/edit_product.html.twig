@@ -11,40 +11,29 @@
             const dropZone = document.getElementById('dropZone');
             const uploadInfo = dropZone.querySelector('.upload-info');
 
-            // Fonction pour mettre à jour l'aperçu
             function updatePreview(file) {
                 if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        // Créer l'élément img
                         const img = document.createElement('img');
                         img.src = e.target.result;
                         img.alt = 'Aperçu';
-                        
-                        // Vider la div de prévisualisation et ajouter la nouvelle image
                         imagePreview.innerHTML = '';
                         imagePreview.appendChild(img);
-                        
-                        // Mettre à jour le texte de la zone de dépôt
                         uploadInfo.innerHTML = `
                             <i data-lucide="check-circle"></i>
                             <p>Image sélectionnée : ${file.name}</p>
                             <span>Cliquez pour changer d'image</span>
                         `;
-                        // Réinitialiser les icônes Lucide
                         lucide.createIcons();
                     };
                     reader.readAsDataURL(file);
                 }
             }
-
-            // Gérer le changement de fichier via l'input
             imageInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 updatePreview(file);
             });
-
-            // Gérer le drag & drop
             dropZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 dropZone.classList.add('dragover');
