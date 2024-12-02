@@ -57,11 +57,10 @@
   font-weight: bold;
 }
 
-/* Styles pour la bannière */
 .banner-container {
   position: relative;
   width: 100%;
-  height: 500px; /* Ajustez cette valeur selon vos besoins */
+  height: 500px; 
   overflow: hidden;
 }
 
@@ -109,7 +108,6 @@
   background-color: #2980b9;
 }
 
-/* Ajustez les styles existants pour l'animation */
 .animate {
   opacity: 0;
   transform: translateY(20px);
@@ -121,10 +119,9 @@
   transform: translateY(0);
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .banner-container {
-    height: 300px; /* Réduisez la hauteur pour les petits écrans */
+    height: 300px; 
   }
 
   .banner-content h1 {
@@ -136,7 +133,6 @@
   }
 }
 
-/* Styles pour la grille de fonctionnalités */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -175,7 +171,6 @@
   color: #b3d1d3;
 }
 
-/* Ajustez les styles existants pour l'animation */
 .animate {
   opacity: 0;
   transform: translateY(20px);
@@ -187,14 +182,12 @@
   transform: translateY(0);
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .features-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Styles pour la section des produits populaires */
 .popular-products {
   margin: 4rem 0;
 }
@@ -262,7 +255,6 @@
   margin-right: auto;
 }
 
-/* Styles pour la section "Comment ça marche" */
 .how-it-works {
   padding: 4rem 0;
   margin: 4rem 0;
@@ -295,7 +287,6 @@ footer {
   margin-top: 100px;
 }
 
-/* Styles pour le footer */
 .site-footer {
   color: #ffffff;
   padding: 4rem 0;
@@ -355,7 +346,6 @@ footer {
   cursor: pointer;
 }
 
-/* Media queries pour la responsivité */
 @media (max-width: 768px) {
   .steps {
     flex-direction: column;
@@ -372,9 +362,6 @@ footer {
   }
 }
 
-/* Supprimez les styles pour .newsletter qui ne sont plus nécessaires */
-
-/* Styles pour la section des témoignages */
 .testimonials {
   padding: 4rem 0;
   background-color: #1a1a1a;
@@ -390,7 +377,7 @@ footer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
-  padding: 0 2rem; /* Ajout de padding horizontal */
+  padding: 0 2rem; 
 }
 
 .testimonial {
@@ -398,7 +385,7 @@ footer {
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 0 1rem; /* Ajout de marges horizontales */
+  margin: 0 1rem; 
 }
 
 .testimonial p {
@@ -424,19 +411,17 @@ footer {
   color: #6294c6;
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .testimonial-grid {
     grid-template-columns: 1fr;
-    padding: 0 1rem; /* Réduction du padding pour les petits écrans */
+    padding: 0 1rem; 
   }
 
   .testimonial {
-    margin: 0 0.5rem; /* Réduction des marges pour les petits écrans */
+    margin: 0 0.5rem; 
   }
 }
 
-/* Styles pour la page des produits */
 .card {
   background-color: #222222;
   border: none;
@@ -469,7 +454,6 @@ footer {
   background-color: #2980b9;
 }
 
-/* Styles pour la page des produits */
 .search-bar {
   margin-bottom: 2rem;
   width: 100%;
@@ -514,7 +498,7 @@ footer {
 
 .sticky-filters {
   position: sticky;
-  top: 20px; /* Ajustez cette valeur selon vos besoins */
+  top: 20px; 
   align-self: flex-start;
 }
 
@@ -566,8 +550,7 @@ footer {
 .filters .number-input-container label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
-  min-width: 70px; /* Ajustez cette valeur selon vos besoins */
-}
+  min-width: 70px; 
 
 .filters .number-input-container input[type="number"] {
   flex: 1;
@@ -626,8 +609,8 @@ footer {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 50px; /* Augmenté de 40px à 50px */
-  height: 50px; /* Augmenté de 40px à 50px */
+  width: 50px; 
+  height: 50px; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -640,11 +623,10 @@ footer {
 }
 
 .btn-add-to-cart i {
-  width: 28px; /* Augmenté de 20px à 28px */
-  height: 28px; /* Augmenté de 20px à 28px */
+  width: 28px; 
+  height: 28px;
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .product-container {
     flex-direction: column;
@@ -703,7 +685,6 @@ footer {
   align-items: center;
 }
 
-/* Styles pour la page du panier */
 .cart-container {
   display: flex;
   gap: 2rem;
@@ -828,7 +809,6 @@ footer {
   background-color: #2980b9;
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .cart-container {
     flex-direction: column;
@@ -839,7 +819,6 @@ footer {
   }
 }
 
-/* Styles pour la page de profil */
 .profile-container {
   margin-left: 2rem;
   margin-right: 2rem;
@@ -900,14 +879,12 @@ footer {
   color: #b3d1d3;
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
   }
 }
 
-/* Styles pour l'image de la commande */
 .order-image {
   width: 50px;
   height: 50px;
@@ -915,14 +892,12 @@ footer {
   border-radius: 4px;
 }
 
-/* Ajustez les styles de la table des commandes */
 .order-table th,
 .order-table td {
   padding: 0.75rem;
   vertical-align: middle;
 }
 
-/* Styles pour la page d'édition du profil */
 .edit-profile-container {
   background-color: #222222;
   padding: 2rem;
@@ -985,7 +960,6 @@ footer {
   background-color: #c0392b;
 }
 
-/* Media query pour la responsivit */
 @media (max-width: 768px) {
   .edit-profile-container {
     padding: 1rem;
@@ -1003,7 +977,6 @@ footer {
   }
 }
 
-/* Styles pour les messages d'erreur de formulaire */
 .form-error {
   color: #e74c3c;
   font-size: 0.85rem;
@@ -1018,7 +991,6 @@ footer {
   padding: 0.25rem 0;
 }
 
-/* Style spécifique pour l'erreur de correspondance des mots de passe */
 .password-mismatch {
   font-size: 0.85rem;
   margin: 0.5rem 0;
@@ -1029,12 +1001,10 @@ footer {
   color: #e74c3c;
 }
 
-/* Mise en évidence des champs de mot de passe en cas d'erreur */
 .password-error input {
   border-color: #e74c3c;
 }
 
-/* Animation pour attirer l'attention sur l'erreur */
 @keyframes shake {
   0%,
   100% {
@@ -1053,7 +1023,6 @@ footer {
   animation: shake 0.4s ease-in-out;
 }
 
-/* Style pour les messages flash */
 .alert {
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
@@ -1074,7 +1043,6 @@ footer {
   color: #2ecc71;
 }
 
-/* Animation pour les messages d'erreur */
 @keyframes shake {
   0%,
   100% {
@@ -1092,7 +1060,6 @@ footer {
   animation: shake 0.4s ease-in-out;
 }
 
-/* Style pour le champ de mot de passe avec l'œil */
 .password-group {
   position: relative;
 }
@@ -1121,7 +1088,6 @@ footer {
   padding-right: 40px !important;
 }
 
-/* Styles pour la gestion des utilisateurs */
 .manage-users {
   background-color: #222222;
   padding: 2rem;
@@ -1153,13 +1119,11 @@ footer {
   color: #b3d1d3;
 }
 
-/* Styles pour la colonne des actions */
 .actions {
   width: 100px;
   white-space: nowrap;
 }
 
-/* Styles pour les boutons d'action */
 .btn-action {
   display: inline-flex;
   align-items: center;
@@ -1190,7 +1154,6 @@ footer {
   font-size: 16px;
 }
 
-/* Style pour le select */
 .role-select {
   width: 100%;
   padding: 8px;
@@ -1211,14 +1174,12 @@ footer {
   color: #b3d1d3;
 }
 
-/* Ajoutez ces styles pour le select désactivé */
 .role-select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   background-color: #2a2a2a;
 }
 
-/* Styles pour les modales */
 .modal {
   position: fixed;
   top: 0;
@@ -1570,7 +1531,6 @@ footer {
   height: 24px;
 }
 
-/* Section produits similaires */
 .related-products {
   margin-top: 4rem;
   padding: 2rem;
@@ -1639,7 +1599,6 @@ footer {
   margin-top: 0.5rem;
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
   .product-main {
     gap: 2rem;
@@ -1698,7 +1657,6 @@ footer {
   }
 }
 
-/* Styles pour la page d'administration */
 .admin-dashboard {
   margin-top: 2rem;
 }
@@ -1784,7 +1742,6 @@ footer {
   transform: scale(1.1);
 }
 
-/* Style pour le conteneur des actions */
 .actions-container {
   display: flex;
   align-items: center;
@@ -1813,7 +1770,6 @@ footer {
   background-color: #2980b9;
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .admin-sections {
     grid-template-columns: 1fr;
@@ -1824,7 +1780,6 @@ footer {
   }
 }
 
-/* Styles pour les icônes dans la page d'administration */
 .stat-icon {
   width: 40px;
   height: 40px;
@@ -1848,7 +1803,6 @@ footer {
   margin-right: 0.25rem;
 }
 
-/* Nouveaux styles pour aligner le texte avec les icônes */
 .stat-card {
   display: flex;
   flex-direction: column;
@@ -1868,17 +1822,15 @@ footer {
   justify-content: center;
 }
 
-/* Ajustez la hauteur de ligne pour les boutons d'action rapide */
 .btn-quick-action {
   line-height: 1.2;
-  min-height: 60px; /* Ajustez cette valeur selon vos besoins */
+  min-height: 60px; 
 }
 
 .btn-action-space {
-  margin-left: 0.5rem; /* Ajustez cette valeur selon vos préférences */
+  margin-left: 0.5rem; 
 }
 
-/* Styles pour la page de gestion des produits */
 .manage-products {
   background-color: #222222;
   padding: 2rem;
@@ -2004,7 +1956,6 @@ footer {
   justify-content: flex-end;
 }
 
-/* Modifiez ces styles pour ajuster la largeur des colonnes */
 .product-table th:nth-child(1),
 .product-table td:nth-child(1) {
   width: 80px;
@@ -2030,22 +1981,13 @@ footer {
   width: 120px;
 }
 
-/* Supprimez ou commentez les styles pour la cinquième colonne */
-/*
-.product-table th:nth-child(5),
-.product-table td:nth-child(5) {
-  width: 20%;
-}
-*/
 
-/* Ajustez le style du prix pour qu'il soit plus visible */
 .product-price {
   font-weight: bold;
   color: #3498db;
   font-size: 1.1em;
 }
 
-/* Media query pour la responsivité */
 @media (max-width: 768px) {
   .product-table {
     font-size: 0.9rem;
@@ -2061,7 +2003,6 @@ footer {
     height: 30px;
   }
 
-  /* Modifiez cette partie pour cacher la colonne du type au lieu du prix */
   .product-table th:nth-child(4),
   .product-table td:nth-child(4) {
     display: none;
@@ -2073,7 +2014,6 @@ footer {
   }
 }
 
-/* Styles pour le formulaire d'ajout de produit */
 .add-product-form {
   background-color: #222222;
   padding: 2rem;
@@ -2145,7 +2085,6 @@ footer {
   color: #3498db;
 }
 
-/* Styles pour les éléments du panier */
 .cart-item {
   display: flex;
   align-items: center;
@@ -2198,7 +2137,6 @@ footer {
   cursor: pointer;
 }
 
-/* Ajustez ces styles si nécessaire pour une meilleure mise en page sur mobile */
 @media (max-width: 768px) {
   .cart-item-controls {
     flex-wrap: wrap;
@@ -2215,7 +2153,7 @@ footer {
 }
 
 .no-products-message {
-  grid-column: 1 / -1; /* Fait s'étendre le message sur toute la largeur de la grille */
+  grid-column: 1 / -1; 
   background-color: #222222;
   padding: 2rem;
   border-radius: 8px;
@@ -2234,18 +2172,8 @@ footer {
   font-style: italic;
 }
 
-/* Supprimer toute la section des styles pour la page d'édition du profil */
-.edit-profile-container,
-.edit-profile-form,
-.password-section,
-.password-hint,
-.form-error,
-.btn-save,
-.btn-cancel {
-  /* Supprimer tous ces styles */
-}
 
-/* Styles pour la page d'édition du profil */
+
 .edit-profile-container {
   background-color: #222222;
   padding: 2rem;
@@ -2579,7 +2507,6 @@ footer {
   margin-bottom: 1rem;
 }
 
-/* Styles pour le popup d'édition utilisateur */
 .edit-user-modal {
   background-color: #222222;
   padding: 2rem;
@@ -2613,7 +2540,7 @@ footer {
   color: #fff;
   border-radius: 4px;
   font-size: 1rem;
-  height: 40px; /* Hauteur fixe pour les inputs */
+  height: 40px;  
 }
 
 .form-actions {
@@ -3288,7 +3215,6 @@ footer {
   background: #4f46e5;
 }
 
-/* Style du récapitulatif de commande */
 .order-summary {
   background-color: #222222;
   padding: 2rem;
@@ -3305,7 +3231,6 @@ footer {
   border-bottom: 1px solid #333;
 }
 
-/* Style des items dans le récapitulatif */
 .cart-items .cart-item {
   display: flex;
   align-items: center;
@@ -3337,7 +3262,6 @@ footer {
   margin: 0.25rem 0;
 }
 
-/* Style du total */
 .cart-total {
   margin-top: 2rem;
   padding-top: 1rem;
@@ -3356,7 +3280,6 @@ footer {
   font-weight: bold;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .order-summary {
     margin-top: 2rem;
@@ -3371,7 +3294,6 @@ footer {
   }
 }
 
-/* Ajoutez ou modifiez ces styles */
 .checkout-form {
   background-color: #222222;
   padding: 2rem;
@@ -3399,14 +3321,12 @@ footer {
   margin-bottom: 1rem;
 }
 
-/* Assurez-vous que les inputs restent dans leurs conteneurs */
 .form-group input,
 .form-group select {
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Ajustement pour les écrans mobiles */
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
@@ -3417,7 +3337,6 @@ footer {
   }
 }
 
-/* Styles du panier */
 .cart-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
