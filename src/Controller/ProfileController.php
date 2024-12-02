@@ -25,9 +25,9 @@ class ProfileController extends AbstractController
             $ordersQuery = $entityManager->createQueryBuilder()
                 ->select('o', 'i', 'p', 's')
                 ->from('App\Entity\Order', 'o')
-                ->leftJoin('o.items', 'i')
-                ->leftJoin('i.product', 'p')
-                ->leftJoin('o.shipping', 's')
+                ->innerJoin('o.items', 'i')
+                ->innerJoin('i.product', 'p')
+                ->innerJoin('o.shipping', 's')
                 ->where('o.user = :user')
                 ->setParameter('user', $user)
                 ->orderBy('o.createdAt', 'DESC')
@@ -80,11 +80,11 @@ class ProfileController extends AbstractController
 
         } catch (\Exception $e) {
             $logger->error('Erreur lors du traitement des commandes : ' . $e->getMessage());
-            $logger->error('Trace : ' . $e->getTraceAsString());
-            
+            $this->addFlash('error', 'Une erreur est survenue lors du chargement de vos commandes');
             return $this->render('profile/index.html.twig', [
                 'user' => $user,
-                'orders' => []
+                'orders' => [],
+                'error' => true
             ]);
         }
     }

@@ -107,6 +107,12 @@
                 <h2>Historique des commandes</h2>
             </div>
             <div class="section-content">
+                {% if error is defined and error %}
+                    <div class="alert alert-danger">
+                        {{ app.flashes('error')[0] }}
+                    </div>
+                {% endif %}
+
                 {% if orders is empty %}
                     <div class="empty-state">
                         <i data-lucide="package-x"></i>
@@ -114,6 +120,21 @@
                         <a href="{{ path('app_products') }}" class="link-action">
                             Découvrir nos produits
                         </a>
+                    </div>
+                {% else %}
+                    <div class="orders-list">
+                        {% for order in orders %}
+                            <div class="order-item">
+                                <div class="order-header">
+                                    <h3>Commande #{{ order.id }}</h3>
+                                    <p>Date : {{ order.date|default('N/A') }}</p>
+                                    <p>Total : {{ order.total|number_format(2, ',', ' ')|default('0,00') }} €</p>
+                                </div>
+                                {% if order.items is defined and order.items|length > 0 %}
+                                    {# Affichage des items #}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     </div>
                 {% endif %}
             </div>
@@ -421,6 +442,133 @@
             border-radius: 20px;
             backdrop-filter: blur(10px);
             z-index: -1;
+        }
+
+        /* Style des commandes */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .order-item {
+            background: var(--bg-hover);
+            border-radius: 16px;
+            padding: 1.75rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .order-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-en_attente {
+            background: rgba(234, 179, 8, 0.1);
+            color: #EAB308;
+        }
+
+        .status-validee {
+            background: rgba(5, 150, 105, 0.1);
+            color: #059669;
+        }
+
+        .status-annulee {
+            background: rgba(220, 38, 38, 0.1);
+            color: #DC2626;
+        }
+
+        .order-product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .product-quantity {
+            color: var(--text-secondary);
+        }
+
+        .product-price {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+
+        .order-total {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .total-amount {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .btn-details {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-details:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
         }
     </style>
 {% endblock %}
