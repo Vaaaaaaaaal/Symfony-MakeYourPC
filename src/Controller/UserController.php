@@ -277,17 +277,7 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route('/admin/products', name: 'app_admin_products')]
-    public function manageProducts(ProductRepository $productRepository): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
-        $products = $productRepository->findAll();
-        
-        return $this->render('admin/manage_products.html.twig', [
-            'products' => $products
-        ]);
-    }
+
 
     #[Route('/admin/users/{id}/edit-form', name: 'app_admin_user_edit_form', methods: ['GET'])]
     public function editUserForm(User $user): Response
