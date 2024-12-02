@@ -361,10 +361,6 @@ footer {
     flex-basis: 100%;
   }
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 .testimonials {
   padding: 4rem 0;
   background-color: #1a1a1a;
@@ -417,11 +413,7 @@ footer {
 @media (max-width: 768px) {
   .testimonial-grid {
     grid-template-columns: 1fr;
-<<<<<<< HEAD
     padding: 0 1rem;
-=======
-    padding: 0 1rem; 
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
   }
 
   .testimonial {
@@ -505,11 +497,7 @@ footer {
 
 .sticky-filters {
   position: sticky;
-<<<<<<< HEAD
   top: 20px;
-=======
-  top: 20px; 
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
   align-self: flex-start;
 }
 
@@ -562,10 +550,7 @@ footer {
   flex: 0 0 auto;
   margin-right: 0.5rem;
   min-width: 70px; 
-<<<<<<< HEAD
 }
-=======
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 
 .filters .number-input-container input[type="number"] {
   flex: 1;
@@ -639,11 +624,7 @@ footer {
 
 .btn-add-to-cart i {
   width: 28px; 
-<<<<<<< HEAD
   height: 28px; 
-=======
-  height: 28px;
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 }
 
 @media (max-width: 768px) {
@@ -2191,7 +2172,6 @@ footer {
   font-style: italic;
 }
 
-<<<<<<< HEAD
 .edit-profile-container,
 .edit-profile-form,
 .password-section,
@@ -2202,10 +2182,6 @@ footer {
   /* Supprimer tous ces styles */
 }
 
-=======
-
-
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 .edit-profile-container {
   background-color: #222222;
   padding: 2rem;
@@ -2572,11 +2548,7 @@ footer {
   color: #fff;
   border-radius: 4px;
   font-size: 1rem;
-<<<<<<< HEAD
   height: 40px;
-=======
-  height: 40px;  
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 }
 
 .form-actions {

@@ -234,17 +234,4 @@ class CartController extends AbstractController
     }
 
 
-<<<<<<< HEAD
-=======
-        $cache = $this->cache; 
-        $key = 'request_' . $requestId;
-        
-        if ($cache->has($key)) {
-            return true;
-        }
-        
-        $cache->set($key, true, 60); 
-        return false;
-    }
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 }

@@ -31,10 +31,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-<<<<<<< HEAD
             // Ajout d'un message flash pour informer l'utilisateur
-=======
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 
             return $this->redirectToRoute('app_home');
         }

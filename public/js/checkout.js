@@ -49,21 +49,13 @@ document.addEventListener("DOMContentLoaded", function () {
   if (cardNumber) {
     cardNumber.addEventListener("keydown", onlyNumbers);
     cardNumber.addEventListener("input", () => formatCardNumber(cardNumber));
-<<<<<<< HEAD
     cardNumber.setAttribute("maxlength", "19");
-=======
-    cardNumber.setAttribute("maxlength", "19"); 
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
   }
 
   if (cardExpiry) {
     cardExpiry.addEventListener("keydown", onlyNumbers);
     cardExpiry.addEventListener("input", () => formatExpiry(cardExpiry));
-<<<<<<< HEAD
     cardExpiry.setAttribute("maxlength", "5");
-=======
-    cardExpiry.setAttribute("maxlength", "5"); 
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
   }
 
   if (cardCVC) {

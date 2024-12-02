@@ -133,10 +133,6 @@
                         
                         const productRow = document.querySelector(`[data-product-id="${currentProductId}"]`).closest('tr');
                         productRow.remove();
-<<<<<<< HEAD
-=======
-
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
                         showNotification('Le produit a été supprimé avec succès', 'success');
                     } else {
                         throw new Error(data.message || 'Erreur lors de la suppression');
@@ -146,10 +142,6 @@
                     showNotification('Erreur lors de la suppression du produit', 'error');
                 }
             });
-<<<<<<< HEAD
-=======
-
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
             function showNotification(message, type) {
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
@@ -160,10 +152,6 @@
                 `;
                 
                 document.body.appendChild(notification);
-<<<<<<< HEAD
-=======
-                
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
                 setTimeout(() => {
                     notification.remove();
                 }, 3000);
@@ -315,16 +303,9 @@
         }
 
         .btn-edit:hover {
-<<<<<<< HEAD
             color: #2980b9; 
         }
 
-=======
-            color: #2980b9;
-        }
-
-       
->>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
         td .btn-edit,
         td .btn-delete {
             margin: 0 5px;
