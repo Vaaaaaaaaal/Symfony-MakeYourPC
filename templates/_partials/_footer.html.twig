@@ -17,10 +17,15 @@
             <div class="footer-newsletter">
                 <h3>Restez informé</h3>
                 <p>Inscrivez-vous à notre newsletter pour recevoir nos dernières offres et nouveautés.</p>
-                <form action="#" method="post" class="newsletter-form">
-                    <input type="email" name="email" placeholder="Votre adresse e-mail" required>
+                {{ form_start(newsletter_form, {'attr': {'class': 'newsletter-form'}}) }}
+                    {{ form_widget(newsletter_form.email, {
+                        'attr': {
+                            'placeholder': 'Votre adresse e-mail',
+                            'required': true
+                        }
+                    }) }}
                     <button type="submit">S'inscrire</button>
-                </form>
+                {{ form_end(newsletter_form) }}
             </div>
         </div>
     </div>
