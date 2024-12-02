@@ -85,7 +85,7 @@ class CheckoutType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le numéro de carte est obligatoire']),
                     new Assert\Regex([
-                        'pattern' => '/^[0-9\s]{19}$/',
+                        'pattern' => '/^(\d{4}\s){3}\d{4}$/',
                         'message' => 'Le numéro de carte doit contenir 16 chiffres'
                     ])
                 ]

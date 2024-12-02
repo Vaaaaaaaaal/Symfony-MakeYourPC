@@ -5,17 +5,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/checkout.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            
-            form.setAttribute('novalidate', true);
-            
-            form.addEventListener('submit', function(e) {
-                return true;
-            });
-        });
-    </script>
 {% endblock %}
 
 {% block stylesheets %}
@@ -63,6 +52,12 @@
 
                     <div class="shipping-info mt-4">
                         <h2>Adresse de livraison</h2>
+                        
+                        {% if app.user %}
+                            <div class="form-group mb-4">
+                                {{ form_row(form.savedAddress, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                        {% endif %}
 
                         <div class="form-group">
                             {{ form_row(form.address) }}
@@ -80,34 +75,49 @@
                     <div class="payment-info mt-4">
                         <h2>Informations de paiement</h2>
                         <div class="form-group">
-                            {{ form_row(form.cardNumber, {
+                            {{ form_label(form.cardNumber) }}
+                            {{ form_widget(form.cardNumber, {
                                 'attr': {
                                     'class': 'form-control',
-                                    'autocomplete': 'cc-number'
+                                    'autocomplete': 'cc-number',
+                                    'data-checkout-field': 'cardNumber'
                                 }
                             }) }}
+                            <div class="invalid-feedback">
+                                Numéro de carte invalide
+                            </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                {{ form_row(form.cardExpiry, {
+                                {{ form_label(form.cardExpiry) }}
+                                {{ form_widget(form.cardExpiry, {
                                     'attr': {
                                         'class': 'form-control',
-                                        'autocomplete': 'cc-exp'
+                                        'autocomplete': 'cc-exp',
+                                        'data-checkout-field': 'cardExpiry'
                                     }
                                 }) }}
+                                <div class="invalid-feedback">
+                                    Date d'expiration invalide
+                                </div>
                             </div>
                             <div class="form-group col-md-6">
-                                {{ form_row(form.cardCvc, {
+                                {{ form_label(form.cardCvc) }}
+                                {{ form_widget(form.cardCvc, {
                                     'attr': {
                                         'class': 'form-control',
-                                        'autocomplete': 'cc-csc'
+                                        'autocomplete': 'cc-csc',
+                                        'data-checkout-field': 'cardCvc'
                                     }
                                 }) }}
+                                <div class="invalid-feedback">
+                                    Code CVC invalide
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-checkout mt-4">
+                    <button type="submit" class="btn-checkout mt-4" id="submit-payment">
                         Valider le paiement
                         <i data-lucide="credit-card"></i>
                     </button>
