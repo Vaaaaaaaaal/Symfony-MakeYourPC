@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Cart;
 use App\Entity\CartItem;
-use App\Entity\Product;
 use App\Repository\CartRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -244,20 +243,5 @@ class CartController extends AbstractController
         }
     }
 
-    private function isDuplicateRequest(?string $requestId): bool
-    {
-        if (!$requestId) {
-            return false;
-        }
 
-        $cache = $this->cache; // Injectez le service de cache
-        $key = 'request_' . $requestId;
-        
-        if ($cache->has($key)) {
-            return true;
-        }
-        
-        $cache->set($key, true, 60); // Cache pour 60 secondes
-        return false;
-    }
 }
