@@ -107,32 +107,75 @@
                 <h2>Historique des commandes</h2>
             </div>
             <div class="section-content">
-                {% if error is defined and error %}
-                    <div class="alert alert-danger">
-                        {{ app.flashes('error')[0] }}
-                    </div>
-                {% endif %}
-
                 {% if orders is empty %}
                     <div class="empty-state">
                         <i data-lucide="package-x"></i>
                         <p>Aucune commande pour le moment</p>
                         <a href="{{ path('app_products') }}" class="link-action">
+                            <i data-lucide="shopping-cart"></i>
                             Découvrir nos produits
                         </a>
                     </div>
                 {% else %}
                     <div class="orders-list">
                         {% for order in orders %}
-                            <div class="order-item">
-                                <div class="order-header">
-                                    <h3>Commande #{{ order.id }}</h3>
-                                    <p>Date : {{ order.date|default('N/A') }}</p>
-                                    <p>Total : {{ order.total|number_format(2, ',', ' ')|default('0,00') }} €</p>
+                            <div class="order-card">
+                                <div class="order-summary" onclick="toggleOrderDetails(this)">
+                                    <div class="order-left">
+                                        <div class="order-number">
+                                            <span class="hash">#</span>
+                                            <span class="label">COMMANDE</span>
+                                            <span class="number">{{ order.id }}</span>
+                                        </div>
+                                        <div class="order-datetime">
+                                            <i data-lucide="calendar"></i>
+                                            <span>{{ order.date }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-right">
+                                        <div class="order-amount">
+                                            {{ order.total|number_format(2, ',', ' ') }} €
+                                        </div>
+                                        <div class="toggle-btn" aria-label="Voir les détails">
+                                            <i data-lucide="chevron-down"></i>
+                                        </div>
+                                    </div>
                                 </div>
-                                {% if order.items is defined and order.items|length > 0 %}
-                                    {# Affichage des items #}
-                                {% endif %}
+
+                                <div class="order-details">
+                                    <div class="products-list">
+                                        {% for item in order.items %}
+                                            <div class="product-item">
+                                                <div class="product-info">
+                                                    <i data-lucide="package"></i>
+                                                    <span class="product-name">{{ item.product.name }}</span>
+                                                </div>
+                                                <div class="product-details">
+                                                    <span class="quantity">
+                                                        × {{ item.quantity }}
+                                                    </span>
+                                                    <span class="price">
+                                                        {{ item.price|number_format(2, ',', ' ') }} €
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    {% if order.shipping %}
+                                        <div class="shipping-info">
+                                            <div class="shipping-header">
+                                                <i data-lucide="truck"></i>
+                                                <span>Adresse de livraison</span>
+                                            </div>
+                                            <div class="shipping-details">
+                                                <p>{{ order.shipping.firstName }} {{ order.shipping.lastName }}</p>
+                                                <p>{{ order.shipping.address }}</p>
+                                                <p>{{ order.shipping.postalCode }} {{ order.shipping.city }}</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -448,127 +491,162 @@
         .orders-list {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .order-item {
-            background: var(--bg-hover);
-            border-radius: 16px;
-            padding: 1.75rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .order-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-            border-color: var(--accent-color);
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .order-info h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .order-date {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .status-en_attente {
-            background: rgba(234, 179, 8, 0.1);
-            color: #EAB308;
-        }
-
-        .status-validee {
-            background: rgba(5, 150, 105, 0.1);
-            color: #059669;
-        }
-
-        .status-annulee {
-            background: rgba(220, 38, 38, 0.1);
-            color: #DC2626;
-        }
-
-        .order-product {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .product-info {
-            display: flex;
-            align-items: center;
             gap: 1rem;
         }
 
-        .product-name {
-            color: var(--text-primary);
-            font-weight: 500;
+        .order-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
-        .product-quantity {
-            color: var(--text-secondary);
-        }
-
-        .product-price {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .order-footer {
+        .order-summary {
+            padding: 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
         }
 
-        .order-total {
+        .order-left {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .order-number {
+            display: flex;
+            align-items: center;
             gap: 0.5rem;
         }
 
-        .total-amount {
-            font-size: 1.25rem;
+        .hash {
+            color: var(--accent-color);
             font-weight: 600;
-            color: var(--text-primary);
+            font-size: 1.2rem;
         }
 
-        .btn-details {
+        .label {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .number {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .order-datetime {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .order-datetime i {
+            width: 1.2rem;
+            height: 1.2rem;
+            color: var(--accent-color);
+        }
+
+        .order-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .order-amount {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--bg-hover);
+            border-radius: 50%;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn i {
+            width: 1.5rem;
+            height: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .order-details {
+            display: none;
+            padding: 0 1.5rem 1.5rem;
+            animation: slideDown 0.3s ease-out;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .order-card.active .toggle-btn i {
+            transform: rotate(180deg);
+        }
+
+        .order-card.active .order-details {
+            display: block;
+        }
+
+        .order-card:hover {
+            background: var(--bg-hover);
+        }
+
+        .order-card:hover .toggle-btn {
             background: var(--accent-color);
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
         }
 
-        .btn-details:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
+        @media (max-width: 768px) {
+            .order-summary {
+                padding: 1.25rem;
+            }
+
+            .order-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .order-right {
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .toggle-btn {
+                width: 2rem;
+                height: 2rem;
+            }
+
+            .toggle-btn i {
+                width: 1.25rem;
+                height: 1.25rem;
+            }
         }
     </style>
 {% endblock %}
@@ -579,5 +657,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
         });
+
+        function toggleOrderDetails(element) {
+            const card = element.closest('.order-card');
+            card.classList.toggle('active');
+        }
     </script>
 {% endblock %}
