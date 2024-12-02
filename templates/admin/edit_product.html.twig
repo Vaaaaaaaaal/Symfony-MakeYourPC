@@ -18,8 +18,15 @@
                         const img = document.createElement('img');
                         img.src = e.target.result;
                         img.alt = 'Aperçu';
+<<<<<<< HEAD
                         imagePreview.innerHTML = '';
                         imagePreview.appendChild(img);
+=======
+                        
+                        imagePreview.innerHTML = '';
+                        imagePreview.appendChild(img);
+                        
+>>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
                         uploadInfo.innerHTML = `
                             <i data-lucide="check-circle"></i>
                             <p>Image sélectionnée : ${file.name}</p>
@@ -30,10 +37,18 @@
                     reader.readAsDataURL(file);
                 }
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
             imageInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 updatePreview(file);
             });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
             dropZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 dropZone.classList.add('dragover');

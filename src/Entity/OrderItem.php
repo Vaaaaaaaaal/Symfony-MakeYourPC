@@ -71,5 +71,4 @@ class OrderItem
         return $this;
     }
 
-    // Getters et Setters...
 }

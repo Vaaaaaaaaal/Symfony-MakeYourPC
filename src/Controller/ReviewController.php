@@ -49,7 +49,6 @@ class ReviewController extends AbstractController
                 throw new \Exception('Utilisateur non connecté');
             }
 
-            // Créer ou mettre à jour la note
             $review = $this->reviewRepository->findOneBy([
                 'product' => $product,
                 'user' => $user
@@ -66,7 +65,6 @@ class ReviewController extends AbstractController
             $this->entityManager->persist($review);
             $this->entityManager->flush();
 
-            // Calculer et mettre à jour la moyenne
             $newAverageRating = $this->reviewRepository->getAverageRating($product);
             $product->setRating($newAverageRating);
             $this->entityManager->persist($product);

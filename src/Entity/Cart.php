@@ -78,7 +78,6 @@ class Cart
 
     public function getItemsCount(): int
     {
-        // On utilise un tableau pour stocker les IDs des produits uniques
         $uniqueProductIds = [];
         
         foreach ($this->items as $item) {
@@ -88,7 +87,6 @@ class Cart
             }
         }
         
-        // On retourne le nombre de produits uniques
         return count($uniqueProductIds);
     }
 

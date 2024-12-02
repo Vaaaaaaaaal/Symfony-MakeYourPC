@@ -84,7 +84,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Ajoutez les getters et setters pour les autres propriétés...
 
     public function getEmail(): ?string
     {
@@ -119,7 +118,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
     }
 
     public function getUserIdentifier(): string
@@ -200,8 +198,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->carts->isEmpty()) {
             return null;
         }
-        
-        // Retourne le dernier panier créé
         return $this->carts->last();
     }
 

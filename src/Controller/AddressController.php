@@ -59,12 +59,10 @@ class AddressController extends AbstractController
     #[Route('/{id}/delete', name: 'app_address_delete', methods: ['POST'])]
     public function delete(Request $request, Address $address, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier que l'adresse appartient bien à l'utilisateur connecté
         if ($address->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cette adresse.');
         }
 
-        // Vérifier le token CSRF
         if ($this->isCsrfTokenValid('delete'.$address->getId(), $request->request->get('_token'))) {
             $entityManager->remove($address);
             $entityManager->flush();

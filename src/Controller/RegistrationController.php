@@ -21,7 +21,6 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -32,9 +31,11 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+<<<<<<< HEAD
             // Ajout d'un message flash pour informer l'utilisateur
+=======
+>>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 
-            // Redirection vers la page d'accueil
             return $this->redirectToRoute('app_home');
         }
 

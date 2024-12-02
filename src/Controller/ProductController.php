@@ -59,10 +59,8 @@ class ProductController extends AbstractController
     #[Route('/product/{id}', name: 'app_product_detail')]
     public function detail(Product $product, Request $request): Response
     {
-        // Récupérer la quantité dans le panier pour ce produit
         $cartQuantity = 0;
         
-        // Si l'utilisateur est connecté
         if ($this->getUser()) {
             $cart = $this->getUser()-> getCart();
             if ($cart) {
@@ -75,7 +73,6 @@ class ProductController extends AbstractController
                 }
             }
         } 
-        // Si l'utilisateur n'est pas connecté, vérifier le panier en session
         else {
             $cart = $request->getSession()->get('cart', []);
             $cartQuantity = $cart[$product->getId()] ?? 0;
@@ -117,7 +114,6 @@ class ProductController extends AbstractController
                     return $this->redirectToRoute('app_add_product');
                 }
             } else {
-                // Définir une image par défaut si aucune image n'est uploadée
                 $product->setImagePath('default.png');
             }
             
@@ -136,9 +132,7 @@ class ProductController extends AbstractController
     public function confirmAddProduct(Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
-        // Logique de confirmation ici
-        
+                
         return $this->redirectToRoute('app_admin_products');
     }
 
@@ -168,7 +162,6 @@ class ProductController extends AbstractController
                         $newFilename
                     );
                     
-                    // Supprimer l'ancienne image si elle existe
                     if ($product->getImagePath()) {
                         $oldImagePath = $this->getParameter('products_directory').'/'.$product->getImagePath();
                         if (file_exists($oldImagePath)) {

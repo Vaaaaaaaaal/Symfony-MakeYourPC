@@ -26,7 +26,6 @@ class UserController extends AbstractController
     #[Route('/login/success', name: 'app_login_success')]
     public function loginSuccess(Security $security): Response
     {
-        // Vérifiez si l'utilisateur est connecté
         if (!$security->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('app_login');
         }
@@ -95,6 +94,25 @@ class UserController extends AbstractController
         ]);
     }
 
+<<<<<<< HEAD
+=======
+    #[Route('/profile', name: 'app_profile')]
+    public function profile(Security $security): Response
+    {
+        $user = $security->getUser();
+        
+        $orders = [
+            ['id' => 1, 'date' => '2023-05-01', 'total' => 599.99, 'image' => 'i7.png'],
+            ['id' => 2, 'date' => '2023-06-15', 'total' => 1299.99,  'image' => 'rtx.jpg'],
+            ['id' => 3, 'date' => '2023-07-20', 'total' => 799.99,  'image' => 'ssd.avif'],
+        ];
+
+        return $this->render('profile/index.html.twig', [
+            'user' => $user,
+            'orders' => $orders,
+        ]);
+    }
+>>>>>>> 4fc1b50709ed1167737bebce28ba0cf3e5872b38
 
     #[Route('/profile/edit', name: 'app_profile_edit')]
     public function editProfile(
@@ -133,7 +151,7 @@ class UserController extends AbstractController
                 'mapped' => false,
                 'required' => false,
                 'label' => 'Nouveau mot de passe',
-                'invalid_message' => ' ',  // Message vide pour supprimer l'erreur par défaut
+                'invalid_message' => ' ', 
                 'attr' => [
                     'class' => 'form-control password-input',
                     'autocomplete' => 'new-password'
@@ -141,7 +159,7 @@ class UserController extends AbstractController
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer les modifications',
-                'attr' => ['class' => 'btn-save']  // Modifié pour utiliser notre nouvelle classe CSS
+                'attr' => ['class' => 'btn-save']  
             ])
             ->getForm();
 
@@ -176,7 +194,6 @@ class UserController extends AbstractController
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Empêcher l'auto-modification du rôle
         if ($user === $security->getUser()) {
             return new JsonResponse([
                 'success' => false,
@@ -251,7 +268,6 @@ class UserController extends AbstractController
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Empêcher la suppression de son propre compte
         if ($user === $security->getUser()) {
             return new JsonResponse([
                 'success' => false,
@@ -259,7 +275,6 @@ class UserController extends AbstractController
             ], 403);
         }
 
-        // Empêcher la suppression d'un admin
         if ($user->isAdmin()) {
             return new JsonResponse([
                 'success' => false,

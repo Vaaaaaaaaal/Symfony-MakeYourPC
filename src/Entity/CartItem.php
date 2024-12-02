@@ -24,7 +24,6 @@ class CartItem
     #[ORM\Column]
     private int $quantity = 1;
 
-    // Getters et setters
 
     public function getId(): ?int
     {
