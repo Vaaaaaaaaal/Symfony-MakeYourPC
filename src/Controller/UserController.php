@@ -21,6 +21,8 @@ use App\Entity\User;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Form\UserEditType;
+use App\Repository\OrderRepository;
+use Psr\Log\LoggerInterface;
 
 class UserController extends AbstractController
 {
@@ -36,7 +38,7 @@ class UserController extends AbstractController
         if ($security->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('app_admin'); 
         } else {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_user_profile');
         }
     }
 
@@ -95,7 +97,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/profile/edit', name: 'app_profile_edit')]
+    #[Route('/profile/edit', name: 'app_user_profile_edit')]
     public function editProfile(
         Request $request,
         Security $security,
@@ -156,7 +158,7 @@ class UserController extends AbstractController
 
             try {
                 $entityManager->flush();
-                return $this->redirectToRoute('app_profile');
+                return $this->redirectToRoute('app_user_profile');
             } catch (\Exception $e) {
             }
         }
@@ -300,5 +302,40 @@ class UserController extends AbstractController
         return $this->render('admin/users/_edit_form.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/profile', name: 'app_user_profile')]
+    public function profile(
+        OrderRepository $orderRepository,
+        LoggerInterface $logger
+    ): Response {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $rawOrders = $orderRepository->findOrdersWithDetailsByUser($user);
+            $logger->info('Nombre de commandes trouvées : ' . count($rawOrders));
+
+            $orders = $orderRepository->formatOrdersData($rawOrders);
+            $logger->info('Données formatées : ' . json_encode($orders));
+
+            return $this->render('profile/index.html.twig', [
+                'user' => $user,
+                'orders' => $orders
+            ]);
+
+        } catch (\Exception $e) {
+            $logger->error('Erreur lors du traitement des commandes : ' . $e->getMessage());
+            $this->addFlash('error', 'Une erreur est survenue lors du chargement de vos commandes');
+            
+            return $this->render('profile/index.html.twig', [
+                'user' => $user,
+                'orders' => [],
+                'error' => true
+            ]);
+        }
     }
 }

@@ -25,7 +25,7 @@ class AddressController extends AbstractController
             $entityManager->persist($address);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_profile');
+            return $this->redirectToRoute('app_user_profile');
         }
 
         return $this->render('address/new.html.twig', [
@@ -47,7 +47,7 @@ class AddressController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_profile');
+            return $this->redirectToRoute('app_user_profile');
         }
 
         return $this->render('address/edit.html.twig', [
@@ -69,7 +69,7 @@ class AddressController extends AbstractController
 
         }
 
-        return $this->redirectToRoute('app_profile');
+        return $this->redirectToRoute('app_user_profile');
     }
 
     #[Route('/{id}/get-data', name: 'app_address_get_data', methods: ['GET'])]
