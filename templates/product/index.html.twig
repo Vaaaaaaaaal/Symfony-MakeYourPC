@@ -6,52 +6,32 @@
     <div class="container">
         <h1 class="my-4">Nos Produits</h1>
         
+        {{ form_start(form, {'attr': {'class': 'product-filter-form'}}) }}
         <div class="search-bar mb-4">
-            <form action="{{ path('app_products') }}" method="GET" class="form-inline">
-                <div class="search-container">
-                    <input type="text" name="search" class="form-control" placeholder="Rechercher un produit..." value="{{ app.request.query.get('search') }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
-                    </div>
+            <div class="search-container">
+                {{ form_widget(form.search) }}
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
                 </div>
-            </form>
+            </div>
         </div>
 
         <div class="product-container">
             <div class="filters sticky-filters">
                 <h4>Filtres</h4>
-                <form action="{{ path('app_products') }}" method="GET">
-                    <div class="form-group number-input-container">
-                        <label for="price_min">Prix min</label>
-                        <input type="number" class="input-int" id="price_min" name="price_min" value="{{ app.request.query.get('price_min') }}">
-                    </div>
-                    <div class="form-group number-input-container">
-                        <label for="price_max">Prix max</label>
-                        <input type="number" class="input-int" id="price_max" name="price_max" value="{{ app.request.query.get('price_max') }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="type">Type de produit</label>
-                        <select class="form-control" id="type" name="type">
-                            <option value="">Tous</option>
-                            {% for type in types %}
-                                <option value="{{ type.id }}" {% if app.request.query.get('type') == type.id %}selected{% endif %}>
-                                    {{ type.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="rating">Note minimale</label>
-                        <select class="form-control" id="rating" name="rating">
-                            <option value="">Toutes les notes</option>
-                            <option value="4" {% if app.request.query.get('rating') == '4' %}selected{% endif %}>4 étoiles et plus</option>
-                            <option value="3" {% if app.request.query.get('rating') == '3' %}selected{% endif %}>3 étoiles et plus</option>
-                            <option value="2" {% if app.request.query.get('rating') == '2' %}selected{% endif %}>2 étoiles et plus</option>
-                            <option value="1" {% if app.request.query.get('rating') == '1' %}selected{% endif %}>1 étoile et plus</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3">Appliquer les filtres</button>
-                </form>
+                <div class="form-group number-input-container">
+                    {{ form_row(form.price_min) }}
+                </div>
+                <div class="form-group number-input-container">
+                    {{ form_row(form.price_max) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(form.type) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(form.rating) }}
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Appliquer les filtres</button>
             </div>
             
             <div class="product-grid">
@@ -87,6 +67,7 @@
                 {% endif %}
             </div>
         </div>
+        {{ form_end(form) }}
     </div>
 {% endblock %}
 

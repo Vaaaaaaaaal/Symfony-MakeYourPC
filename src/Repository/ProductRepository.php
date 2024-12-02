@@ -45,27 +45,27 @@ class ProductRepository extends ServiceEntityRepository
             ->leftJoin('p.type', 't')
             ->addSelect('t');
 
-        if (isset($criteria['search'])) {
+        if (!empty($criteria['search'])) {
             $qb->andWhere('p.name LIKE :search')
                ->setParameter('search', '%' . $criteria['search'] . '%');
         }
 
-        if (isset($criteria['price_min'])) {
+        if (!empty($criteria['price_min'])) {
             $qb->andWhere('p.price >= :price_min')
                ->setParameter('price_min', $criteria['price_min']);
         }
 
-        if (isset($criteria['price_max'])) {
+        if (!empty($criteria['price_max'])) {
             $qb->andWhere('p.price <= :price_max')
                ->setParameter('price_max', $criteria['price_max']);
         }
 
-        if (isset($criteria['type'])) {
+        if (!empty($criteria['type'])) {
             $qb->andWhere('t.id = :type')
                ->setParameter('type', $criteria['type']);
         }
 
-        if (isset($criteria['rating'])) {
+        if (!empty($criteria['rating'])) {
             $qb->andWhere('p.rating >= :rating')
                ->setParameter('rating', $criteria['rating']);
         }

@@ -14,45 +14,35 @@ use App\Form\ProductType;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use App\Entity\Cart;
+use App\Form\ProductFilterType;
 
 class ProductController extends AbstractController
 {
     #[Route('/products', name: 'app_products')]
     public function index(Request $request, ProductRepository $productRepository, TypeRepository $typeRepository): Response
     {
-        $search = $request->query->get('search');
-        $priceMin = $request->query->get('price_min');
-        $priceMax = $request->query->get('price_max');
-        $typeId = $request->query->get('type');
-        $rating = $request->query->get('rating');
-
+        $form = $this->createForm(ProductFilterType::class, null, [
+            'method' => 'GET'
+        ]);
+        
+        $form->handleRequest($request);
+        
         $criteria = [];
-        
-        if ($search) {
-            $criteria['search'] = $search;
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $criteria = [
+                'search' => $data['search'] ?? null,
+                'price_min' => $data['price_min'] ?? null,
+                'price_max' => $data['price_max'] ?? null,
+                'type' => $data['type'] ? $data['type']->getId() : null,
+                'rating' => $data['rating'] ?? null
+            ];
         }
-        
-        if ($priceMin) {
-            $criteria['price_min'] = $priceMin;
-        }
-        if ($priceMax) {
-            $criteria['price_max'] = $priceMax;
-        }
-        
-        if ($typeId) {
-            $criteria['type'] = $typeId;
-        }
-        
-        if ($rating) {
-            $criteria['rating'] = $rating;
-        }
-
-        $products = $productRepository->findBySearchCriteria($criteria);
-        $types = $typeRepository->findAll();
 
         return $this->render('product/index.html.twig', [
-            'products' => $products,
-            'types' => $types
+            'form' => $form->createView(),
+            'products' => $productRepository->findBySearchCriteria($criteria),
+            'types' => $typeRepository->findAll(),
         ]);
     }
 
