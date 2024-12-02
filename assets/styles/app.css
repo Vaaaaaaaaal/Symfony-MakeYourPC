@@ -3530,6 +3530,25 @@ footer {
     background: #2980b9;
 }
 
+.btn-checkout-1 {
+    display: flex;
+    width: 90%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #3498db;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-checkout-1:hover {
+    background: #2980b9;
+}
+
 .empty-cart {
     text-align: center;
     padding: 4rem 2rem;
