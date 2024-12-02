@@ -3,98 +3,302 @@
 {% block title %}Nouvelle adresse{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>Ajouter une nouvelle adresse</h1>
-
-        {{ form_start(form, {'attr': {'class': 'address-form'}}) }}
-            {{ form_widget(form) }}
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Ajouter l'adresse</button>
-                <a href="{{ path('app_profile') }}" class="btn btn-secondary">Retour</a>
+    <div class="profile-section">
+        <div class="section-header">
+            <div class="header-left">
+                <i data-lucide="map-pin"></i>
+                <h2>Nouvelle adresse</h2>
             </div>
-        {{ form_end(form) }}
+        </div>
+        
+        <div class="section-content">
+            {{ form_start(form, {'attr': {'class': 'address-form'}}) }}
+                <div class="form-grid">
+                    <div class="form-group">
+                        {{ form_label(form.name, 'Nom de l\'adresse', {'label_attr': {'class': 'label'}}) }}
+                        {{ form_widget(form.name, {'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Ex: Domicile, Bureau...'
+                        }}) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    <div class="info-group">
+                        <div class="form-group">
+                            {{ form_label(form.firstname, 'Prénom', {'label_attr': {'class': 'label'}}) }}
+                            {{ form_widget(form.firstname, {'attr': {
+                                'class': 'form-input',
+                                'placeholder': 'Votre prénom'
+                            }}) }}
+                            {{ form_errors(form.firstname) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.lastname, 'Nom', {'label_attr': {'class': 'label'}}) }}
+                            {{ form_widget(form.lastname, {'attr': {
+                                'class': 'form-input',
+                                'placeholder': 'Votre nom'
+                            }}) }}
+                            {{ form_errors(form.lastname) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.address, 'Adresse', {'label_attr': {'class': 'label'}}) }}
+                        {{ form_widget(form.address, {'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Numéro et nom de rue'
+                        }}) }}
+                        {{ form_errors(form.address) }}
+                    </div>
+
+                    <div class="info-group">
+                        <div class="form-group">
+                            {{ form_label(form.postal, 'Code postal', {'label_attr': {'class': 'label'}}) }}
+                            {{ form_widget(form.postal, {'attr': {
+                                'class': 'form-input',
+                                'placeholder': 'Code postal'
+                            }}) }}
+                            {{ form_errors(form.postal) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.city, 'Ville', {'label_attr': {'class': 'label'}}) }}
+                            {{ form_widget(form.city, {'attr': {
+                                'class': 'form-input',
+                                'placeholder': 'Ville'
+                            }}) }}
+                            {{ form_errors(form.city) }}
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="form-group">
+                            {{ form_label(form.country, 'Pays', {'label_attr': {'class': 'label'}}) }}
+                            {{ form_widget(form.country, {'attr': {
+                                'class': 'form-input',
+                                'placeholder': 'Pays'
+                            }}) }}
+                            {{ form_errors(form.country) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.phone, 'Téléphone', {'label_attr': {'class': 'label'}}) }}
+                            {{ form_widget(form.phone, {'attr': {
+                                'class': 'form-input',
+                                'placeholder': 'Numéro de téléphone'
+                            }}) }}
+                            {{ form_errors(form.phone) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-new">
+                        <i data-lucide="save"></i>
+                        Ajouter l'adresse
+                    </button>
+                    <a href="{{ path('app_profile') }}" class="link-action">
+                        <i data-lucide="arrow-left"></i>
+                        Retour
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
     </div>
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .container {
-            padding: 2rem 0;
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-card: #141414;
+            --bg-hover: #1A1A1A;
+            --bg-active: #222222;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --accent-color: #6366F1;
+            --accent-hover: #4F46E5;
+            --border-color: #262626;
+            --danger-color: #DC2626;
+            --success-color: #059669;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            color: #3498db;
-            margin-bottom: 2rem;
-        }
-
-        .address-form {
-            max-width: 600px;
+        .profile-section {
+            max-width: 900px;
             margin: 2rem auto;
-            padding: 2rem;
-            background: #2a2a2a;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .profile-section:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-header {
+            padding: 1.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-header i {
+            color: var(--accent-color);
+        }
+
+        .section-content {
+            padding: 1.75rem;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            position: relative;
         }
 
-        label {
-            color: #3498db;
+        .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
             margin-bottom: 0.5rem;
             display: block;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        input[type="text"] {
+        .form-input {
             width: 100%;
-            padding: 0.75rem;
-            border-radius: 4px;
-            border: 1px solid #404040;
-            background: #333333;
-            color: #e0e0e0;
+            padding: 0.85rem 1rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
         }
 
-        input[type="text"]:focus {
-            border-color: #3498db;
+        .form-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            background: var(--bg-active);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
         }
 
         .form-actions {
-            margin-top: 2rem;
             display: flex;
             gap: 1rem;
+            margin-top: 2rem;
         }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
+        .btn-new {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
             border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-new:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .link-action {
+            color: var(--accent-color);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
             font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2980b9;
+        .link-action:hover {
+            background: rgba(99, 102, 241, 0.2);
             transform: translateY(-2px);
         }
 
-        .btn-secondary {
-            background: #404040;
-            color: #e0e0e0;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .btn-secondary:hover {
-            background: #4a4a4a;
-            transform: translateY(-2px);
+        @media (max-width: 640px) {
+            .info-group {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .profile-section {
+                margin: 1rem;
+            }
+
+            .section-header, .section-content {
+                padding: 1.25rem;
+            }
         }
     </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
 {% endblock %} 
