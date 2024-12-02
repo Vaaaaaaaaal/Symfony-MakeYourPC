@@ -20,6 +20,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Entity\User;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Form\UserEditType;
 
 class UserController extends AbstractController
 {
@@ -208,36 +209,32 @@ class UserController extends AbstractController
     public function editUser(
         User $user,
         Request $request,
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        EntityManagerInterface $entityManager
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        $data = json_decode($request->getContent(), true);
+        $form = $this->createForm(UserEditType::class, $user);
+        $form->handleRequest($request);
 
-        try {
-            if (isset($data['name'])) $user->setName($data['name']);
-            if (isset($data['surname'])) $user->setSurname($data['surname']);
-            if (isset($data['email'])) $user->setEmail($data['email']);
-            if (isset($data['adresse'])) $user->setAdresse($data['adresse']);
-            if (isset($data['telephone'])) $user->setTelephone($data['telephone']);
-            if (!empty($data['password'])) {
-                $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
-                $user->setPassword($hashedPassword);
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $entityManager->flush();
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Utilisateur mis à jour avec succès'
+                ]);
+            } catch (\Exception $e) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Erreur lors de la mise à jour de l\'utilisateur'
+                ], 500);
             }
-
-            $entityManager->flush();
-
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Utilisateur mis à jour avec succès'
-            ]);
-        } catch (\Exception $e) {
-            return new JsonResponse([
-                'success' => false,
-                'message' => 'Erreur lors de la mise à jour de l\'utilisateur'
-            ], 500);
         }
+
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Données invalides'
+        ], 400);
     }
 
     #[Route('/admin/users/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
@@ -287,6 +284,21 @@ class UserController extends AbstractController
         
         return $this->render('admin/manage_products.html.twig', [
             'products' => $products
+        ]);
+    }
+
+    #[Route('/admin/users/{id}/edit-form', name: 'app_admin_user_edit_form', methods: ['GET'])]
+    public function editUserForm(User $user): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $form = $this->createForm(UserEditType::class, $user, [
+            'action' => $this->generateUrl('app_admin_user_edit', ['id' => $user->getId()]),
+            'method' => 'POST',
+        ]);
+
+        return $this->render('admin/users/_edit_form.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }
