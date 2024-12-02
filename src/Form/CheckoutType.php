@@ -3,19 +3,35 @@
 namespace App\Form;
 
 use App\Entity\OrderShipping;
+use App\Entity\Address;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\EntityRepository;
 
 class CheckoutType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('savedAddress', EntityType::class, [
+                'class' => Address::class,
+                'choice_label' => 'name',
+                'mapped' => false,
+                'required' => false,
+                'placeholder' => 'Choisir une adresse enregistrée',
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    return $er->createQueryBuilder('a')
+                        ->where('a.user = :user')
+                        ->setParameter('user', $options['user']);
+                },
+                'label' => 'Adresses enregistrées'
+            ])
             ->add('firstName', TextType::class, [
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le prénom est obligatoire']),
@@ -100,6 +116,7 @@ class CheckoutType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => OrderShipping::class,
+            'user' => null
         ]);
     }
 } 

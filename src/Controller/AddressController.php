@@ -71,4 +71,22 @@ class AddressController extends AbstractController
 
         return $this->redirectToRoute('app_profile');
     }
+
+    #[Route('/{id}/get-data', name: 'app_address_get_data', methods: ['GET'])]
+    public function getData(Address $address): Response
+    {
+        // Vérifier que l'adresse appartient bien à l'utilisateur connecté
+        if ($address->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à accéder à cette adresse.');
+        }
+
+        return $this->json([
+            'firstname' => $address->getFirstname(),
+            'lastname' => $address->getLastname(),
+            'address' => $address->getAddress(),
+            'postal' => $address->getPostal(),
+            'city' => $address->getCity(),
+            'phone' => $address->getPhone()
+        ]);
+    }
 } 

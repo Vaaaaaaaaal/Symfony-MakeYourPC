@@ -94,7 +94,6 @@ class UserController extends AbstractController
         ]);
     }
 
-
     #[Route('/profile/edit', name: 'app_profile_edit')]
     public function editProfile(
         Request $request,
