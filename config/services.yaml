@@ -29,3 +29,8 @@ services:
       $cartRepository: '@App\Repository\CartRepository'
       $cartItemRepository: '@App\Repository\CartItemRepository'
       $entityManager: "@doctrine.orm.entity_manager"
+
+  App\Service\OrderManager:
+    arguments:
+      $orderRepository: '@App\Repository\OrderRepository'
+      $entityManager: "@doctrine.orm.entity_manager"

@@ -23,9 +23,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Form\UserEditType;
 use App\Repository\OrderRepository;
 use Psr\Log\LoggerInterface;
+use App\Service\OrderManager;
 
 class UserController extends AbstractController
 {
+    public function __construct(
+        private OrderManager $orderManager,
+        private LoggerInterface $logger
+    ) {}
+
     #[Route('/login/success', name: 'app_login_success')]
     public function loginSuccess(Security $security): Response
     {
@@ -304,6 +310,28 @@ class UserController extends AbstractController
                 'orders' => [],
                 'error' => true
             ]);
+        }
+    }
+
+    #[Route('/user/orders', name: 'app_user_orders')]
+    public function orders(): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $orders = $this->orderManager->getUserOrders($user);
+            $this->logger->info('Données formatées : ' . json_encode($orders));
+
+            return $this->render('user/orders.html.twig', [
+                'orders' => $orders
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de la récupération des commandes : ' . $e->getMessage());
+            $this->addFlash('error', 'Une erreur est survenue lors de la récupération de vos commandes');
+            return $this->redirectToRoute('app_user_profile');
         }
     }
 }
