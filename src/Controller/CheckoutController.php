@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Order;
-use App\Entity\OrderItem;
 use App\Entity\OrderShipping;
 use App\Form\CheckoutType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use App\Repository\CartRepository;
+use App\Service\CartManager;
 use Psr\Log\LoggerInterface;
 use App\Repository\OrderRepository;
 
@@ -20,7 +19,7 @@ class CheckoutController extends AbstractController
 {
     public function __construct(
         private OrderRepository $orderRepository,
-        private CartRepository $cartRepository,
+        private CartManager $cartManager,
         private LoggerInterface $logger
     ) {}
 
@@ -31,7 +30,7 @@ class CheckoutController extends AbstractController
     ): Response {
         try {
             $user = $this->getUser();
-            $cart = $this->cartRepository->findOneBy(['user' => $user]);
+            $cart = $this->cartManager->getOrCreateCart($user);
 
             if (!$cart || $cart->getItems()->isEmpty()) {
                 return $this->redirectToRoute('app_cart');
@@ -86,7 +85,7 @@ class CheckoutController extends AbstractController
             $order = $this->orderRepository->find($orderId);
 
             if ($order) {
-                $cart = $this->cartRepository->findOneBy(['user' => $this->getUser()]);
+                $cart = $this->cartManager->getOrCreateCart($this->getUser());
                 $this->orderRepository->finalizeOrder($order, $cart);
                 $session->remove('cart');
                 $session->remove('pending_order_id');
