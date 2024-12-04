@@ -12,6 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class SecurityController extends AbstractController
 {
@@ -67,5 +68,19 @@ class SecurityController extends AbstractController
         return $this->render('security/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
+    }
+
+    #[Route('/login/success', name: 'app_login_success')]
+    public function loginSuccess(Security $security): Response
+    {
+        if (!$security->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if ($security->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('app_admin');
+        }
+        
+        return $this->redirectToRoute('app_user_profile');
     }
 }

@@ -13,12 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\CartManager;
+use App\Service\UserManager;
+use Psr\Log\LoggerInterface;
+use App\Service\ProductManager;
 
 class CartController extends AbstractController
 {
     public function __construct(
         private CartManager $cartManager,
-        private ProductRepository $productRepository
+        private ProductManager $productManager,
+        private LoggerInterface $logger
     ) {}
 
     #[Route('/cart', name: 'app_cart')]
@@ -62,7 +66,7 @@ class CartController extends AbstractController
                 throw new \Exception('Utilisateur non connecté');
             }
 
-            $product = $this->productRepository->find($id);
+            $product = $this->productManager->getProduct($id);
             if (!$product) {
                 throw new \Exception('Produit non trouvé');
             }
@@ -96,113 +100,62 @@ class CartController extends AbstractController
     #[Route('/cart/update/{id}', name: 'cart_update', methods: ['POST'])]
     public function updateCart(
         int $id,
-        Request $request,
-        ProductRepository $productRepository,
-        EntityManagerInterface $entityManager
+        Request $request
     ): JsonResponse {
         try {
             $user = $this->getUser();
             if (!$user) {
-                return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
+                throw new \Exception('Non autorisé');
             }
 
             $data = json_decode($request->getContent(), true);
             $change = $data['change'] ?? 0;
 
-            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
-            $product = $productRepository->find($id);
-            
-            $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
-                'cart' => $cart,
-                'product' => $product
-            ]);
-
-            if (!$cartItem) {
-                return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
-            }
-
-            $newQuantity = $cartItem->getQuantity() + $change;
-            
-            if ($newQuantity > $product->getStock()) {
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => 'Stock insuffisant',
-                    'availableStock' => $product->getStock()
-                ], 400);
-            }
-            
-            if ($newQuantity < 1) {
-                $newQuantity = 1;
-            }
-            
-            $cartItem->setQuantity($newQuantity);
-            $entityManager->flush();
-
-            $itemTotal = $cartItem->getProduct()->getPrice() * $newQuantity;
-            $total = 0;
-            foreach ($cart->getItems() as $item) {
-                $total += $item->getProduct()->getPrice() * $item->getQuantity();
-            }
+            $cart = $this->cartManager->getOrCreateCart($user);
+            $cartItem = $this->cartManager->updateCartItemQuantity($cart, $id, $change);
 
             return new JsonResponse([
                 'success' => true,
-                'quantity' => $newQuantity,
-                'itemTotal' => $itemTotal,
-                'total' => $total,
-                'itemCount' => count($cart->getItems()),
-                'stockRemaining' => $product->getStock() - $newQuantity
+                'quantity' => $cartItem->getQuantity(),
+                'itemTotal' => $cartItem->getTotal(),
+                'total' => $cart->getTotal(),
+                'itemCount' => $cart->getItemCount(),
+                'stockRemaining' => $cartItem->getProduct()->getStock()
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+            return new JsonResponse(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
 
     #[Route('/cart/remove/{id}', name: 'cart_remove', methods: ['POST'])]
-    public function removeFromCart(
-        int $id,
-        ProductRepository $productRepository,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
+    public function removeFromCart(int $id): JsonResponse
+    {
         try {
             $user = $this->getUser();
             if (!$user) {
-                return new JsonResponse(['success' => false, 'message' => 'Non autorisé'], 403);
+                throw new \Exception('Non autorisé');
             }
 
-            $cart = $entityManager->getRepository(Cart::class)->findOneBy(['user' => $user]);
-            $product = $productRepository->find($id);
+            $cart = $this->cartManager->getOrCreateCart($user);
+            $product = $this->productManager->getProduct($id);
             
-            $cartItem = $entityManager->getRepository(CartItem::class)->findOneBy([
-                'cart' => $cart,
-                'product' => $product
-            ]);
-
-            if (!$cartItem) {
-                return new JsonResponse(['success' => false, 'message' => 'Item non trouvé'], 404);
+            if (!$this->cartManager->removeProduct($cart, $product)) {
+                throw new \Exception('Item non trouvé');
             }
-
-            $entityManager->remove($cartItem);
-            $entityManager->flush();
-
-            $total = 0;
-            foreach ($cart->getItems() as $item) {
-                $total += $item->getProduct()->getPrice() * $item->getQuantity();
-            }
-
-            $totalQuantity = count($cart->getItems());
 
             return new JsonResponse([
                 'success' => true,
-                'total' => $total,
-                'cartCount' => $totalQuantity,
+                'total' => $this->cartManager->getTotal($cart),
+                'cartCount' => $this->cartManager->getItemsCount($cart),
                 'message' => 'Produit supprimé avec succès'
             ]);
 
         } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de la suppression : ' . $e->getMessage());
             return new JsonResponse([
                 'success' => false,
-                'message' => 'Une erreur est survenue lors de la suppression'
-            ], 500);
+                'message' => $e->getMessage()
+            ], 400);
         }
     }
 

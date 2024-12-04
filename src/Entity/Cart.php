@@ -98,4 +98,13 @@ class Cart
         }
         return $total;
     }
+
+    public function getItemCount(): int
+    {
+        return array_reduce(
+            $this->items->toArray(),
+            fn($sum, $item) => $sum + $item->getQuantity(),
+            0
+        );
+    }
 }

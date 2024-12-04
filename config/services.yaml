@@ -28,8 +28,9 @@ services:
   App\Service\CartManager:
     arguments:
       $cartRepository: '@App\Repository\CartRepository'
-      $cartItemRepository: '@App\Repository\CartItemRepository'
+      $cartItemManager: '@App\Service\CartItemManager'
       $entityManager: "@doctrine.orm.entity_manager"
+      $productManager: '@App\Service\ProductManager'
 
   App\Service\OrderManager:
     arguments:
@@ -39,4 +40,21 @@ services:
   App\Service\ReviewManager:
     arguments:
       $reviewRepository: '@App\Repository\ReviewRepository'
+      $entityManager: "@doctrine.orm.entity_manager"
+
+  App\Service\UserManager:
+    arguments:
+      $userRepository: '@App\Repository\UserRepository'
+      $entityManager: "@doctrine.orm.entity_manager"
+      $passwordHasher: "@security.password_hasher"
+
+  App\Service\ProductManager:
+    arguments:
+      $productRepository: '@App\Repository\ProductRepository'
+      $entityManager: "@doctrine.orm.entity_manager"
+      $productsDirectory: "%products_directory%"
+
+  App\Service\CartItemManager:
+    arguments:
+      $cartItemRepository: '@App\Repository\CartItemRepository'
       $entityManager: "@doctrine.orm.entity_manager"

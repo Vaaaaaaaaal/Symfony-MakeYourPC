@@ -95,17 +95,58 @@ class OrderManager
 
     public function getDashboardStats(): array
     {
-        return $this->orderRepository->getAdminDashboardStats();
+        $orders = $this->orderRepository->findBy([], ['createdAt' => 'DESC'], 5);
+        $recentOrders = array_map(function($order) {
+            return [
+                'id' => $order->getId(),
+                'date' => $order->getCreatedAt(),
+                'total' => $order->getTotalAmount(),
+                'status' => $order->getStatus()
+            ];
+        }, $orders);
+
+        return [
+            'orderCount' => $this->orderRepository->count([]),
+            'totalRevenue' => $this->orderRepository->getTotalRevenue(),
+            'recentOrders' => $recentOrders
+        ];
     }
 
     public function getUserOrders(User $user): array
     {
-        $orders = $this->orderRepository->findOrdersWithDetailsByUser($user);
-        return $this->orderRepository->formatOrdersData($orders);
+        $orders = $this->orderRepository->findBy(['user' => $user], ['createdAt' => 'DESC']);
+        return array_map(function($order) {
+            return [
+                'id' => $order->getId(),
+                'date' => $order->getCreatedAt()->format('d/m/Y H:i'),
+                'totalAmount' => $order->getTotalAmount(),
+                'items' => $order->getItems(),
+                'shipping' => $order->getShipping()
+            ];
+        }, $orders);
     }
 
     public function getOrder(int $orderId): ?Order
     {
         return $this->orderRepository->find($orderId);
+    }
+
+    private function formatOrdersData(array $orders): array
+    {
+        return array_map(function($order) {
+            return [
+                'id' => $order->getId(),
+                'date' => $order->getCreatedAt(),
+                'total' => $order->getTotal(),
+                'status' => $order->getStatus(),
+                'items' => array_map(function($item) {
+                    return [
+                        'product' => $item->getProduct()->getName(),
+                        'quantity' => $item->getQuantity(),
+                        'price' => $item->getPrice()
+                    ];
+                }, $order->getItems()->toArray())
+            ];
+        }, $orders);
     }
 } 

@@ -7,15 +7,16 @@ use App\Entity\User;
 use App\Entity\Product;
 use App\Entity\CartItem;
 use App\Repository\CartRepository;
-use App\Repository\CartItemRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ProductManager;
 
 class CartManager
 {
     public function __construct(
         private CartRepository $cartRepository,
-        private CartItemRepository $cartItemRepository,
-        private EntityManagerInterface $entityManager
+        private CartItemManager $cartItemManager,
+        private EntityManagerInterface $entityManager,
+        private ProductManager $productManager
     ) {}
 
     public function getOrCreateCart(User $user): Cart
@@ -34,53 +35,45 @@ class CartManager
 
     public function addProduct(Cart $cart, Product $product, int $quantity): CartItem
     {
-        $cartItem = $this->cartItemRepository->findByCartAndProduct($cart, $product);
+        $cartItem = $this->cartItemManager->findByCartAndProduct($cart, $product);
 
-        if ($cartItem) {
-            $cartItem->setQuantity($quantity);
-        } else {
-            $cartItem = new CartItem();
-            $cartItem->setCart($cart)
-                    ->setProduct($product)
-                    ->setQuantity($quantity);
-            $this->entityManager->persist($cartItem);
+        if (!$cartItem) {
+            return $this->cartItemManager->createCartItem($cart, $product, $quantity);
         }
 
-        $this->entityManager->flush();
-        
+        $newQuantity = $cartItem->getQuantity() + $quantity;
+        $this->cartItemManager->updateQuantity($cartItem, $newQuantity);
+
         return $cartItem;
     }
 
-    public function updateItemQuantity(Cart $cart, Product $product, int $change): ?CartItem
+    public function updateCartItemQuantity(Cart $cart, int $productId, int $change): CartItem
     {
-        $cartItem = $this->cartItemRepository->findByCartAndProduct($cart, $product);
-        
+        $product = $this->productManager->getProduct($productId);
+        if (!$product) {
+            throw new \Exception('Produit non trouvé');
+        }
+
+        $cartItem = $this->cartItemManager->findByCartAndProduct($cart, $product);
         if (!$cartItem) {
-            return null;
+            throw new \Exception('Item non trouvé');
         }
 
         $newQuantity = $cartItem->getQuantity() + $change;
-        if ($newQuantity < 1) {
-            $newQuantity = 1;
-        }
-        
-        $cartItem->setQuantity($newQuantity);
-        $this->entityManager->flush();
-        
+        $this->cartItemManager->updateQuantity($cartItem, $newQuantity);
+
         return $cartItem;
     }
 
     public function removeProduct(Cart $cart, Product $product): bool
     {
-        $cartItem = $this->cartItemRepository->findByCartAndProduct($cart, $product);
+        $cartItem = $this->cartItemManager->findByCartAndProduct($cart, $product);
         
         if (!$cartItem) {
             return false;
         }
 
-        $this->entityManager->remove($cartItem);
-        $this->entityManager->flush();
-        
+        $this->cartItemManager->removeCartItem($cartItem);
         return true;
     }
 
@@ -88,19 +81,13 @@ class CartManager
     {
         $total = 0;
         foreach ($cart->getItems() as $item) {
-            $total += $item->getProduct()->getPrice() * $item->getQuantity();
+            $total += $this->cartItemManager->getItemTotal($item);
         }
         return $total;
     }
 
     public function getItemsCount(Cart $cart): int
     {
-        return array_reduce(
-            $cart->getItems()->toArray(),
-            function($sum, $item) {
-                return $sum + $item->getQuantity();
-            },
-            0
-        );
+        return $cart->getItems()->count();
     }
 } 

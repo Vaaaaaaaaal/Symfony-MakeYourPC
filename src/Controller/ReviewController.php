@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Repository\ProductRepository;
 use App\Service\ReviewManager;
+use App\Service\ProductManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,7 +15,7 @@ class ReviewController extends AbstractController
 {
     public function __construct(
         private ReviewManager $reviewManager,
-        private ProductRepository $productRepository,
+        private ProductManager $productManager,
         private LoggerInterface $logger
     ) {}
 
@@ -23,11 +23,12 @@ class ReviewController extends AbstractController
     public function rate(Request $request): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
-            if (!$data) {
-                throw new \Exception('Données JSON invalides');
+            $user = $this->getUser();
+            if (!$user) {
+                throw new \Exception('Utilisateur non connecté');
             }
 
+            $data = json_decode($request->getContent(), true);
             $productId = $data['productId'] ?? null;
             $rating = $data['rating'] ?? null;
 
@@ -35,16 +36,7 @@ class ReviewController extends AbstractController
                 throw new \Exception('ProductId et rating sont requis');
             }
 
-            $product = $this->productRepository->find($productId);
-            if (!$product) {
-                throw new \Exception('Produit non trouvé');
-            }
-
-            $user = $this->getUser();
-            if (!$user) {
-                throw new \Exception('Utilisateur non connecté');
-            }
-
+            $product = $this->productManager->getProduct($productId);
             $review = $this->reviewManager->createOrUpdateReview($product, $user, (float)$rating);
 
             return new JsonResponse([
@@ -52,9 +44,8 @@ class ReviewController extends AbstractController
                 'message' => 'Avis enregistré avec succès',
                 'averageRating' => $this->reviewManager->getAverageRating($product)
             ]);
-
         } catch (\Exception $e) {
-            $this->logger->error('Erreur lors de l\'enregistrement de l\'avis : ' . $e->getMessage());
+            $this->logger->error('Erreur : ' . $e->getMessage());
             return new JsonResponse([
                 'success' => false,
                 'message' => $e->getMessage()
