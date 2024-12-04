@@ -12,11 +12,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\CartManager;
 
 class CartController extends AbstractController
 {
     public function __construct(
-        private CartRepository $cartRepository,
+        private CartManager $cartManager,
         private ProductRepository $productRepository
     ) {}
 
@@ -24,7 +25,7 @@ class CartController extends AbstractController
     public function index(): Response
     {
         $user = $this->getUser();
-        $cart = $this->cartRepository->findOneBy(['user' => $user]);
+        $cart = $this->cartManager->getOrCreateCart($user);
         
         $cartItems = [];
         $total = 0;
@@ -40,7 +41,7 @@ class CartController extends AbstractController
                     'stock' => $item->getProduct()->getStock()
                 ];
             }
-            $total = $this->cartRepository->getCartTotal($cart);
+            $total = $this->cartManager->getTotal($cart);
         }
 
         return $this->render('cart/index.html.twig', [
@@ -74,13 +75,13 @@ class CartController extends AbstractController
                 ], 400);
             }
 
-            $cart = $this->cartRepository->findOrCreateCart($user);
-            $cartItem = $this->cartRepository->addProductToCart($cart, $product, $quantity);
+            $cart = $this->cartManager->getOrCreateCart($user);
+            $cartItem = $this->cartManager->addProduct($cart, $product, $quantity);
 
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Panier mis à jour',
-                'cartCount' => $this->cartRepository->getCartItemsCount($cart),
+                'cartCount' => $this->cartManager->getItemsCount($cart),
                 'stockRemaining' => $product->getStock() - $quantity
             ]);
 
