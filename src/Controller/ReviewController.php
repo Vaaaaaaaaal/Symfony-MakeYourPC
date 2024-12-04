@@ -2,23 +2,19 @@
 
 namespace App\Controller;
 
-use App\Entity\Review;
-use App\Repository\ReviewRepository;
 use App\Repository\ProductRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ReviewManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[Route('/review')]
 class ReviewController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private ReviewRepository $reviewRepository,
+        private ReviewManager $reviewManager,
         private ProductRepository $productRepository,
         private LoggerInterface $logger
     ) {}
@@ -49,36 +45,19 @@ class ReviewController extends AbstractController
                 throw new \Exception('Utilisateur non connecté');
             }
 
-            $review = $this->reviewRepository->findOneBy([
-                'product' => $product,
-                'user' => $user
-            ]);
-
-            if (!$review) {
-                $review = new Review();
-                $review->setProduct($product);
-                $review->setUser($user);
-                $review->setCreatedAt(new \DateTimeImmutable());
-            }
-            
-            $review->setRating((float)$rating);
-            $this->entityManager->persist($review);
-            $this->entityManager->flush();
-
-            $newAverageRating = $this->reviewRepository->getAverageRating($product);
-            $product->setRating($newAverageRating);
-            $this->entityManager->persist($product);
-            $this->entityManager->flush();
+            $review = $this->reviewManager->createOrUpdateReview($product, $user, (float)$rating);
 
             return new JsonResponse([
                 'success' => true,
-                'newRating' => number_format($newAverageRating, 1)
+                'message' => 'Avis enregistré avec succès',
+                'averageRating' => $this->reviewManager->getAverageRating($product)
             ]);
 
         } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de l\'enregistrement de l\'avis : ' . $e->getMessage());
             return new JsonResponse([
                 'success' => false,
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 400);
         }
     }

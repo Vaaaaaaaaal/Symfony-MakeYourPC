@@ -10,6 +10,7 @@ services:
   # default configuration for services in *this* file
   _defaults:
     autowire: true # Automatically injects dependencies in your services.
+
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
   # makes classes in src/ available to be used as services
@@ -33,4 +34,9 @@ services:
   App\Service\OrderManager:
     arguments:
       $orderRepository: '@App\Repository\OrderRepository'
+      $entityManager: "@doctrine.orm.entity_manager"
+
+  App\Service\ReviewManager:
+    arguments:
+      $reviewRepository: '@App\Repository\ReviewRepository'
       $entityManager: "@doctrine.orm.entity_manager"
