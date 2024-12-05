@@ -5,6 +5,48 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/checkout.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Formatage du numéro de carte
+        const cardNumberInput = document.querySelector('[data-checkout-field="cardNumber"]');
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 16) value = value.slice(0, 16);
+            
+            // Format XXXX XXXX XXXX XXXX
+            const parts = [];
+            for (let i = 0; i < value.length; i += 4) {
+                parts.push(value.slice(i, i + 4));
+            }
+            e.target.value = parts.join(' ');
+        });
+
+        // Formatage de la date d'expiration
+        const expiryInput = document.querySelector('[data-checkout-field="cardExpiry"]');
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            
+            // Format MM/YY
+            if (value.length >= 2) {
+                const month = value.slice(0, 2);
+                const year = value.slice(2);
+                if (parseInt(month) > 12) value = '12' + year;
+                e.target.value = month + (year.length ? '/' + year : '');
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // Formatage du CVC
+        const cvcInput = document.querySelector('[data-checkout-field="cardCvc"]');
+        cvcInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 3) value = value.slice(0, 3);
+            e.target.value = value;
+        });
+    });
+    </script>
 {% endblock %}
 
 {% block stylesheets %}
