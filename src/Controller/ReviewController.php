@@ -38,11 +38,12 @@ class ReviewController extends AbstractController
 
             $product = $this->productManager->getProduct($productId);
             $review = $this->reviewManager->createOrUpdateReview($product, $user, (float)$rating);
+            $averageRating = $this->reviewManager->getAverageRating($product);
 
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Avis enregistré avec succès',
-                'averageRating' => $this->reviewManager->getAverageRating($product)
+                'averageRating' => $averageRating
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Erreur : ' . $e->getMessage());

@@ -54,5 +54,13 @@ class OrderRepository extends ServiceEntityRepository
             'recentOrders' => $recentOrders
         ];
     }
+
+    public function getTotalRevenue(): float
+    {
+        return (float) $this->createQueryBuilder('o')
+            ->select('COALESCE(SUM(o.totalAmount), 0)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
 

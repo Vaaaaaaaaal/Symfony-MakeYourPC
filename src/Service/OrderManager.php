@@ -100,8 +100,7 @@ class OrderManager
             return [
                 'id' => $order->getId(),
                 'date' => $order->getCreatedAt(),
-                'total' => $order->getTotalAmount(),
-                'status' => $order->getStatus()
+                'totalAmount' => $order->getTotalAmount()
             ];
         }, $orders);
 
@@ -138,7 +137,6 @@ class OrderManager
                 'id' => $order->getId(),
                 'date' => $order->getCreatedAt(),
                 'total' => $order->getTotal(),
-                'status' => $order->getStatus(),
                 'items' => array_map(function($item) {
                     return [
                         'product' => $item->getProduct()->getName(),
@@ -148,5 +146,20 @@ class OrderManager
                 }, $order->getItems()->toArray())
             ];
         }, $orders);
+    }
+
+    public function getOrderCount(): int
+    {
+        return $this->orderRepository->count([]);
+    }
+
+    public function getTotalRevenue(): float
+    {
+        return $this->orderRepository->getTotalRevenue();
+    }
+
+    public function getRecentOrders(int $limit): array
+    {
+        return $this->orderRepository->findBy([], ['createdAt' => 'DESC'], $limit);
     }
 } 

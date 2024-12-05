@@ -43,11 +43,19 @@ class ReviewManager
             return 0;
         }
 
-        $total = array_reduce($reviews, function($sum, $review) {
-            return $sum + $review->getRating();
-        }, 0);
+        $sum = 0;
+        foreach ($reviews as $review) {
+            $sum += $review->getRating();
+        }
 
-        return $total / count($reviews);
+        $average = round($sum / count($reviews), 1);
+        
+        // Mise à jour du rating dans la table produit
+        $product->setRating($average);
+        $this->entityManager->persist($product);
+        $this->entityManager->flush();
+
+        return $average;
     }
 
     public function getProductReviews(Product $product): array
@@ -64,5 +72,13 @@ class ReviewManager
             ['user' => $user],
             ['createdAt' => 'DESC']
         );
+    }
+
+    public function getUserReview(Product $product, User $user): ?Review
+    {
+        return $this->reviewRepository->findOneBy([
+            'product' => $product,
+            'user' => $user
+        ]);
     }
 } 

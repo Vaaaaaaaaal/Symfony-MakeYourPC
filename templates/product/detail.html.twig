@@ -16,15 +16,17 @@
 
                 <div class="product-rating" data-product-id="{{ product.id }}">
                     {% if app.user %}
+                        {% set userReview = reviewManager.getUserReview(product, app.user) %}
                         <div class="rating-stars interactive">
                             {% for i in 1..5 %}
                                 <i data-lucide="star" 
-                                   class="star {% if product.rating is not null and i <= product.rating %}filled{% endif %}"
+                                   class="star {% if userReview and i <= userReview.rating %}filled{% endif %}"
                                    data-rating="{{ i }}"
                                    title="Noter {{ i }} étoile{% if i > 1 %}s{% endif %}">
                                 </i>
                             {% endfor %}
                         </div>
+                        <small>(Votre note : {{ userReview ? userReview.rating : 'Aucune' }})</small>
                     {% else %}
                         <div class="rating-stars">
                             {% for i in 1..5 %}
@@ -203,45 +205,39 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const ratingContainer = document.querySelector('.rating-stars.interactive');
-            if (!ratingContainer) return;
-
-            const stars = ratingContainer.querySelectorAll('.star');
-            const productId = ratingContainer.closest('.product-rating').dataset.productId;
-
-            stars.forEach(star => {
+            const ratingStars = document.querySelectorAll('.rating-stars.interactive .star');
+            const ratingValue = document.querySelector('.rating-value');
+            
+            ratingStars.forEach(star => {
                 star.addEventListener('click', function() {
                     const rating = this.dataset.rating;
-
+                    const productId = this.closest('.product-rating').dataset.productId;
+                    
                     fetch('/review/rate', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Accept': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({
-                            productId: parseInt(productId),
-                            rating: parseInt(rating)
+                            productId: productId,
+                            rating: rating
                         })
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => Promise.reject(err));
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            stars.forEach(s => {
+                            // Mise à jour des étoiles
+                            ratingStars.forEach(s => {
                                 s.classList.remove('filled');
                                 if (s.dataset.rating <= rating) {
                                     s.classList.add('filled');
                                 }
                             });
-                            const ratingValue = document.querySelector('.rating-value');
+                            
+                            // Mise à jour de la note moyenne affichée
                             if (ratingValue) {
-                                ratingValue.textContent = `${data.newRating}/5`;
+                                ratingValue.textContent = data.averageRating.toFixed(1) + '/5';
                             }
 
                             const notification = document.createElement('div');
@@ -261,7 +257,7 @@
                         notification.className = 'notification error';
                         notification.innerHTML = `
                             <div class="notification-content">
-                                <span>${error.error || 'Une erreur est survenue lors de la notation'}</span>
+                                <span>${error.message || 'Une erreur est survenue lors de la notation'}</span>
                             </div>
                         `;
                         document.body.appendChild(notification);

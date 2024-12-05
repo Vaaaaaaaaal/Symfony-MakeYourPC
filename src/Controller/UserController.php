@@ -26,19 +26,7 @@ class UserController extends AbstractController
         private LoggerInterface $logger
     ) {}
 
-    #[Route('/admin', name: 'app_admin')]
-    public function adminDashboard(): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $stats = $this->userManager->getDashboardStats();
-        $orderStats = $this->orderManager->getDashboardStats();
-
-        return $this->render('admin/index.html.twig', [
-            'stats' => array_merge($stats, $orderStats),
-            'recentOrders' => $orderStats['recentOrders'],
-        ]);
-    }
 
     #[Route('/admin/users', name: 'app_admin_users')]
     public function manageUsers(): Response

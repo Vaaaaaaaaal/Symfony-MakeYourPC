@@ -70,4 +70,9 @@ class UserManager
 
         return true;
     }
+
+    public function getUserCount(): int
+    {
+        return $this->userRepository->count([]);
+    }
 } 

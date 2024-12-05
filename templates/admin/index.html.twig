@@ -16,12 +16,12 @@
                 <div class="stat-card">
                     <i data-lucide="shopping-cart" class="stat-icon"></i>
                     <h3>Commandes</h3>
-                    <p class="stat-value">{{ stats.orders }}</p>
+                    <p class="stat-value">{{ stats.orderCount }}</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="dollar-sign" class="stat-icon"></i>
                     <h3>Revenus</h3>
-                    <p class="stat-value">{{ stats.revenue|number_format(2, ',', ' ') }} €</p>
+                    <p class="stat-value">{{ stats.totalRevenue|number_format(2, ',', ' ') }} €</p>
                 </div>
                 <div class="stat-card">
                     <i data-lucide="package" class="stat-icon"></i>
