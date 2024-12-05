@@ -2081,16 +2081,16 @@
         },
         {
             "name": "symfony/asset-mapper",
-            "version": "v7.1.5",
+            "version": "v7.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/asset-mapper.git",
-                "reference": "e3ae56f965f1fe503db1f604756a44d40e6dea16"
+                "reference": "bb1c2f5f394c84ce5b1ac8c94d0ac213ae3ce5f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/asset-mapper/zipball/e3ae56f965f1fe503db1f604756a44d40e6dea16",
-                "reference": "e3ae56f965f1fe503db1f604756a44d40e6dea16",
+                "url": "https://api.github.com/repos/symfony/asset-mapper/zipball/bb1c2f5f394c84ce5b1ac8c94d0ac213ae3ce5f8",
+                "reference": "bb1c2f5f394c84ce5b1ac8c94d0ac213ae3ce5f8",
                 "shasum": ""
             },
             "require": {
@@ -2140,7 +2140,7 @@
             "description": "Maps directories of assets & makes them available in a public directory with versioned filenames.",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/asset-mapper/tree/v7.1.5"
+                "source": "https://github.com/symfony/asset-mapper/tree/v7.1.9"
             },
             "funding": [
                 {
@@ -2156,7 +2156,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-19T08:57:32+00:00"
+            "time": "2024-11-20T11:08:58+00:00"
         },
         {
             "name": "symfony/cache",
@@ -10007,7 +10007,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -10015,6 +10015,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

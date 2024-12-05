@@ -6,20 +6,18 @@
         <title>{% block title %}MakeYourPC{% endblock %}</title>
         <link rel="icon" href="{{ asset('images/BlackLogo.svg') }}">
         {% block stylesheets %}
-        {{ include('_partials/_stylesheets.html.twig') }}
+            {{ include('_partials/_stylesheets.html.twig') }}
         {% endblock %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% block javascripts %}
-        {{ importmap('app') }}
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                lucide.createIcons();
-            });
-        </script>
+            {{ importmap('app') }}
+            <script src="https://unpkg.com/lucide@latest"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    lucide.createIcons();
+                });
+            </script>
         {% endblock %}
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-        <script src="https://unpkg.com/lucide@latest"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     </head>
     <body>
@@ -45,7 +43,9 @@
             {{ include('_partials/_footer.html.twig') }}
         </footer>
         <script>
-            lucide.createIcons();
+            document.addEventListener('DOMContentLoaded', () => {
+                initLucideIcons();
+            });
         </script>
         <script>
             function animateElements() {

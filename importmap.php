@@ -28,4 +28,8 @@ return [
     'animations' => [
         'path' => './assets/js/animations.js',
     ],
+    'lucide' => [
+        'version' => '0.359.0',
+        'package_specifier' => 'lucide-static'
+    ]
 ];

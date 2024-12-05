@@ -5,14 +5,25 @@
  * which should already be in your base.html.twig.
  */
 import { Turbo } from "@hotwired/turbo-rails";
-import { createIcons, Icons } from "lucide";
+import { createIcons, icons } from "lucide-static";
 import "./js/animations.js";
 import "./styles/admin.css";
 import "./styles/app.css";
 
-console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");
+// Rendre lucide disponible globalement
+window.lucide = {
+  createIcons: createIcons,
+  icons: icons,
+};
 
-createIcons({
-  icons: Icons,
+// Initialisation au chargement
+document.addEventListener("DOMContentLoaded", () => {
+  window.lucide.createIcons();
 });
+
+// Réinitialisation après navigation Turbo
+document.addEventListener("turbo:render", () => {
+  window.lucide.createIcons();
+});
+
 Turbo.start();
