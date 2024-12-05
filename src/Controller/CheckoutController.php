@@ -48,8 +48,6 @@ class CheckoutController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $session->set('checkout_processing', true);
-                
                 try {
                     $selectedAddress = $form->get('savedAddress')->getData();
                     if ($selectedAddress) {
@@ -61,14 +59,12 @@ class CheckoutController extends AbstractController
                     
                     $entityManager->persist($shipping);
                     $this->orderManager->finalizeOrder($order, $cart);
-
-                    $session->remove('checkout_processing');
                     
-                    return $this->redirectToRoute('app_checkout_confirmation');
+                    $this->addFlash('success', 'Votre commande a été traitée avec succès');
+                    return $this->redirectToRoute('app_home');
                     
                 } catch (\Exception $e) {
                     $this->logger->error('Erreur lors du traitement : ' . $e->getMessage());
-                    $this->addFlash('error', 'Une erreur est survenue lors de la création de la commande');
                 }
             }
 
@@ -105,7 +101,7 @@ class CheckoutController extends AbstractController
         return $this->render('checkout/payment.html.twig');
     }
 
-    #[Route('/checkout/confirmation', name: 'app_order_confirmation')]
+    #[Route('/checkout/confirmation', name: 'app_checkout_confirmation')]
     public function confirmation(): Response
     {
         return $this->render('checkout/confirmation.html.twig');

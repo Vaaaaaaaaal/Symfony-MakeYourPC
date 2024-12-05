@@ -125,6 +125,18 @@
 
 {% block body %}
     <div class="container">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
         <h1 class="my-4">Finaliser votre commande</h1>
 
         <div class="checkout-container">
