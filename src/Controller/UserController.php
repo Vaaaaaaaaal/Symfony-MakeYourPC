@@ -137,4 +137,68 @@ class UserController extends AbstractController
             ], 400);
         }
     }
+
+    #[Route('/admin/users/{id}/edit', name: 'app_admin_user_edit', methods: ['GET', 'POST'])]
+    public function editUser(Request $request, User $user): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
+        $form = $this->createForm(UserEditType::class, $user);
+        $form->handleRequest($request);
+        
+        if ($request->isMethod('POST')) {
+            if ($form->isSubmitted() && $form->isValid()) {
+                try {
+                    $this->userManager->updateUser($user);
+                    return new JsonResponse([
+                        'success' => true,
+                        'message' => 'Utilisateur modifié avec succès'
+                    ]);
+                } catch (\Exception $e) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => $e->getMessage()
+                    ], 400);
+                }
+            }
+        }
+        
+        return $this->render('admin/users/_edit_form.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
+    }
+
+    #[Route('/admin/users/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
+    public function deleteUser(User $user): JsonResponse
+    {
+        try {
+            $this->denyAccessUnlessGranted('ROLE_ADMIN');
+            
+            $currentUser = $this->getUser();
+            if (!$currentUser instanceof User) {
+                throw new \Exception('Utilisateur non connecté');
+            }
+            
+            if ($user->getId() === $currentUser->getId()) {
+                throw new \Exception('Vous ne pouvez pas supprimer votre propre compte');
+            }
+            
+            if ($user->isAdmin()) {
+                throw new \Exception('Impossible de supprimer un administrateur');
+            }
+            
+            $this->userManager->deleteUser($user);
+            
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Utilisateur supprimé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }

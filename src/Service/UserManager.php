@@ -6,6 +6,10 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Entity\Order;
+use App\Entity\Cart;
+use App\Entity\CartItem;
+use App\Entity\OrderItem;
 
 class UserManager
 {
@@ -37,10 +41,51 @@ class UserManager
 
     public function deleteUser(User $user): void
     {
-        if ($user->isAdmin()) {
-            throw new \Exception('Impossible de supprimer un administrateur');
+        try {
+            if ($user->isAdmin()) {
+                throw new \Exception('Impossible de supprimer un administrateur');
+            }
+
+            // Supprimer les commandes et leurs éléments associés
+            $orders = $this->entityManager
+                ->getRepository(Order::class)
+                ->findBy(['user' => $user]);
+            
+            foreach ($orders as $order) {
+                // Supprimer d'abord les order_items
+                $orderItems = $this->entityManager
+                    ->getRepository(OrderItem::class)
+                    ->findBy(['order' => $order]);
+                
+                foreach ($orderItems as $orderItem) {
+                    $this->entityManager->remove($orderItem);
+                }
+                // Puis supprimer la commande
+                $this->entityManager->remove($order);
+            }
+
+            // Supprimer le panier et ses éléments
+            $cart = $this->entityManager
+                ->getRepository(Cart::class)
+                ->findOneBy(['user' => $user]);
+
+            if ($cart) {
+                $cartItems = $this->entityManager
+                    ->getRepository(CartItem::class)
+                    ->findBy(['cart' => $cart]);
+
+                foreach ($cartItems as $cartItem) {
+                    $this->entityManager->remove($cartItem);
+                }
+                $this->entityManager->remove($cart);
+            }
+
+            // Supprimer l'utilisateur
+            $this->entityManager->remove($user);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            throw new \Exception('Erreur lors de la suppression de l\'utilisateur : ' . $e->getMessage());
         }
-        $this->userRepository->deleteUser($user);
     }
 
     public function getDashboardStats(): array
@@ -58,8 +103,7 @@ class UserManager
 
     public function updateUser(User $user): void
     {
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->userRepository->updateUserProfile($user);
     }
 
     public function canDeleteUser(User $currentUser, User $targetUser): bool

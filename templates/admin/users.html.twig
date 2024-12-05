@@ -61,19 +61,16 @@
         <div id="editUserFormContainer">
             {# Le formulaire sera chargé ici dynamiquement #}
         </div>
-        <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('editUserModal')">Annuler</button>
-        </div>
     </div>
 </div>
 
-<div class="modal" id="deleteConfirmModal" style="display: none;">
+<div class="modal" id="deleteConfirmModal">
     <div class="modal-content">
-        <h2>Confirmer la suppression</h2>
-        <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+        <h2>Confirmation de suppression</h2>
+        <p></p>
         <div class="modal-actions">
-            <button class="btn-delete" id="confirmDelete">Supprimer</button>
-            <button class="btn-cancel" onclick="closeModal('deleteConfirmModal')">Annuler</button>
+            <button id="confirmDelete" class="btn-danger">Supprimer</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('deleteConfirmModal')">Annuler</button>
         </div>
     </div>
 </div>
@@ -93,9 +90,7 @@ function showNotification(message, type = 'success') {
         </div>
     `;
     
-    const container = document.getElementById('notificationContainer');
-    container.appendChild(notification);
-    
+    document.getElementById('notificationContainer').appendChild(notification);
     setTimeout(() => {
         notification.remove();
     }, 3000);
@@ -145,7 +140,17 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const row = this.closest('tr');
             userToDelete = row.querySelector('.role-select').dataset.userId;
-            document.getElementById('deleteConfirmModal').style.display = 'flex';
+            const modal = document.getElementById('deleteConfirmModal');
+            const confirmMessage = modal.querySelector('.modal-content p');
+            confirmMessage.innerHTML = `
+                Êtes-vous sûr de vouloir supprimer cet utilisateur ?<br><br>
+                <strong>Attention :</strong> Cette action supprimera également :<br>
+                - Toutes ses commandes<br>
+                - Tous ses avis/évaluations<br>
+                - Son panier actuel (si existant)<br><br>
+                Cette action est irréversible.
+            `;
+            modal.style.display = 'flex';
         });
     });
 
@@ -174,6 +179,62 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             showNotification('Une erreur est survenue', 'error');
         }
+    });
+
+    // Ajoutez ce code après la gestion de la suppression
+    const editButtons = document.querySelectorAll('.btn-action.edit');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const row = this.closest('tr');
+            const userId = row.querySelector('.role-select').dataset.userId;
+            const modal = document.getElementById('editUserModal');
+            const formContainer = document.getElementById('editUserFormContainer');
+            
+            try {
+                const response = await fetch(`/admin/users/${userId}/edit`);
+                const html = await response.text();
+                formContainer.innerHTML = html;
+                modal.style.display = 'flex';
+                
+                // Gestion du formulaire d'édition
+                const form = formContainer.querySelector('form');
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    
+                    try {
+                        const response = await fetch(`/admin/users/${userId}/edit`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            // Mise à jour correcte des données dans le tableau
+                            const name = formData.get('user_edit[name]');
+                            const surname = formData.get('user_edit[surname]');
+                            const email = formData.get('user_edit[email]');
+                            
+                            row.querySelector('td:nth-child(2)').textContent = name;
+                            row.querySelector('td:nth-child(3)').textContent = surname;
+                            row.querySelector('td:nth-child(4)').textContent = email;
+                            
+                            closeModal('editUserModal');
+                            showNotification('Utilisateur modifié avec succès');
+                        } else {
+                            showNotification(data.message || 'Erreur lors de la modification', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showNotification('Une erreur est survenue', 'error');
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Erreur lors du chargement du formulaire', 'error');
+            }
+        });
     });
 });
 
