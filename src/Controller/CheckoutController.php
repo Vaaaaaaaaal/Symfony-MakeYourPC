@@ -27,6 +27,11 @@ class CheckoutController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager
     ): Response {
+        $session = $request->getSession();
+        if ($session->get('checkout_processing', false)) {
+            return $this->redirectToRoute('app_cart');
+        }
+        
         try {
             $user = $this->getUser();
             $cart = $this->cartManager->getOrCreateCart($user);
@@ -43,6 +48,8 @@ class CheckoutController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $session->set('checkout_processing', true);
+                
                 try {
                     $selectedAddress = $form->get('savedAddress')->getData();
                     if ($selectedAddress) {
@@ -55,6 +62,8 @@ class CheckoutController extends AbstractController
                     $entityManager->persist($shipping);
                     $this->orderManager->finalizeOrder($order, $cart);
 
+                    $session->remove('checkout_processing');
+                    
                     return $this->redirectToRoute('app_checkout_confirmation');
                     
                 } catch (\Exception $e) {
@@ -63,6 +72,8 @@ class CheckoutController extends AbstractController
                 }
             }
 
+            $session->remove('checkout_processing');
+            
             return $this->render('checkout/index.html.twig', [
                 'form' => $form->createView(),
                 'cart' => $cart
