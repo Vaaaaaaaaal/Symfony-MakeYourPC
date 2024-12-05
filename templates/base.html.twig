@@ -1,71 +1,92 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="MakeYourPC - Créez votre PC gaming sur mesure">
+        <meta name="theme-color" content="#ffffff">
+        
         <title>{% block title %}MakeYourPC{% endblock %}</title>
-        <link rel="icon" href="{{ asset('images/BlackLogo.svg') }}">
+        
+        {# Favicons #}
+        <link rel="icon" href="{{ asset('images/BlackLogo.svg') }}" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="{{ asset('images/BlackLogo.svg') }}">
+        
+        {# Styles #}
         {% block stylesheets %}
             {{ include('_partials/_stylesheets.html.twig') }}
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         {% endblock %}
+        
+        {# Scripts #}
         {% block javascripts %}
             {{ importmap('app') }}
-            <script src="https://unpkg.com/lucide@latest"></script>
+            <script src="https://unpkg.com/lucide@latest" defer></script>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     lucide.createIcons();
                 });
             </script>
         {% endblock %}
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     </head>
-    <body>
-        <header>
+    
+    <body class="flex flex-col min-h-screen">
+        {# Skip to main content - Accessibilité #}
+        <a href="#main-content" class="sr-only focus:not-sr-only">
+            Aller au contenu principal
+        </a>
+        
+        {# Header #}
+        {% block header %}
             {{ include('_partials/_header.html.twig') }}
-        </header>
-
-        <main>
-            {% block body %}
+        {% endblock %}
+        
+        {# Main content #}
+        <main id="main-content" class="flex-grow">
+            {# Flash messages #}
+            {% block flash_messages %}
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
-                        <div class="alert alert-{{ label }}">
+                        <div class="alert alert-{{ label }} animate" role="alert">
                             {{ message }}
                         </div>
                     {% endfor %}
                 {% endfor %}
-                
-                {% block content %}{% endblock %}
             {% endblock %}
+            
+            {# Main content block #}
+            {% block body %}{% endblock %}
         </main>
-
-        <footer>
+        
+        {# Footer #}
+        {% block footer %}
             {{ include('_partials/_footer.html.twig') }}
-        </footer>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                initLucideIcons();
-            });
-        </script>
-        <script>
-            function animateElements() {
-                const animatedElements = document.querySelectorAll('.animate');
-                
-                function checkScroll() {
-                    animatedElements.forEach(el => {
-                        const rect = el.getBoundingClientRect();
-                        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-                        if (rect.top <= windowHeight * 0.75) {
-                            el.classList.add('visible');
-                        }
-                    });
+        {% endblock %}
+        
+        {# Deferred Scripts #}
+        {% block deferred_javascripts %}
+            <script>
+                function animateElements() {
+                    const animatedElements = document.querySelectorAll('.animate');
+                    
+                    const checkScroll = () => {
+                        animatedElements.forEach(el => {
+                            const rect = el.getBoundingClientRect();
+                            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                            if (rect.top <= windowHeight * 0.75) {
+                                el.classList.add('visible');
+                            }
+                        });
+                    };
+
+                    window.addEventListener('scroll', checkScroll, { passive: true });
+                    checkScroll();
                 }
 
-                window.addEventListener('scroll', checkScroll);
-                checkScroll(); 
-            }
-            document.addEventListener('DOMContentLoaded', animateElements);
-            document.addEventListener('turbo:load', animateElements);
-        </script>
+                document.addEventListener('DOMContentLoaded', animateElements);
+                document.addEventListener('turbo:load', animateElements);
+            </script>
+        {% endblock %}
     </body>
 </html>
