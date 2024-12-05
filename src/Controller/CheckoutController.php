@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Service\CartManager;
 use App\Service\OrderManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CheckoutController extends AbstractController
 {
@@ -108,10 +109,9 @@ class CheckoutController extends AbstractController
     }
 
     #[Route('/admin/order/{id}/view', name: 'app_admin_order_view')]
+    #[IsGranted('ROLE_ADMIN')]
     public function viewOrder(Order $order): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         return $this->render('admin/order/view.html.twig', [
             'order' => $order
         ]);

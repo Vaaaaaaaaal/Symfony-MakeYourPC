@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminController extends AbstractController
 {
@@ -20,10 +21,9 @@ class AdminController extends AbstractController
     ) {}
 
     #[Route('/admin', name: 'app_admin')]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
         $stats = [
             'users' => $this->userManager->getUserCount(),
             'products' => $this->productManager->getProductCount(),
@@ -40,10 +40,9 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/users', name: 'app_admin_users')]
+    #[IsGranted('ROLE_ADMIN')]
     public function manageUsers(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         return $this->render('admin/users.html.twig', [
             'users' => $this->userManager->getAllUsers()
         ]);

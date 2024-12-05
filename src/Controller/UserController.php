@@ -11,12 +11,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -29,20 +29,19 @@ class UserController extends AbstractController
 
 
     #[Route('/admin/users', name: 'app_admin_users')]
+    #[IsGranted('ROLE_ADMIN')]
     public function manageUsers(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         return $this->render('admin/users.html.twig', [
             'users' => $this->userManager->getAllUsers()
         ]);
     }
 
     #[Route('/profile/edit', name: 'app_user_profile_edit')]
-    public function editProfile(Request $request, Security $security): Response
+    public function editProfile(Request $request): Response
     {
         /** @var User $user */
-        $user = $security->getUser();
+        $user = $this->getUser();
 
         $form = $this->createProfileForm($user);
         $form->handleRequest($request);
@@ -96,11 +95,10 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin/users/{id}/role', name: 'app_admin_user_role', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function updateRole(int $id, Request $request): JsonResponse
     {
         try {
-            $this->denyAccessUnlessGranted('ROLE_ADMIN');
-            
             $data = json_decode($request->getContent(), true);
             $newRole = $data['role'] ?? null;
             
@@ -139,10 +137,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin/users/{id}/edit', name: 'app_admin_user_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function editUser(Request $request, User $user): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         $form = $this->createForm(UserEditType::class, $user);
         $form->handleRequest($request);
         
@@ -170,11 +167,10 @@ class UserController extends AbstractController
     }
 
     #[Route('/admin/users/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteUser(User $user): JsonResponse
     {
         try {
-            $this->denyAccessUnlessGranted('ROLE_ADMIN');
-            
             $currentUser = $this->getUser();
             if (!$currentUser instanceof User) {
                 throw new \Exception('Utilisateur non connecté');

@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use App\Form\ProductType;
 use App\Service\ReviewManager;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ProductController extends AbstractController
 {
@@ -30,22 +31,20 @@ class ProductController extends AbstractController
     ) {}
 
     #[Route('/admin/products', name: 'app_admin_products')]
+    #[IsGranted('ROLE_ADMIN')]
     public function manageProducts(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         return $this->render('admin/manage_products.html.twig', [
             'products' => $this->productManager->getAllProducts()
         ]);
     }
 
     #[Route('/admin/product/delete/{id}', name: 'app_delete_product', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteProduct(
         Product $product,
         Request $request
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
         if (!$this->isCsrfTokenValid('delete-product', $request->headers->get('X-CSRF-TOKEN'))) {
             return new JsonResponse([
                 'success' => false,
@@ -172,10 +171,9 @@ class ProductController extends AbstractController
     }
 
     #[Route('/admin/product/add', name: 'app_add_product')]
+    #[IsGranted('ROLE_ADMIN')]
     public function addProduct(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
@@ -198,10 +196,9 @@ class ProductController extends AbstractController
     }
 
     #[Route('/admin/product/edit/{id}', name: 'app_edit_product')]
+    #[IsGranted('ROLE_ADMIN')]
     public function editProduct(Request $request, Product $product): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
