@@ -166,7 +166,7 @@ class ProductController extends AbstractController
                 'reviewManager' => $reviewManager
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('Erreur : ' . $e->getMessage());
+            $this->logger->error('Erreur lors de la récupération du produit : ' . $e->getMessage());
             throw $this->createNotFoundException('Le produit demandé n\'existe pas');
         }
     }

@@ -77,93 +77,67 @@
         </div>
     </div>
 </div>
+
+<div class="notification-container" id="notificationContainer"></div>
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
 <script>
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span>${message}</span>
+        </div>
+    `;
+    
+    const container = document.getElementById('notificationContainer');
+    container.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Gestion du changement de rôle
     const roleSelects = document.querySelectorAll('.role-select');
     
     roleSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            const userId = this.dataset.userId;
-            const newRole = this.value;
-            
-            fetch(`/admin/users/${userId}/role`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    role: newRole
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Erreur lors du changement de rôle');
-                    this.value = this.options[0].value;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Une erreur est survenue');
-                this.value = this.options[0].value;
-            });
-        });
-    });
-
-    const editButtons = document.querySelectorAll('.btn-action.edit');
-    let currentUserId = null;
-
-    editButtons.forEach(button => {
-        button.addEventListener('click', async function() {
-            const row = this.closest('tr');
-            currentUserId = row.querySelector('.role-select')?.dataset.userId;
-            
+        select.addEventListener('change', async function() {
             try {
-                const response = await fetch(`/admin/users/${currentUserId}/edit-form`);
-                const formHtml = await response.text();
-                document.getElementById('editUserFormContainer').innerHTML = formHtml;
+                const userId = this.dataset.userId;
+                const newRole = this.value;
+                const oldValue = this.value === 'ROLE_ADMIN' ? 'ROLE_USER' : 'ROLE_ADMIN';
                 
-                const form = document.getElementById('edit_user_form');
-                form.addEventListener('submit', handleEditSubmit);
+                const response = await fetch(`/admin/users/${userId}/role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+
+                const data = await response.json();
                 
-                document.getElementById('editUserModal').style.display = 'flex';
+                if (data.success) {
+                    showNotification('Rôle modifié avec succès');
+                } else {
+                    this.value = oldValue;
+                    showNotification(data.message || 'Erreur lors du changement de rôle', 'error');
+                }
             } catch (error) {
-                console.error('Erreur lors du chargement du formulaire:', error);
-                alert('Erreur lors du chargement du formulaire');
+                console.error('Error:', error);
+                this.value = oldValue;
+                showNotification('Une erreur est survenue', 'error');
             }
         });
     });
 
-    async function handleEditSubmit(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(e.target);
-        
-        try {
-            const response = await fetch(`/admin/users/${currentUserId}/edit`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Une erreur est survenue');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Une erreur est survenue');
-        }
-    }
-
+    // Gestion de la suppression
     const deleteButtons = document.querySelectorAll('.btn-action.delete');
     let userToDelete = null;
 
@@ -175,29 +149,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    document.getElementById('confirmDelete').addEventListener('click', function() {
+    document.getElementById('confirmDelete').addEventListener('click', async function() {
         if (!userToDelete) return;
 
-        fetch(`/admin/users/${userToDelete}/delete`, {
-            method: 'DELETE',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
+        try {
+            const response = await fetch(`/admin/users/${userToDelete}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
             if (data.success) {
                 const row = document.querySelector(`[data-user-id="${userToDelete}"]`).closest('tr');
                 row.remove();
                 closeModal('deleteConfirmModal');
+                showNotification('Utilisateur supprimé avec succès');
             } else {
-                alert(data.message);
+                showNotification(data.message || 'Erreur lors de la suppression', 'error');
             }
-        })
-        .catch(() => {
-            closeModal('deleteConfirmModal');
-            location.reload();
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Une erreur est survenue', 'error');
+        }
     });
 });
 

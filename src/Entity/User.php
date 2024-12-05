@@ -113,7 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->isAdmin) {
             $roles[] = 'ROLE_ADMIN';
         }
-        return $roles;
+        return array_unique($roles);
     }
 
     public function eraseCredentials(): void

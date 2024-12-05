@@ -25,10 +25,14 @@ class UserManager
         }
     }
 
-    public function updateRole(User $user, string $newRole): void
+    public function updateRole(User $user, string $role): void
     {
-        $isAdmin = $newRole === 'ROLE_ADMIN';
-        $this->userRepository->updateUserRole($user, $isAdmin);
+        if (!in_array($role, ['ROLE_USER', 'ROLE_ADMIN'])) {
+            throw new \Exception('Rôle invalide');
+        }
+        
+        $user->setIsAdmin($role === 'ROLE_ADMIN');
+        $this->entityManager->flush();
     }
 
     public function deleteUser(User $user): void
@@ -74,5 +78,10 @@ class UserManager
     public function getUserCount(): int
     {
         return $this->userRepository->count([]);
+    }
+
+    public function getUser(int $id): ?User
+    {
+        return $this->userRepository->find($id);
     }
 } 

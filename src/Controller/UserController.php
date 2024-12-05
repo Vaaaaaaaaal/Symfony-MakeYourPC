@@ -94,4 +94,47 @@ class UserController extends AbstractController
             'orders' => $orders
         ]);
     }
+
+    #[Route('/admin/users/{id}/role', name: 'app_admin_user_role', methods: ['POST'])]
+    public function updateRole(int $id, Request $request): JsonResponse
+    {
+        try {
+            $this->denyAccessUnlessGranted('ROLE_ADMIN');
+            
+            $data = json_decode($request->getContent(), true);
+            $newRole = $data['role'] ?? null;
+            
+            if (!$newRole) {
+                throw new \Exception('Le rôle est requis');
+            }
+            
+            $user = $this->userManager->getUser($id);
+            if (!$user) {
+                throw new \Exception('Utilisateur non trouvé');
+            }
+            
+            $currentUser = $this->getUser();
+            if (!$currentUser instanceof User) {
+                throw new \Exception('Utilisateur non connecté');
+            }
+            
+            if ($user->getId() === $currentUser->getId()) {
+                throw new \Exception('Vous ne pouvez pas modifier votre propre rôle');
+            }
+            
+            $isAdmin = $newRole === 'ROLE_ADMIN';
+            $user->setIsAdmin($isAdmin);
+            $this->userManager->updateUser($user);
+            
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Rôle mis à jour avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }
