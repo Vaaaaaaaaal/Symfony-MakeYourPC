@@ -5,7 +5,10 @@
 {% block body %}
     <div class="container">
         <div class="edit-profile-container">
-            <h2>Modifier mon profil</h2>
+            <h2>
+                <i data-lucide="user-circle-2"></i>
+                Modifier mon profil
+            </h2>
 
             
             {{ form_start(form, {'attr': {'class': 'edit-profile-form'}}) }}
@@ -77,4 +80,186 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-card: #141414;
+            --bg-hover: #1A1A1A;
+            --bg-active: #222222;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --accent-color: #6366F1;
+            --accent-hover: #4F46E5;
+            --border-color: #262626;
+            --danger-color: #DC2626;
+            --success-color: #059669;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-profile-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .edit-profile-container:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .edit-profile-container h2 {
+            padding: 1.75rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .edit-profile-container h2::before {
+            content: '';
+            font-family: 'lucide';
+            color: var(--accent-color);
+        }
+
+        .edit-profile-form {
+            padding: 1.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: block;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+            outline: none;
+            background: var(--bg-active);
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--accent-color);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .form-actions button {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-actions button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-cancel {
+            color: var(--accent-color);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .edit-profile-container {
+                margin: 1rem;
+            }
+
+            .edit-profile-container h2,
+            .edit-profile-form {
+                padding: 1.25rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 {% endblock %}
